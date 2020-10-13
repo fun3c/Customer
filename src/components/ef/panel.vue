@@ -119,7 +119,7 @@
             :activeElement="activeElement"
             @changeNodeSite="changeNodeSite"
             @nodeRightMenu="nodeRightMenu"
-            @clickNode="clickNode"
+            @dbclick="clickNode"
           >
           </flow-node>
         </template>
@@ -241,7 +241,7 @@ export default {
   mounted() {
     this.jsPlumb = jsPlumb.getInstance();
     this.$nextTick(() => {
-      // 默认加载流程A的数据、在这里可以根据具体的业务返回符合流程数据格式的数据即可
+      // 默认加载流程A的数据
       this.dataReload(getDataC());
     });
   },
@@ -337,17 +337,28 @@ export default {
         // // 设置目标点，其他源点拖出的线可以连接该节点
         this.jsPlumb.makeTarget(node.id, this.jsplumbTargetOptions);
         
-        if (!node.viewOnly) {
+
+        if (!node.viewOnly) { //是否是不可移动元素
           this.jsPlumb.draggable(node.id, { //可拖动元素
             grid:[15,15],//网格设置
-             Anchors: [ 'TopCenter',  'Bottom','BottomRight', 'BottomLeft'],
-            containment: "parent",
+             Anchors: [ 'TopCenter', 'Bottom','BottomRight', 'BottomLeft'],
+            // containment: "parent",
             stop: function(el) {
               // 拖拽节点结束后的对调
               console.log("拖拽结束: ", el);
             }
           });
         }
+        //初始化添加端点
+  //          this.jsPlumb.addEndpoint(node.id, {
+  //         anchor:[
+  //   [ 0.5, 0, 0, -1, 0, 0, "top" ],
+  //   [ 1, 0.5, 1, 0, 0, 0, "right" ]
+  //   [ 0.5, 1, 0, 1, 0, 0, "bottom" ]
+  //   [ 0, 0.5, -1, 0, 0, 0, "left" ]
+  // ]
+  //     })
+ 
       }
       // 初始化连线
       for (var i = 0; i < this.data.lineList.length; i++) {

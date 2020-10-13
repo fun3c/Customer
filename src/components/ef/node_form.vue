@@ -103,6 +103,7 @@
             // 修改连线
             saveLine() {
                 this.$emit('setLineLabel', this.line.from, this.line.to, this.line.label)
+                 this.$emit("isHideFrom",false)
             },
             Deselect(){
                 this.$emit("isHideFrom",false)
@@ -119,6 +120,7 @@
                         this.$emit('repaintEverything')
                     }
                 })
+                this.$emit("isHideFrom",false)
             }
         }
     }

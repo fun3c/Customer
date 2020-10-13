@@ -2,26 +2,37 @@
   <div
     ref="node"
     :style="nodeContainerStyle"
-    @click="clickNode"
+    @dbclick="clickNode"
     @mouseup="changeNodeSite"
     :class="nodeContainerClass"
   >
-    <!-- 最左侧的那条竖线 -->
-    <div class="ef-node-left"></div>
+   
     <!-- 节点类型的图标 -->
-    <img
+    <div class="el-node-top ">
+          <img
+      :class="nodeClass"
       style="width: 50px; height: 50px"
       :src="require('@/assets/' + node.img + '.png')"
       alt=""
     />
-    <!-- <div class="ef-node-left-ico flow-node-drag">
+ 
+    <div class="ef-node-text" :show-overflow-tooltip="true">
+      {{ node.name }}
+    </div>
+    </div>
+   <div class="el-node-bottom">
+ <!-- 最中间的那条竖线 -->
+    <div class="ef-node-left"></div>
+    <!-- 最下边的横线 -->
+       <div class="ef-bottom-line flow-node-drag">
+         <!-- 这里根据后端给的节点出口信息来渲染 -->
+            <div class="flow-node-drag endpoint" v-for="(item) in 4" :key="item" ></div>
+        </div>
+   </div>
+       <!-- <div class="ef-node-left-ico flow-node-drag">
             <i :class="nodeIcoClass"></i>
         </div> -->
     <!-- 节点名称 -->
-    <div class="ef-node-text" :show-overflow-tooltip="true">
-      {{ node.name }}
-      
-    </div>
     <!-- 节点状态图标 -->
     <!-- <div class="ef-node-right-ico">
             <i class="el-icon-circle-check el-node-state-success" v-show="node.state === 'success'"></i>
@@ -50,6 +61,12 @@ export default {
         "ef-node-container": true,
         //是否选中
         [this.node.type]: true,
+      };
+    },
+        nodeClass() {
+      return {
+        //是否选中
+        'el-node-img': true,
         "ef-node-active":
           this.activeElement.type == "node"
             ? this.activeElement.nodeId === this.node.id
@@ -74,7 +91,7 @@ export default {
   methods: {
     // 点击节点
     clickNode() {
-      this.$emit("clickNode", this.node.id);
+      this.$emit("dbclick", this.node.id);
     },
     // 鼠标移动后抬起
     changeNodeSite() {
