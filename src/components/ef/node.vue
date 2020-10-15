@@ -2,7 +2,7 @@
   <div
     ref="node"
     :style="nodeContainerStyle"
-    @dbclick="clickNode"
+    @dblclick="clickNode"
     @mouseup="changeNodeSite"
     :class="nodeContainerClass"
   >
@@ -20,19 +20,25 @@
       {{ node.name }}
     </div>
     </div>
-   <div class="el-node-bottom">
+   <div v-if="node.type!=='end'" class="el-node-bottom">
  <!-- 最中间的那条竖线 -->
-    <div class="ef-node-left"></div>
+ <div>
+      <div class="ef-node-center">
+     
+    </div>
+     <div v-if="isShowBottomLine!==true" class="flow-node-drag start-endpoint"></div>
+ </div>
     <!-- 最下边的横线 -->
-       <div class="ef-bottom-line flow-node-drag">
+       <div v-if="isShowBottomLine" class="ef-bottom-line ">
          <!-- 这里根据后端给的节点出口信息来渲染 -->
-            <div class="flow-node-drag endpoint" v-for="(item) in 4" :key="item" ></div>
+            <div class="flow-node-drag endpoint" v-for="(item) in 2" :key="item" ></div>
         </div>
    </div>
        <!-- <div class="ef-node-left-ico flow-node-drag">
             <i :class="nodeIcoClass"></i>
         </div> -->
     <!-- 节点名称 -->
+    <!-- 查看任务重现画布需要 -->
     <!-- 节点状态图标 -->
     <!-- <div class="ef-node-right-ico">
             <i class="el-icon-circle-check el-node-state-success" v-show="node.state === 'success'"></i>
@@ -63,6 +69,9 @@ export default {
         [this.node.type]: true,
       };
     },
+    clssss(){
+        console.log("gggggggggggggggggg")
+    },
         nodeClass() {
       return {
         //是否选中
@@ -73,6 +82,14 @@ export default {
             : false
       };
     },
+    //节点是否展示横线
+    isShowBottomLine(){
+     if( this.node.type!=="start"){
+       return true
+     }
+    },
+
+
     // 节点容器样式
     nodeContainerStyle() {
       return {
@@ -91,7 +108,8 @@ export default {
   methods: {
     // 点击节点
     clickNode() {
-      this.$emit("dbclick", this.node.id);
+      console.log(1111)
+      this.$emit("dblclick", this.node.id);
     },
     // 鼠标移动后抬起
     changeNodeSite() {

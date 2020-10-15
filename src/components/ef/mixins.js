@@ -9,8 +9,8 @@ export const easyFlowMixin = {
                 Container: 'efContainer',
                 // 连线的样式，直线或者曲线等，可选值:  StateMachine、Flowchart，Bezier、Straight
                 // Connector: ['Bezier', {curviness: 100}],
-                // Connector: ['Straight', {stub: 20, gap: 1}],
-                Connector: ['Flowchart', {stub: 30, gap: 1, alwaysRespectStubs: false, midpoint: 0.5, cornerRadius: 10}],
+                Connector: ['Straight', {stub: 45, gap: 0}],
+                // Connector: ['Flowchart', {stub: 30, gap: 1, alwaysRespectStubs: false, midpoint: 0.5, cornerRadius: 10}],
                 // Connector: ['StateMachine', {margin: 5, curviness: 10, proximityLimit: 80}],
                 // 鼠标不能拖动删除线
                 ConnectionsDetachable: false,
@@ -98,7 +98,7 @@ export const easyFlowMixin = {
                 isSource: true,
                 isTarget: true,
                 // 动态锚点、提供了4个方向 Continuous、AutoDefault
-                anchor: 'Continuous',
+                anchor:['BottomCenter'],
                 // 设置连线上面的label样式
                 labelStyle: {
                     cssClass: 'flowLabel'
@@ -111,17 +111,36 @@ export const easyFlowMixin = {
             /**
              * 源点配置参数
              */
-            jsplumbSourceOptions: {
+            jsplumbSourceOptions: { //源节点配置
                 // 设置可以拖拽的类名，只要鼠标移动到该类名上的DOM，就可以拖拽连线
                 filter: '.flow-node-drag',
                 filterExclude: false,
-                anchor: 'Continuous',
+                // anchor: 'Continuous',
+                // Anchor: ["Right", "Left"], 
+                anchor:[ 'BottomRight', 'BottomLeft'],
+             
                 allowLoopback: false,
                 maxConnections: -1,
                 onMaxConnections: function (info, e) {
                     console.log(`超过了最大值连线: ${info.maxConnections}`)
                 }
             },
+
+            jsplumbStartSourceOptions: { //源节点配置
+                // 设置可以拖拽的类名，只要鼠标移动到该类名上的DOM，就可以拖拽连线
+                filter: '.flow-node-drag',
+                filterExclude: false,
+                // anchor: 'Continuous',
+                // Anchor: ["Right", "Left"], 
+                anchor:[ 'BottomCenter'],
+             
+                allowLoopback: false,
+                maxConnections: -1,
+                onMaxConnections: function (info, e) {
+                    console.log(`超过了最大值连线: ${info.maxConnections}`)
+                }
+            },
+            
             // 参考 https://www.cnblogs.com/mq0036/p/7942139.html
             jsplumbSourceOptions2: {
                 // 设置可以拖拽的类名，只要鼠标移动到该类名上的DOM，就可以拖拽连线
@@ -129,7 +148,9 @@ export const easyFlowMixin = {
                 filterExclude: false,
                 // anchor: 'Continuous',
                 allowLoopback: false,
-                connector: ['Flowchart', {curviness: 50}],
+                connector: ['Flowchart', {curviness: 5}],
+            
+
                 connectorStyle: {
                     // 线的颜色
                     stroke: 'red',
@@ -146,8 +167,9 @@ export const easyFlowMixin = {
                 // 设置可以拖拽的类名，只要鼠标移动到该类名上的DOM，就可以拖拽连线
                 filter: '.flow-node-drag',
                 filterExclude: false,
-                anchor: 'Continuous',
+                anchor:["Continuous",{faces:["top"]}],
                 allowLoopback: false,
+                MaxConnections: 1,
                 dropOptions: {hoverClass: 'ef-drop-hover'}
             }
         }

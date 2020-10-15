@@ -28,13 +28,12 @@
         data() {
             return {
                 activeNames: '1',
-                // draggable配置参数参考 https://www.cnblogs.com/weixin186/p/10108679.html
+              
                 draggableOptions: {
                     preventOnFilter: false,
                     sort: false,
                     disabled: false,
                     ghostClass: 'tt',
-                    // 不使用H5原生的配置
                     forceFallback: true,
                     // 拖拽的时候样式
                     // fallbackClass: 'flow-node-draggable'
@@ -57,7 +56,7 @@
                                 ico: 'el-icon-video-play',
                                  img:"start",
                                 // 自定义覆盖样式
-                                style: {}
+                                style: {},
                             },
                         ]
                     },
@@ -87,16 +86,16 @@
                             },
                             {
                                 id: '4',
-                                type: 'aaa',
+                                type: 'bbb',
                                 name: 'AB测试',
                                 ico: 'el-icon-cpu',
                                 img:"AB测试",
-                                img:"短信",
+                                img:"AB测试",
                                 // 自定义覆盖样式
                                 style: {}
                             },{
                                 id: '5',
-                                type: 'aaa',
+                                type: 'ccc',
                                 name: '等待',
                                 ico: 'el-icon-cpu',
                                 img:"wait",
@@ -105,7 +104,7 @@
                             },
                             {
                                 id: '6',
-                                type: 'aaa',
+                                type: 'ddd',
                                 name: '推荐',
                                 ico: 'el-icon-cpu',
                                 img:"推荐",
@@ -143,7 +142,6 @@
         
             if (this.isFirefox()) {
                 document.body.ondrop = function (event) {
-                    // 解决火狐浏览器无法获取鼠标拖拽结束的坐标问题
                     mousePosition.left = event.layerX
                     mousePosition.top = event.clientY - 50
                     event.preventDefault();

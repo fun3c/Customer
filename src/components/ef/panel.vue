@@ -116,10 +116,11 @@
             :id="node.id"
             :key="node.id"
             :node="node"
+            ref="flowNode"
             :activeElement="activeElement"
             @changeNodeSite="changeNodeSite"
             @nodeRightMenu="nodeRightMenu"
-            @dbclick="clickNode"
+            @dblclick="clickNode"
           >
           </flow-node>
         </template>
@@ -260,7 +261,6 @@ export default {
         this.jsPlumb.setSuspendDrawing(false, true);
         // 初始化节点
         this.loadEasyFlow();
-        // 单点击了连接线, https://www.cnblogs.com/ysx215/p/7615677.html
         this.jsPlumb.bind("click", (conn, originalEvent) => {
             this.isHideFrom(true);
           this.activeElement.type = "line";
@@ -312,7 +312,11 @@ export default {
             this.$message.error("不支持两个节点之间连线回环");
             return false;
           }
+
+         
           this.$message.success("连接成功");
+           //连线成功后应该怎么做  删除连线节点
+          console.log(this.$refs.flowNode[0].showEndpoint())
           return true;
         });
 
@@ -330,18 +334,18 @@ export default {
         let node = this.data.nodeList[i];
         // 设置源点，可以拖出线连接其他节点
 
-        this.jsPlumb.makeSource(
-          node.id,
-          lodash.merge(this.jsplumbSourceOptions, {})
-        );
-        // // 设置目标点，其他源点拖出的线可以连接该节点
-        this.jsPlumb.makeTarget(node.id, this.jsplumbTargetOptions);
+        this.jsPlumb.makeSource(node.id,lodash.merge(this.jsplumbStartSourceOptions, {}));
+        // // 设置目标点，其他源点拖出的线可以连接该节点,开始节点不可链接
+        if(node.type!=="start"){
+          this.jsPlumb.makeTarget(node.id, this.jsplumbTargetOptions);
+        }
+        
         
 
         if (!node.viewOnly) { //是否是不可移动元素
           this.jsPlumb.draggable(node.id, { //可拖动元素
             grid:[15,15],//网格设置
-             Anchors: [ 'TopCenter', 'Bottom','BottomRight', 'BottomLeft'],
+            //  Anchors: [ 'TopCenter', 'Bottom','BottomRight', 'BottomLeft'],
             // containment: "parent",
             stop: function(el) {
               // 拖拽节点结束后的对调
@@ -532,11 +536,12 @@ export default {
 
       this.data.nodeList.push(node);
       this.$nextTick(function() {
-        this.jsPlumb.makeSource(nodeId, this.jsplumbSourceOptions);
+        
+        this.jsPlumb.makeSource(nodeId, this.jsplumbSourceOptions); //元节点配置
         this.jsPlumb.makeTarget(nodeId, this.jsplumbTargetOptions);
         this.jsPlumb.draggable(nodeId, {//可拖动元素
           containment: "parent",
-     grid:[15,15],
+          grid:[15,15],
           stop: function(el) {
             // 拖拽节点结束后的对调
             console.log("拖拽结束: ", el);
@@ -726,24 +731,7 @@ export default {
         })
       },
     
-    // // 下载数据
-    // downloadData() {
-    //     this.$confirm('确定要下载该流程数据吗？', '提示', {
-    //         confirmButtonText: '确定',
-    //         cancelButtonText: '取消',
-    //         type: 'warning',
-    //         closeOnClickModal: false
-    //     }).then(() => {
-    //         var datastr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.data, null, '\t'));
-    //         var downloadAnchorNode = document.createElement('a')
-    //         downloadAnchorNode.setAttribute("href", datastr);
-    //         downloadAnchorNode.setAttribute("download", 'data.json')
-    //         downloadAnchorNode.click();
-    //         downloadAnchorNode.remove();
-    //         this.$message.success("正在下载中,请稍后...")
-    //     }).catch(() => {
-    //     })
-    // },
+
     openHelp() {
       this.flowHelpVisible = true;
       this.$nextTick(function() {
