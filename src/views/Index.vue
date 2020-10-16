@@ -1,16 +1,13 @@
 <template>
   <el-container class="index-box">
-    <el-aside width="asideWidth" class="left-nav">
-      <div class="logo">
-        D-Customer
-        <!-- <img v-show="!isCollapse" src="../assets/logo.png" alt="ELementUI" width="122" height="27"> -->
-      </div>
-      <menus :isCollapse="isCollapse"/>
-    </el-aside>
-    <el-container>
       <el-header>
         <headers/>
       </el-header>
+    
+    <el-container>
+      <el-aside width="asideWidth" class="left-nav">
+      <menus :isCollapse="isCollapse"/>
+    </el-aside>
       <el-main>
         <router-view v-if="isRouterAlive"/>
       </el-main>

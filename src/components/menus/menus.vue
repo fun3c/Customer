@@ -44,7 +44,6 @@ export default {
   }
   .menu-nav:not(.el-menu--collapse) {
     width: 200px;
-    min-height: 500px;
-    height: 100%;
+    min-height: 400px;
   }
 </style>
