@@ -537,7 +537,15 @@ export default {
       this.data.nodeList.push(node);
       this.$nextTick(function() {
         
-        this.jsPlumb.makeSource(nodeId, this.jsplumbSourceOptions); //元节点配置
+           
+        // // 设置目标点，其他源点拖出的线可以连接该节点,开始节点不可链接
+        if(node.type!=="NID_START"){
+          this.jsPlumb.makeSource(nodeId, this.jsplumbSourceOptions);
+        }else{
+          this.jsPlumb.makeSource(nodeId,this.jsplumbStartSourceOptions);
+        }
+
+        // this.jsPlumb.makeSource(nodeId, this.jsplumbSourceOptions); //元节点配置
         this.jsPlumb.makeTarget(nodeId, this.jsplumbTargetOptions);
         this.jsPlumb.draggable(nodeId, {//可拖动元素
           containment: "parent",

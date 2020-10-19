@@ -20,7 +20,7 @@
       {{ node.name }}
     </div>
     </div>
-   <div v-if="node.type!=='end'" class="el-node-bottom">
+   <div v-if="node.type!=='NID_END'" class="el-node-bottom">
  <!-- 最中间的那条竖线 -->
  <div>
       <div class="ef-node-center">
@@ -84,7 +84,7 @@ export default {
     },
     //节点是否展示横线
     isShowBottomLine(){
-     if( this.node.type!=="start"){
+     if( this.node.type!=="NID_START"){
        return true
      }
     },

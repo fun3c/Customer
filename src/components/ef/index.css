@@ -130,7 +130,7 @@
     flex-direction: column;
   width: 150px;
     /* border-bottom: #a1a1a1 solid 2px; */
-    height: 90px;
+    height: 75px;
 }
 /* //头部容器 */
 
@@ -159,7 +159,7 @@
 .ef-node-center {
 
     width: 2px;
-    height: 40px;
+    height: 30px;
     background-color: #a1a1a1;
     margin-left: 50%;
     margin-top: -5px;
@@ -185,7 +185,7 @@
     border-radius: 50%;
     background-color:  #a1a1a1;
     z-index: 10;
-    margin-left: 49%;
+    margin-left: 48%;
 }
 .endpoint{
     width: 8px;
@@ -193,6 +193,7 @@
     border-radius: 50%;
     background-color:  #a1a1a1;
     z-index: 10;
+
 }
 .el-node-img:hover {
     /* 设置移动样式*/
@@ -229,7 +230,7 @@
     color: #565758;
     font-size: 12px;
     line-height: 32px;
-    margin-left: 8px;
+    margin-left: 12px;
     position: absolute;
     left: 60%;
     /* width: 100px; */

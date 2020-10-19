@@ -59,13 +59,38 @@
               v-model="activeNames"
               @change="handleChange"
             >
-              <el-collapse-item title="一致性 Consistency">
-                <div>
-                  与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；
+              <el-collapse-item :title="item.title">
+                <div v-for="(items,index) in item.children" :key="index">
+                  
+                     <div 
+          class="ef-node-form-item"
+          v-for="(items, index) in node.parameters" 
+          :key="index">
+            <!-- //标题 -->
+            <b class="form-item-title">
+              {{ items.title }}
+            </b>
+            <!-- 描述信息 -->
+            <!-- <el-divider></el-divider> -->
+
+                <!-- 文本标签 -->
+            <span class="PTYPE_TEXT" >
+              {{ items.defaultValue }}
+              <br>
+              <span >  {{ items.tips }}</span>
+            </span>
+      
+            <!-- input框 -->
+            <el-input
+           
+              v-model="node.parameters[index].defaultValue"
+              :placeholder="items.defaultValue"
+            >
+            </el-input>
+
+            
                 </div>
-                <div>
-                  在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。
-                </div>
+          </div>
               </el-collapse-item>
             </el-collapse>
 
@@ -187,6 +212,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+::-webkit-scrollbar {display:none}
+
 
 .ef-node-form-body{
 display: flex;
@@ -194,8 +221,13 @@ display: flex;
 // justify-items: center;
 // align-items: center;
 padding-left: 20px;
+height: 500px;
+overflow-x:hidden; overflow-y:scroll;
 }
-
+.el-form{
+  width: 100%;
+  
+}
 .el-node-form-tag {
   position: absolute;
   top: 50%;
@@ -217,15 +249,23 @@ padding-left: 20px;
     // height: 70px;
     margin-bottom: 10px;
     font-size: 14px;
-    // line-height: 1.3 ;
-
+    width: 100%;
+    height: 30px;
+    line-height: 30px ;
+    color: #6d6d6d;
+    border-bottom: solid 1px #ccc;
   }
   .PTYPE_TEXT{
     font-size: 14px;
     span{
       font-size: 12px;
-      color: rgb(194, 193, 193);
+      color: rgb(145, 145, 145);
     }
   }
+  .el-collapse-item__header {
+    color: wheat;
+     background-color: #009bd8 !important;
+  }
+ 
 }
 </style>
