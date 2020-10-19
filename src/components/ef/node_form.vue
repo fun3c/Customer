@@ -113,6 +113,7 @@ export default {
       node: {},
       line: {},
       data: {},
+      value:"",
       activeNames: ["1"],
       stateList: [
         {
