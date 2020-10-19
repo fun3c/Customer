@@ -12,7 +12,7 @@
           <img
       :class="nodeClass"
       style="width: 50px; height: 50px"
-      :src="require('@/assets/' + node.img + '.png')"
+      :src="require('@/assets/' + node.img )"
       alt=""
     />
  

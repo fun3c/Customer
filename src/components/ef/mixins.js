@@ -9,8 +9,8 @@ export const easyFlowMixin = {
                 Container: 'efContainer',
                 // 连线的样式，直线或者曲线等，可选值:  StateMachine、Flowchart，Bezier、Straight
                 // Connector: ['Bezier', {curviness: 100}],
-                Connector: ['Straight', {stub: 45, gap: 0}],
-                // Connector: ['Flowchart', {stub: 30, gap: 1, alwaysRespectStubs: false, midpoint: 0.5, cornerRadius: 10}],
+                // Connector: ['Straight', {stub: 45, gap: 0}],
+                Connector: ['Flowchart', {stub: 30, gap: 1, alwaysRespectStubs: false, midpoint: 0.5, cornerRadius: 10}],
                 // Connector: ['StateMachine', {margin: 5, curviness: 10, proximityLimit: 80}],
                 // 鼠标不能拖动删除线
                 ConnectionsDetachable: false,
@@ -84,7 +84,7 @@ export const easyFlowMixin = {
                     }]
                 ],
                 // 绘制图的模式 svg、canvas
-                RenderMode: 'svg',
+                RenderMode: 'canvas',
                 // 鼠标滑过线的样式
                 HoverPaintStyle: {stroke: '#b0b2b5', strokeWidth: 1},
                 // 滑过锚点效果
@@ -106,7 +106,8 @@ export const easyFlowMixin = {
                 // 修改了jsplumb 源码，支持label 为空传入自定义style
                 emptyLabelStyle: {
                     cssClass: 'emptyFlowLabel'
-                }
+                },
+                EndpointStyle : { fill : '#456' }
             },
             /**
              * 源点配置参数
@@ -119,7 +120,7 @@ export const easyFlowMixin = {
                 // Anchor: ["Right", "Left"], 
                 anchor:[ 'BottomRight', 'BottomLeft'],
              
-                allowLoopback: false,
+                allowLoopback: true, //形成回环
                 maxConnections: -1,
                 onMaxConnections: function (info, e) {
                     console.log(`超过了最大值连线: ${info.maxConnections}`)

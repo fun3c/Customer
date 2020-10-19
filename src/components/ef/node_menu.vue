@@ -4,12 +4,12 @@
             <span class="ef-node-pmenu" @click="menu.open = !menu.open"><i :class="{'el-icon-caret-bottom': menu.open,'el-icon-caret-right': !menu.open}"></i>&nbsp;{{menu.name}}</span>
             <ul v-show="menu.open" class="ef-node-menu-ul">
                 <draggable class="drag-box" @end="end" @start="move" v-model="menu.children" :options="draggableOptions">
-                    <li v-for="subMenu in menu.children" :class="'ef-node-menu-li '+ subMenu.type"  :key="subMenu.id" :type="subMenu.type">
+                    <li v-for="subMenu in menu.children" :class="'ef-node-menu-li '+ subMenu.nodeTypeID"  :key="subMenu.id" :type="subMenu.nodeTypeID">
                         <img 
                               style="width: 50px; height: 50px"
-                             :src="require('@/assets/'+subMenu.img+'.png')" 
+                             :src="require('@/assets/'+subMenu.image)" 
                              alt="">
-                             <span> {{subMenu.name}} </span>
+                             <span> {{subMenu.caption}} </span>
                     </li>
                 </draggable>
             </ul>
@@ -18,7 +18,7 @@
 </template>
 <script>
     import draggable from 'vuedraggable'
-
+    import menuList from "./group"
     var mousePosition = {
         left: -1,
         top: -1
@@ -40,98 +40,7 @@
                 },
                 // 默认打开的左侧菜单的id
                 defaultOpeneds: ['1', '2','3'],
-                menuList: [  //数据覆盖,定义的数据类型  包含操作修改 节点出口分支
-                    {
-                        id: '1',
-                        type: 'group',
-                        name: '开始节点',
-                        ico: 'el-icon-video-play',
-                        img:"start",
-                        open: true,
-                        children: [
-                            {
-                                id: '0',
-                                type: 'start',
-                                name: '开始',
-                                ico: 'el-icon-video-play',
-                                 img:"start",
-                                // 自定义覆盖样式
-                                style: {},
-                            },
-                        ]
-                    },
-                    {
-                        id: '2',
-                        type: 'group',
-                        name: '事件',
-                        ico: 'el-icon-guide',
-                        open: true,
-                        children: [
-                            {
-                                id: '2',
-                                type: 'task',
-                                name: '条件分支',
-                                ico: 'el-icon-guide',
-                                img:"条件分支",
-                                // 自定义覆盖样式
-                                style: {}
-                            }, {
-                                id: '3',
-                                type: 'aaa',
-                                name: '短信',
-                                ico: 'el-icon-cpu',
-                                img:"短信",
-                                // 自定义覆盖样式
-                                style: {}
-                            },
-                            {
-                                id: '4',
-                                type: 'bbb',
-                                name: 'AB测试',
-                                ico: 'el-icon-cpu',
-                                img:"AB测试",
-                                img:"AB测试",
-                                // 自定义覆盖样式
-                                style: {}
-                            },{
-                                id: '5',
-                                type: 'ccc',
-                                name: '等待',
-                                ico: 'el-icon-cpu',
-                                img:"wait",
-                                // 自定义覆盖样式
-                                style: {}
-                            },
-                            {
-                                id: '6',
-                                type: 'ddd',
-                                name: '推荐',
-                                ico: 'el-icon-cpu',
-                                img:"推荐",
-                                // 自定义覆盖样式
-                                style: {}
-                            }
-                        ]
-                    },
-                    {
-                        id: '3',
-                        type: 'group',
-                        name: '结束节点',
-                        ico: 'el-icon-video-pause',
-                        open: true,
-                        children: [
-                            {
-                                id: '5',
-                                type: 'end',
-                                name: '流程结束',
-                                ico: 'el-icon-switch-button',
-                                img:"stop",
-                                // 自定义覆盖样式
-                                style: {}
-                            },
-                        ]
-                    }
-                ],
+                menuList: menuList,
                 nodeMenu: {}
             }
         },
@@ -155,7 +64,7 @@
                 for (let i = 0; i < this.menuList.length; i++) {
                     let children = this.menuList[i].children;
                     for (let j = 0; j < children.length; j++) {
-                        if (children[j].type === type) {
+                        if (children[j].nodeTypeID === type) {
                             return children[j]
                         }
                     }
@@ -169,6 +78,7 @@
             },
             // 拖拽结束时触发
             end(evt, e) {
+           
                 this.$emit('addNode', evt, this.nodeMenu, mousePosition)
             },
             // 是否是火狐浏览器

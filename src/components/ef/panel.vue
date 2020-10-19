@@ -479,9 +479,9 @@ export default {
       var nodeId = this.getUUID();
       // 动态生成名字
 
-      var origName = nodeMenu.name;
+      var origName = nodeMenu.caption;
+      console.log(nodeMenu,'fwwwwwwwwwwwwwwwwwww')
 
-      console.log(origName);
       var nodeName = origName;
       var index = 1;
       while (index < 10000) {
@@ -503,10 +503,9 @@ export default {
       var node = {
         id: nodeId,
         name: nodeName,
-        type: nodeMenu.type,
+        type: nodeMenu.nodeTypeID,
         left: left + "px",
         top: top + "px",
-        ico: nodeMenu.ico,
         controlState: "success",
         controlDescription: "", //控件描述
         controlCondition: "", //条件判断
@@ -514,17 +513,18 @@ export default {
         createBy: "", //创建人
         createTime: "", //创建时间
         controlVersion: "",
-        img:nodeMenu.img
+        img:nodeMenu.image,
+        parameters:nodeMenu.parameters
       };
   
         // 判断节点类型，如果是开始的话，就有且只能有一个
-        if(node.type ==="start"){
+        if(node.type ==="NID_START"){
          
            let startArr= this.data.nodeList.filter((item,index)=>{
                console.log(item.type)
-              return item.type=="start"
+              return item.type=="NID_START"
             })
-                
+              console.log(startArr)  
           if( startArr.length==1){
              console.log(startArr.length)
             this.$message.error("画布中只允许存在一个开始控件");
@@ -617,7 +617,7 @@ export default {
       this.menu.top = evt.y + "px";
     },
     repaintEverything() {
-      this.jsPlumb.repaint();
+      this.jsPlumb.repaint();//重绘组件
     },
     // 流程数据信息
     dataInfo() {
