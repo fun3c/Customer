@@ -55,13 +55,7 @@
                 </span>
                  <div class="subline"></div>
               </div>
-
-
-
-
               <!-- 下拉框 -->
-
-
                <div class="PTYPE_LABEL" v-if="item.type === 'PTYPE_SELECT'">
                      <el-select
                 v-model="node.parameters[index].defaultValue"
@@ -84,13 +78,13 @@
             </div>
 
             <!-- 折叠面板 -->
-            <el-collapse
-              v-if="item.type === 'PTYPE_GROUP'"
-              v-model="activeNames"
-              @change="handleChange"
-            >
-              <el-collapse-item :title="item.title">
-                <div v-for="(items, index) in item.children" :key="index">
+                       <div class="PTYPE_GROUP" v-if="item.type === 'PTYPE_GROUP'">
+                     <el-collapse
+                v-model="node.parameters[index].defaultValue"
+                placeholder="请选择"
+              >
+                 <el-collapse-item :title="item.title">
+                   <div v-for="(items, index) in item.children" :key="index">
                   <div
                     class="ef-node-form-item"
                     v-for="(items, index) in node.parameters"
@@ -104,15 +98,22 @@
                     <!-- <el-divider></el-divider> -->
 
                     <!-- 文本标签 -->
-                    <span class="PTYPE_TEXT">
+                    <!-- <span class="PTYPE_TEXT">
                       {{ items.defaultValue }}
                       <br />
                       <span> {{ items.tips }}</span>
-                    </span>
+                    </span> -->
                   </div>
                 </div>
-              </el-collapse-item>
-            </el-collapse>
+                   </el-collapse-item>
+              </el-collapse>
+                    <span class="el-from-describe">
+                  {{ item.tips }}
+                </span>
+                 <div class="subline"></div>
+              </div>
+
+         
             <!-- 开关 -->
             <el-form-item v-if="item.type === 'PTYPE_SWITCH'">
               >
@@ -331,11 +332,20 @@ export default {
       color: rgb(145, 145, 145);
     }
   }
-  .el-collapse-item__header {
-    color: wheat;
-    background-color: #009bd8 !important;
+  .PTYPE_GROUP{
+    padding: 0;
   }
+  .PTYPE_GROUP {
+    margin-left: -20px;
+    width: 124%;
+    color: wheat;
+    // background-color: #009bd8 !important;
+  }
+ 
 
 
+}
+.el-collapse-item__header{
+  background-color: red;
 }
 </style>

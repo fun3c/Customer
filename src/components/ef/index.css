@@ -345,3 +345,9 @@
 .ef-drop-hover{
     border: 1px dashed #1879FF;
 }
+.el-collapse-item__header{
+    font-weight: 700;
+    padding: 0 15px;
+    color:white;
+    background-color: rgb(23, 174, 194);
+  }
