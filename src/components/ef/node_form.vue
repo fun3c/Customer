@@ -7,50 +7,81 @@
       <div class="ef-node-form-body">
         <!-- 常规控件展示内容 -->
         <el-form :model="node" ref="dataForm" v-show="type === 'node'">
+          <div class="ef-form-title">
+            <!-- from标题 -->
+            <p>
+              {{ `${node.caption}控件  （ID:${node.id}）` }}
+            </p>
+            <span>
+              {{ node.info }}
+            </span>
+            <div class="subline"></div>
+          </div>
           <div
             class="ef-node-form-item"
             v-for="(item, index) in node.parameters"
             :key="index"
           >
-        
-
-            <!-- input框 -->
+    
             <div v-if="!blacklist.includes(item.type)">
-                  <!-- //标题 -->
-            <b class="form-item-title">
-              {{ item.title }}
-            </b>
-            <!-- 文本标签 -->
-            <span class="PTYPE_TEXT" v-if="item.type === 'PTYPE_TEXT'">
-              {{ item.defaultValue }}
-              <br />
-              <span> {{ item.tips }}</span>
-            </span>
-                  <el-input
-              v-if="item.type === 'PTYPE_LABEL'"
-              v-model="node.parameters[index].defaultValue"
-              :placeholder="item.defaultValue"
-            >
-            </el-input>
+              <!-- //标题 -->
+              <b class="form-item-title">
+                {{ item.title }}
+              </b>
+              <!-- 文本标签 -->
+              <span class="PTYPE_TEXT" v-if="item.type === 'PTYPE_TEXT'">
+                {{ item.defaultValue }}
+                <br />
+                <span> {{ item.tips }}</span>
+                
+              </span>
+                <!-- input -->
+              <div class="PTYPE_INPUT" v-if="item.type === 'PTYPE_INPUT'">
+                <el-input
+                  v-model="node.parameters[index].defaultValue"
+                  :placeholder="item.defaultValue"
+                >
+                </el-input>
+                <span class="el-from-describe">
+                  {{ item.tips }}
+                </span>
+                 <div class="subline"></div>
+              </div>
+                <!-- label -->
+              <div class="PTYPE_LABEL" v-if="item.type === 'PTYPE_LABEL'">
+                  <p>{{item.defaultValue}}</p>
+                    <span class="el-from-describe">
+                  {{ item.tips }}
+                </span>
+                 <div class="subline"></div>
+              </div>
 
-                        <!-- 下拉框 -->
-            <el-select
-              v-model="value"
-              v-if="item.type === 'PTYPE_SELECT'"
-              filterable
-              placeholder="请选择"
-            >
-              <el-option
-                v-for="(item, index) in item.values"
-                :key="index"
-                :label="item"
-                :value="item"
+
+
+
+              <!-- 下拉框 -->
+
+
+               <div class="PTYPE_LABEL" v-if="item.type === 'PTYPE_SELECT'">
+                     <el-select
+                v-model="node.parameters[index].defaultValue"
+                placeholder="请选择"
               >
-              </el-option>
-            </el-select>
-
+                <el-option
+                  v-for="(option, index) in item.values"
+                  :key="index"
+                  :label="option"
+                  :value="index"
+                >
+                </el-option>
+              </el-select>
+                    <span class="el-from-describe">
+                  {{ item.tips }}
+                </span>
+                 <div class="subline"></div>
+              </div>
+           
             </div>
-      
 
             <!-- 折叠面板 -->
             <el-collapse
@@ -78,44 +109,29 @@
                       <br />
                       <span> {{ items.tips }}</span>
                     </span>
-
-                    <!-- input框 -->
-                    <el-input
-                      v-model="node.parameters[index].defaultValue"
-                      :placeholder="items.defaultValue"
-                    >
-                    </el-input>
                   </div>
                 </div>
               </el-collapse-item>
             </el-collapse>
             <!-- 开关 -->
-           <el-form-item v-if="item.type === 'PTYPE_SWITCH'">
-            >
-            {{item.title}}
-            <el-tooltip :content="item.tips" placement="top">
-              <el-switch
-                v-model="node.parameters[index].defaultValue"
-                active-color="#13ce66"
-                inactive-color="#ff4949"
-                active-value="100"
-                inactive-value="0"
+            <el-form-item v-if="item.type === 'PTYPE_SWITCH'">
               >
-              </el-switch>
-            </el-tooltip>
-
-          </el-form-item>
-
-
-
+              {{ item.title }}
+              <el-tooltip :content="item.tips" placement="top">
+                <el-switch
+                  v-model="node.parameters[index].defaultValue"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949"
+                  active-value="100"
+                  inactive-value="0"
+                >
+                </el-switch>
+              </el-tooltip>
+            </el-form-item>
           </div>
-
-         
-
           <el-form-item>
             <el-button icon="el-icon-close" @click="Deselect">关闭</el-button>
-            <el-button type="primary" icon="el-icon-check" @click="save"
-              >保存</el-button
+            <el-button type="primary" icon="el-icon-check" @click="save" >保存</el-button
             >
           </el-form-item>
         </el-form>
@@ -154,9 +170,8 @@ export default {
       node: {},
       line: {},
       data: {},
-      value: "",
-      blacklist:['PTYPE_GROUP','PTYPE_SWITCH'],//组件标题黑名单
-      switchValue:"",
+      blacklist: ["PTYPE_GROUP", "PTYPE_SWITCH"], //组件标题黑名单
+      switchValue: "",
       activeNames: ["1"],
       stateList: [
         {
@@ -212,11 +227,10 @@ export default {
     save() {
       this.data.nodeList.filter(node => {
         if (node.id === this.node.id) {
-          node.name = this.node.name;
+          // node.name = this.node.name;
           node.left = this.node.left;
           node.top = this.node.top;
-          node.ico = this.node.ico;
-          node.state = this.node.state;
+          node.parameters = this.node.parameters;
           this.$emit("repaintEverything");
         }
       });
@@ -233,18 +247,35 @@ export default {
 ::-webkit-scrollbar {
   display: none;
 }
-.form-left,.ef-node-form{
-  height: 100% ;
+.form-left,
+.ef-node-form {
+  height: 100%;
 }
-.el-form-item{
-  border-bottom: solid 1px #ccc;
+.ef-form-title {
+  padding: 20px 20px 0px 20px;
+
+  p {
+    color: rgb(84, 191, 218);
+    font-weight: 700;
+  }
+
+  span {
+    font-size: 12px;
+    color: rgb(145, 145, 145);
+  }
+}
+.subline{
+      line-height: 100%;
+    height: 2px;
+    background-color: #ccc;
+    margin-top: 20px;
 }
 .ef-node-form-body {
   display: flex;
   // flex-direction: column;
   // justify-items: center;
   // align-items: center;
-  padding-left: 20px;
+  // padding-left: 20px;
   height: 100%;
   // overflow-x: hidden;
   overflow-y: scroll;
@@ -252,6 +283,12 @@ export default {
 .el-form {
   width: 100%;
 }
+    .el-button{
+      margin-left: 5px;
+      width: 45% !important;
+      // border: none;
+    }
+
 .el-node-form-tag {
   position: absolute;
   top: 50%;
@@ -265,6 +302,7 @@ export default {
 }
 
 .ef-node-form-item {
+  padding: 20px;
   padding-bottom: 15px;
   box-sizing: border-box;
 
@@ -276,8 +314,15 @@ export default {
     width: 100%;
     height: 30px;
     line-height: 30px;
-    color: #6d6d6d;
+    color: #54afca;
     // border-bottom: solid 1px #ccc;
+  }
+  .el-from-describe {
+    //描述信息
+    display: block;
+    margin-top: 10px;
+    font-size: 12px;
+    color: rgb(197, 197, 197);
   }
   .PTYPE_TEXT {
     font-size: 14px;
@@ -290,5 +335,7 @@ export default {
     color: wheat;
     background-color: #009bd8 !important;
   }
+
+
 }
 </style>

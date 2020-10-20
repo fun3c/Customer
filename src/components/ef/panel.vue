@@ -107,27 +107,27 @@
       <div style="width: 230px;border-right: 1px solid #dce3e8;">
         <node-menu @addNode="addNode" ref="nodeMenu"></node-menu>
       </div>
- <div  class="wiper">
+      <div class="wiper">
         <div id="efContainer" ref="efContainer" class="container" v-flowDrag>
-        <template v-for="node in data.nodeList">
-          <!-- 画布要展示的组件 -->
-      
-          <flow-node
-            :id="node.id"
-            :key="node.id"
-            :node="node"
-            ref="flowNode"
-            :activeElement="activeElement"
-            @changeNodeSite="changeNodeSite"
-            @nodeRightMenu="nodeRightMenu"
-            @dblclick="clickNode"
-          >
-          </flow-node>
-        </template>
-        <!-- 给画布一个默认的宽度和高度 -->
-        <!-- <div style="position:absolute;top: 2000px;left: 2000px;">&nbsp;</div> -->
+          <template v-for="node in data.nodeList">
+            <!-- 画布要展示的组件 -->
+
+            <flow-node
+              :id="node.id"
+              :key="node.id"
+              :node="node"
+              ref="flowNode"
+              :activeElement="activeElement"
+              @changeNodeSite="changeNodeSite"
+              @nodeRightMenu="nodeRightMenu"
+              @dblclick="clickNode"
+            >
+            </flow-node>
+          </template>
+          <!-- 给画布一个默认的宽度和高度 -->
+          <!-- <div style="position:absolute;top: 2000px;left: 2000px;">&nbsp;</div> -->
+        </div>
       </div>
- </div>
       <!-- 右侧表单 -->
       <div
         v-show="this.isShowForm"
@@ -144,7 +144,6 @@
     <!-- 流程数据详情 -->
     <flow-info v-if="flowInfoVisible" ref="flowInfo" :data="data"></flow-info>
     <flow-help v-if="flowHelpVisible" ref="flowHelp"></flow-help>
-
   </div>
 </template>
 
@@ -162,7 +161,6 @@ import FlowNodeForm from "./node_form";
 import lodash from "lodash";
 
 import { getDataC } from "./data_C";
-
 
 export default {
   data() {
@@ -262,7 +260,7 @@ export default {
         // 初始化节点
         this.loadEasyFlow();
         this.jsPlumb.bind("click", (conn, originalEvent) => {
-            this.isHideFrom(true);
+          this.isHideFrom(true);
           this.activeElement.type = "line";
           this.activeElement.sourceId = conn.sourceId;
           this.activeElement.targetId = conn.targetId;
@@ -313,10 +311,9 @@ export default {
             return false;
           }
 
-         
           this.$message.success("连接成功");
-           //连线成功后应该怎么做  删除连线节点
-          console.log(this.$refs.flowNode[0].showEndpoint())
+          //连线成功后应该怎么做  删除连线节点
+          console.log(this.$refs.flowNode[0].showEndpoint());
           return true;
         });
 
@@ -334,17 +331,20 @@ export default {
         let node = this.data.nodeList[i];
         // 设置源点，可以拖出线连接其他节点
 
-        this.jsPlumb.makeSource(node.id,lodash.merge(this.jsplumbStartSourceOptions, {}));
+        this.jsPlumb.makeSource(
+          node.id,
+          lodash.merge(this.jsplumbStartSourceOptions, {})
+        );
         // // 设置目标点，其他源点拖出的线可以连接该节点,开始节点不可链接
-        if(node.type!=="start"){
+        if (node.nodeTypeID !== "start") {
           this.jsPlumb.makeTarget(node.id, this.jsplumbTargetOptions);
         }
-        
-        
 
-        if (!node.viewOnly) { //是否是不可移动元素
-          this.jsPlumb.draggable(node.id, { //可拖动元素
-            grid:[15,15],//网格设置
+        if (!node.viewOnly) {
+          //是否是不可移动元素
+          this.jsPlumb.draggable(node.id, {
+            //可拖动元素
+            grid: [15, 15], //网格设置
             //  Anchors: [ 'TopCenter', 'Bottom','BottomRight', 'BottomLeft'],
             // containment: "parent",
             stop: function(el) {
@@ -354,15 +354,14 @@ export default {
           });
         }
         //初始化添加端点
-  //          this.jsPlumb.addEndpoint(node.id, {
-  //         anchor:[
-  //   [ 0.5, 0, 0, -1, 0, 0, "top" ],
-  //   [ 1, 0.5, 1, 0, 0, 0, "right" ]
-  //   [ 0.5, 1, 0, 1, 0, 0, "bottom" ]
-  //   [ 0, 0.5, -1, 0, 0, 0, "left" ]
-  // ]
-  //     })
- 
+        //          this.jsPlumb.addEndpoint(node.id, {
+        //         anchor:[
+        //   [ 0.5, 0, 0, -1, 0, 0, "top" ],
+        //   [ 1, 0.5, 1, 0, 0, 0, "right" ]
+        //   [ 0.5, 1, 0, 1, 0, 0, "bottom" ]
+        //   [ 0, 0.5, -1, 0, 0, 0, "left" ]
+        // ]
+        //     })
       }
       // 初始化连线
       for (var i = 0; i < this.data.lineList.length; i++) {
@@ -394,7 +393,7 @@ export default {
         conn.addClass("flowLabel");
       }
       conn.setLabel({
-        grid:[15,15],
+        grid: [15, 15],
         label: label
       });
       this.data.lineList.forEach(function(line) {
@@ -406,7 +405,7 @@ export default {
     // 删除激活的元素
     deleteElement() {
       if (this.activeElement.type === "node") {
-        console.log(this.activeElement)
+        console.log(this.activeElement);
         this.deleteNode(this.activeElement.nodeId);
       } else if (this.activeElement.type === "line") {
         this.$confirm("确定删除所点击的线吗?", "提示", {
@@ -454,7 +453,7 @@ export default {
      * @param mousePosition 鼠标拖拽结束的坐标
      */
     addNode(evt, nodeMenu, mousePosition) {
-        console.log(nodeMenu,"nodeMenu数据")
+      console.log(nodeMenu, "nodeMenu数据");
       var screenX = evt.originalEvent.clientX,
         screenY = evt.originalEvent.clientY;
       let efContainer = this.$refs.efContainer;
@@ -480,7 +479,7 @@ export default {
       // 动态生成名字
 
       var origName = nodeMenu.caption;
-      console.log(nodeMenu,'fwwwwwwwwwwwwwwwwwww')
+      console.log(nodeMenu, "fwwwwwwwwwwwwwwwwwww");
 
       var nodeName = origName;
       var index = 1;
@@ -499,57 +498,48 @@ export default {
         }
         break;
       }
-//传递给画布控件的属性
+      //传递给画布控件的属性
       var node = {
         id: nodeId,
-        name: nodeName,
-        type: nodeMenu.nodeTypeID,
+        caption: nodeName,
+        nodeTypeID: nodeMenu.nodeTypeID,
+        info:nodeMenu.info,
         left: left + "px",
         top: top + "px",
         controlState: "success",
-        controlDescription: "", //控件描述
-        controlCondition: "", //条件判断
-        url: "",
-        createBy: "", //创建人
-        createTime: "", //创建时间
-        controlVersion: "",
-        img:nodeMenu.image,
-        parameters:nodeMenu.parameters
+        image: nodeMenu.image,
+        parameters: nodeMenu.parameters
       };
-  
-        // 判断节点类型，如果是开始的话，就有且只能有一个
-        if(node.type ==="NID_START"){
-         
-           let startArr= this.data.nodeList.filter((item,index)=>{
-               console.log(item.type)
-              return item.type=="NID_START"
-            })
-              console.log(startArr)  
-          if( startArr.length==1){
-             console.log(startArr.length)
-            this.$message.error("画布中只允许存在一个开始控件");
-            return;
-          }
+      console.log(node,'ppppppppppppp')
+      // 判断节点类型，如果是开始的话，就有且只能有一个
+      if (node.nodeTypeID === "NID_START") {
+        let startArr = this.data.nodeList.filter((item, index) => {
+          console.log(item.nodeTypeID);
+          return item.nodeTypeID == "NID_START";
+        });
+        console.log(startArr);
+        if (startArr.length == 1) {
+          console.log(startArr.length);
+          this.$message.error("画布中只允许存在一个开始控件");
+          return;
         }
-
-
+      }
 
       this.data.nodeList.push(node);
       this.$nextTick(function() {
-        
-           
         // // 设置目标点，其他源点拖出的线可以连接该节点,开始节点不可链接
-        if(node.type!=="NID_START"){
+        if (node.nodeTypeID !== "NID_START") {
           this.jsPlumb.makeSource(nodeId, this.jsplumbSourceOptions);
-        }else{
-          this.jsPlumb.makeSource(nodeId,this.jsplumbStartSourceOptions);
+        } else {
+          this.jsPlumb.makeSource(nodeId, this.jsplumbStartSourceOptions);
         }
 
         // this.jsPlumb.makeSource(nodeId, this.jsplumbSourceOptions); //元节点配置
         this.jsPlumb.makeTarget(nodeId, this.jsplumbTargetOptions);
-        this.jsPlumb.draggable(nodeId, {//可拖动元素
+        this.jsPlumb.draggable(nodeId, {
+          //可拖动元素
           containment: "parent",
-          grid:[15,15],
+          grid: [15, 15],
           stop: function(el) {
             // 拖拽节点结束后的对调
             console.log("拖拽结束: ", el);
@@ -570,9 +560,9 @@ export default {
       })
         .then(() => {
           //判断节点是否可以删除
-          if(nodeId==this.data.nodeList[0].id){
-            this.$message.warning("开始节点不可删除")
-            return
+          if (nodeId == this.data.nodeList[0].id) {
+            this.$message.warning("开始节点不可删除");
+            return;
           }
           this.data.nodeList = this.data.nodeList.filter(function(node) {
             if (node.id === nodeId) {
@@ -591,8 +581,10 @@ export default {
     },
     clickNode(nodeId) {
       //点击节点  展示右侧信息栏
+
       this.activeElement.type = "node";
       this.activeElement.nodeId = nodeId;
+
       this.isHideFrom(true);
       if (this.$refs.nodeForm.nodeInit) {
         this.$refs.nodeForm.nodeInit(this.data, nodeId);
@@ -625,7 +617,7 @@ export default {
       this.menu.top = evt.y + "px";
     },
     repaintEverything() {
-      this.jsPlumb.repaint();//重绘组件
+      this.jsPlumb.repaint(); //重绘组件
     },
     // 流程数据信息
     dataInfo() {
@@ -705,40 +697,45 @@ export default {
         .catch(() => {});
     },
     // 放弃编辑
-    giveUp(){
-        this.$confirm("您编辑的内容尚未保存，退出后信息可能丢失，是否确认继续退出？", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-        closeOnClickModal: false
-      })
+    giveUp() {
+      this.$confirm(
+        "您编辑的内容尚未保存，退出后信息可能丢失，是否确认继续退出？",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+          closeOnClickModal: false
+        }
+      )
         .then(() => {
-        //   console.log(this.data.id);
-        //   this.$message.success("正在执行中,请稍后...");
-        //   this.$message.success("执行完毕");
+          //   console.log(this.data.id);
+          //   this.$message.success("正在执行中,请稍后...");
+          //   this.$message.success("执行完毕");
         })
         .catch(() => {});
     },
     //设置任务
-     setTask() {
-        this.$prompt('请输入邮箱', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-          inputErrorMessage: '邮箱格式不正确'
-        }).then(({ value }) => {
+    setTask() {
+      this.$prompt("请输入邮箱", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+        inputErrorMessage: "邮箱格式不正确"
+      })
+        .then(({ value }) => {
           this.$message({
-            type: 'success',
-            message: '你的邮箱是: ' + value
+            type: "success",
+            message: "你的邮箱是: " + value
           });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '取消输入'
-          });       
         })
-      },
-    
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "取消输入"
+          });
+        });
+    },
 
     openHelp() {
       this.flowHelpVisible = true;

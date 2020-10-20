@@ -12,15 +12,15 @@
           <img
       :class="nodeClass"
       style="width: 50px; height: 50px"
-      :src="require('@/assets/' + node.img )"
+      :src="require('@/assets/' + node.image )"
       alt=""
     />
  
     <div class="ef-node-text" :show-overflow-tooltip="true">
-      {{ node.name }}
+      {{ node.caption }}
     </div>
     </div>
-   <div v-if="node.type!=='NID_END'" class="el-node-bottom">
+   <div v-if="node.nodeTypeID!=='NID_END'" class="el-node-bottom">
  <!-- 最中间的那条竖线 -->
  <div>
       <div class="ef-node-center">
@@ -84,7 +84,7 @@ export default {
     },
     //节点是否展示横线
     isShowBottomLine(){
-     if( this.node.type!=="NID_START"){
+     if( this.node.nodeTypeID!=="NID_START"){
        return true
      }
     },
@@ -108,7 +108,6 @@ export default {
   methods: {
     // 点击节点
     clickNode() {
-      console.log(1111)
       this.$emit("dblclick", this.node.id);
     },
     // 鼠标移动后抬起
