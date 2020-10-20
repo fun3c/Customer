@@ -1,43 +1,39 @@
 <template>
-  <div>
+  <div class="form-left">
     <div class="ef-node-form">
       <div class="ef-node-form-header">
         编辑
       </div>
       <div class="ef-node-form-body">
         <!-- 常规控件展示内容 -->
-        <el-form
-          :model="node"
-          ref="dataForm"
+        <el-form :model="node" ref="dataForm" v-show="type === 'node'">
+          <div
+            class="ef-node-form-item"
+            v-for="(item, index) in node.parameters"
+            :key="index"
+          >
         
-          v-show="type === 'node'"
-        >
-          <div 
-          class="ef-node-form-item"
-          v-for="(item, index) in node.parameters" 
-          :key="index">
-            <!-- //标题 -->
+
+            <!-- input框 -->
+            <div v-if="!blacklist.includes(item.type)">
+                  <!-- //标题 -->
             <b class="form-item-title">
               {{ item.title }}
             </b>
-            <!-- 描述信息 -->
-            <!-- <el-divider></el-divider> -->
-
-                <!-- 文本标签 -->
+            <!-- 文本标签 -->
             <span class="PTYPE_TEXT" v-if="item.type === 'PTYPE_TEXT'">
               {{ item.defaultValue }}
-              <br>
-              <span >  {{ item.tips }}</span>
+              <br />
+              <span> {{ item.tips }}</span>
             </span>
-      
-            <!-- input框 -->
-            <el-input
+                  <el-input
               v-if="item.type === 'PTYPE_LABEL'"
               v-model="node.parameters[index].defaultValue"
               :placeholder="item.defaultValue"
             >
             </el-input>
-            <!-- 下拉框 -->
+
+                        <!-- 下拉框 -->
             <el-select
               v-model="value"
               v-if="item.type === 'PTYPE_SELECT'"
@@ -53,49 +49,69 @@
               </el-option>
             </el-select>
 
-                  <!-- 折叠面板 -->
+            </div>
+      
+
+            <!-- 折叠面板 -->
             <el-collapse
               v-if="item.type === 'PTYPE_GROUP'"
               v-model="activeNames"
               @change="handleChange"
             >
               <el-collapse-item :title="item.title">
-                <div v-for="(items,index) in item.children" :key="index">
-                  
-                     <div 
-          class="ef-node-form-item"
-          v-for="(items, index) in node.parameters" 
-          :key="index">
-            <!-- //标题 -->
-            <b class="form-item-title">
-              {{ items.title }}
-            </b>
-            <!-- 描述信息 -->
-            <!-- <el-divider></el-divider> -->
+                <div v-for="(items, index) in item.children" :key="index">
+                  <div
+                    class="ef-node-form-item"
+                    v-for="(items, index) in node.parameters"
+                    :key="index"
+                  >
+                    <!-- //标题 -->
+                    <b class="form-item-title">
+                      {{ items.title }}
+                    </b>
+                    <!-- 描述信息 -->
+                    <!-- <el-divider></el-divider> -->
 
-                <!-- 文本标签 -->
-            <span class="PTYPE_TEXT" >
-              {{ items.defaultValue }}
-              <br>
-              <span >  {{ items.tips }}</span>
-            </span>
-      
-            <!-- input框 -->
-            <el-input
-           
-              v-model="node.parameters[index].defaultValue"
-              :placeholder="items.defaultValue"
-            >
-            </el-input>
+                    <!-- 文本标签 -->
+                    <span class="PTYPE_TEXT">
+                      {{ items.defaultValue }}
+                      <br />
+                      <span> {{ items.tips }}</span>
+                    </span>
 
-            
+                    <!-- input框 -->
+                    <el-input
+                      v-model="node.parameters[index].defaultValue"
+                      :placeholder="items.defaultValue"
+                    >
+                    </el-input>
+                  </div>
                 </div>
-          </div>
               </el-collapse-item>
             </el-collapse>
+            <!-- 开关 -->
+           <el-form-item v-if="item.type === 'PTYPE_SWITCH'">
+            >
+            {{item.title}}
+            <el-tooltip :content="item.tips" placement="top">
+              <el-switch
+                v-model="node.parameters[index].defaultValue"
+                active-color="#13ce66"
+                inactive-color="#ff4949"
+                active-value="100"
+                inactive-value="0"
+              >
+              </el-switch>
+            </el-tooltip>
+
+          </el-form-item>
+
+
 
           </div>
-   
+
+         
+
           <el-form-item>
             <el-button icon="el-icon-close" @click="Deselect">关闭</el-button>
             <el-button type="primary" icon="el-icon-check" @click="save"
@@ -138,7 +154,9 @@ export default {
       node: {},
       line: {},
       data: {},
-      value:"",
+      value: "",
+      blacklist:['PTYPE_GROUP','PTYPE_SWITCH'],//组件标题黑名单
+      switchValue:"",
       activeNames: ["1"],
       stateList: [
         {
@@ -212,21 +230,27 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-::-webkit-scrollbar {display:none}
-
-
-.ef-node-form-body{
-display: flex;
-// flex-direction: column;
-// justify-items: center;
-// align-items: center;
-padding-left: 20px;
-height: 500px;
-overflow-x:hidden; overflow-y:scroll;
+::-webkit-scrollbar {
+  display: none;
 }
-.el-form{
+.form-left,.ef-node-form{
+  height: 100% ;
+}
+.el-form-item{
+  border-bottom: solid 1px #ccc;
+}
+.ef-node-form-body {
+  display: flex;
+  // flex-direction: column;
+  // justify-items: center;
+  // align-items: center;
+  padding-left: 20px;
+  height: 100%;
+  // overflow-x: hidden;
+  overflow-y: scroll;
+}
+.el-form {
   width: 100%;
-  
 }
 .el-node-form-tag {
   position: absolute;
@@ -240,32 +264,31 @@ overflow-x:hidden; overflow-y:scroll;
   z-index: 0;
 }
 
-.ef-node-form-item{
+.ef-node-form-item {
   padding-bottom: 15px;
   box-sizing: border-box;
 
-  .form-item-title{
+  .form-item-title {
     display: block;
     // height: 70px;
     margin-bottom: 10px;
     font-size: 14px;
     width: 100%;
     height: 30px;
-    line-height: 30px ;
+    line-height: 30px;
     color: #6d6d6d;
-    border-bottom: solid 1px #ccc;
+    // border-bottom: solid 1px #ccc;
   }
-  .PTYPE_TEXT{
+  .PTYPE_TEXT {
     font-size: 14px;
-    span{
+    span {
       font-size: 12px;
       color: rgb(145, 145, 145);
     }
   }
   .el-collapse-item__header {
     color: wheat;
-     background-color: #009bd8 !important;
+    background-color: #009bd8 !important;
   }
- 
 }
 </style>

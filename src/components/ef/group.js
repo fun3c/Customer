@@ -39,20 +39,20 @@ var menuList=[  //数据覆盖,定义的数据类型  包含操作修改 节点�
                                 "defaultValue": "条件",
                                 "tips": "任务名称用于描述任务主要功能"
                             },
-                            {
-                                "title": "任务ID", //属性的标题
-                                "type": "PTYPE_LABEL", //控件的类型，详细见《属性控件定义文档》
-                                "defaultValue": "CONSTANT_TASKID",
-                                "tips": "任务ID用来唯一标识此任务"
-                            },
-                            {
-                                "title": "任务触发条件", //属性的标题
-                                "type": "PTYPE_SELECT", //控件的类型，详细见《属性控件定义文档》
-                                "defaultValue": "0",
-                                "values": ['定时定向', '用户行为触发'],
-                                "tips": "………………",
-                                "showInEditor": true
-                            }
+                            // {
+                            //     "title": "任务ID", //属性的标题
+                            //     "type": "PTYPE_LABEL", //控件的类型，详细见《属性控件定义文档》
+                            //     "defaultValue": "CONSTANT_TASKID",
+                            //     "tips": "任务ID用来唯一标识此任务"
+                            // },
+                            // {
+                            //     "title": "任务触发条件", //属性的标题
+                            //     "type": "PTYPE_SELECT", //控件的类型，详细见《属性控件定义文档》
+                            //     "defaultValue": "0",
+                            //     "values": ['定时定向', '用户行为触发'],
+                            //     "tips": "………………",
+                            //     "showInEditor": true
+                            // }
                         ]
 
                     },
@@ -89,6 +89,18 @@ var menuList=[  //数据覆盖,定义的数据类型  包含操作修改 节点�
                         "type": "PTYPE_TEXT", //控件的类型，详细见《属性控件定义文档》
                         "defaultValue": "条件",
                         "tips": "任务名称用于描述任务主要功能"
+                    },
+                    {
+                        "title": "任务重入", //属性的标题
+                        "type": "PTYPE_SWITCH", //控件的类型，详细见《属性控件定义文档》
+                        "defaultValue": false,
+                        "tips": "任务ID用来唯一标识此任务"
+                    },
+                    {
+                        "title": "任务频控", //属性的标题
+                        "type": "PTYPE_SWITCH", //控件的类型，详细见《属性控件定义文档》
+                        "defaultValue": false,
+                        "tips": "任务ID用来唯一标识此任务"
                     },
                     {
                         "title": "任务ID", //属性的标题
@@ -129,7 +141,7 @@ var menuList=[  //数据覆盖,定义的数据类型  包含操作修改 节点�
                         "title": "任务触发条件", //属性的标题
                         "type": "PTYPE_SELECT", //控件的类型，详细见《属性控件定义文档》
                         "defaultValue": "0",
-                        "values": ['定时定向', '用户行为触发'],
+                        "values": ['人群定时触发', '用户行为触发'],
                         "tips": "………………",
                         "showInEditor": true
                     }
