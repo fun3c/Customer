@@ -83,29 +83,14 @@
                 placeholder="请选择"
               >
                 <el-option
-                  v-for="(option) in item.values"
+                  v-for="(option,inx) in item.values"
                   :key="option.value"
                   :label="option.label"
-                  :value="option.value"
-                >
-                </el-option>
-              </el-select>
-              <!-- 联动的下拉框 -->
-                <el-select
-                v-if="node.parameters[index].defaultValue!=='请选择'"
-                v-model="node.parameters[index].values[node.parameters[index].defaultValue].children.defaultValue"
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="(option,inx) in node.parameters[index].values[node.parameters[index].defaultValue].children.values"
-                  :key="option.value"
-                  :label="option.title"
                   :value="inx"
+                 
                 >
                 </el-option>
-                <!-- {{node.parameters[index].values[node.parameters[index].defaultValue].children.values}} -->
               </el-select>
-
                     <span class="el-from-describe">
                         {{node.parameters[index].defaultValue}}
                   {{ item.tips }}
@@ -294,9 +279,8 @@ export default {
   padding: 20px 20px 0px 20px;
 
   p {
-    color: rgb(52, 137, 158);
+    color: rgb(84, 191, 218);
     font-weight: 700;
-    font-size: 18px;
   }
 
   span {
