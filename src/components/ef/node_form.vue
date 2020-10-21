@@ -106,6 +106,11 @@
                 <!-- {{node.parameters[index].values[node.parameters[index].defaultValue].children.values}} -->
               </el-select>
 
+              <!-- 展示区 -->
+                <div class="select_show">
+                  <li></li>
+                </div>
+
                     <span class="el-from-describe">
                         {{node.parameters[index].defaultValue}}
                   {{ item.tips }}
@@ -387,4 +392,14 @@ export default {
 .el-collapse-item__header{
   background-color: red;
 }
+.el-select{
+  width: 100% ;
+}
+.select_show{
+  width: 100%;
+  height: 500px;
+  background-color: #ccc;
+}
+
+
 </style>
