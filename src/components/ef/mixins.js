@@ -95,10 +95,12 @@ export const easyFlowMixin = {
              * 连线参数
              */
             jsplumbConnectOptions: {
-                isSource: true,
-                isTarget: true,
+                // isSource: true,
+                // isTarget: true,
                 // 动态锚点、提供了4个方向 Continuous、AutoDefault
-                anchor:['BottomCenter'],
+                // anchor:['BottomLeft','BottomRight','TopCenter'],
+                connector: ['Flowchart', {curviness: 5}],
+                
                 // 设置连线上面的label样式
                 labelStyle: {
                     cssClass: 'flowLabel'
@@ -136,7 +138,7 @@ export const easyFlowMixin = {
                 anchor:[ 'BottomCenter'],
              
                 allowLoopback: false,
-                maxConnections: -1,
+                maxConnections: 1,
                 onMaxConnections: function (info, e) {
                     console.log(`超过了最大值连线: ${info.maxConnections}`)
                 }

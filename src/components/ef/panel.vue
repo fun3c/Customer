@@ -331,12 +331,18 @@ export default {
         let node = this.data.nodeList[i];
         // 设置源点，可以拖出线连接其他节点
 
-        this.jsPlumb.makeSource(
+       if(node.nodeTypeID==='NID_START'){
+          this.jsPlumb.makeSource(
           node.id,
-          lodash.merge(this.jsplumbStartSourceOptions, {})
+          lodash.merge(this.jsplumbStartSourceOptions, {}))
+       }else{
+          this.jsPlumb.makeSource(
+          node.id,
+          lodash.merge(this.jsplumbSourceOptions, {})
         );
+       }
         // // 设置目标点，其他源点拖出的线可以连接该节点,开始节点不可链接
-        if (node.nodeTypeID !== "start") {
+        if (node.nodeTypeID !== "NID_START") {
           this.jsPlumb.makeTarget(node.id, this.jsplumbTargetOptions);
         }
 
@@ -345,8 +351,8 @@ export default {
           this.jsPlumb.draggable(node.id, {
             //可拖动元素
             grid: [15, 15], //网格设置
-            //  Anchors: [ 'TopCenter', 'Bottom','BottomRight', 'BottomLeft'],
-            // containment: "parent",
+             Anchors: [ 'TopCenter', 'Bottom','BottomRight', 'BottomLeft'],
+            containment: "parent",
             stop: function(el) {
               // 拖拽节点结束后的对调
               console.log("拖拽结束: ", el);
@@ -357,11 +363,9 @@ export default {
         //          this.jsPlumb.addEndpoint(node.id, {
         //         anchor:[
         //   [ 0.5, 0, 0, -1, 0, 0, "top" ],
-        //   [ 1, 0.5, 1, 0, 0, 0, "right" ]
-        //   [ 0.5, 1, 0, 1, 0, 0, "bottom" ]
-        //   [ 0, 0.5, -1, 0, 0, 0, "left" ]
+
         // ]
-        //     })
+            // })
       }
       // 初始化连线
       for (var i = 0; i < this.data.lineList.length; i++) {

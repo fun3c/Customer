@@ -34,7 +34,7 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                         "values": [
                             {
                                 "value": 0,
-                                "label": "定时定向",
+                                "label": "人群定时触发",
                                 "children": {
                                     'title': '触发人群',
                                     'type': 'PTYPE_CROWD ',
@@ -49,7 +49,8 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                                     //触发时间
                                     'triggeringTime': '13:00',
                                     //触发周期
-                                    'triggerCycle': { 'frequency': '每月', 'time': '2020-02-02' }
+                                    'triggerCycle': { 'frequency': '每月', 'time': '2020-02-02' },
+                                    "selectedList":[]
                                 },
                             }, {
                                 "value": 1,
@@ -66,7 +67,8 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                                         { 'title': 'MALL_INDEX_COUPON_ICON', 'rules': [{ 'r1': '当天点击次数', 'r2': '=', 'r3': '3' }] }
                                     ],
                                     "tips": "………………",
-                                    "showInEditor": true
+                                    "showInEditor": true,
+                                    "selectedList":[]
                                 },
                             }
                         ],
