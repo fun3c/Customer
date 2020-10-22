@@ -1,7 +1,7 @@
 <template>
   <div class="header-box">
     <el-row type="flex" justify="space-between">
-      <el-col :span="4" style="font-size:34px">
+      <el-col :span="6" style="font-size:34px">
         D-Customer
       </el-col>
       <el-col :span="4" :offset="15" >
