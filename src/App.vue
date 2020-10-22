@@ -14,6 +14,7 @@ export default {
 #app {
   width: 100%;
   height: 100%;
+  list-style: none;
 }
 
 ::-webkit-scrollbar {
@@ -35,6 +36,7 @@ border-radius: 7px;
 -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
 background-color: #666666;
 }
+
 
 // /*定义两端按钮的样式*/
 // ::-webkit-scrollbar-button {

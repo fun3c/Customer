@@ -22,6 +22,7 @@
             v-for="(item, index) in node.parameters"
             :key="index"
           >
+    
             <div v-if="!blacklist.includes(item.type)">
               <!-- //标题 -->
               <b class="form-item-title">
@@ -32,8 +33,9 @@
                 {{ item.defaultValue }}
                 <br />
                 <span> {{ item.tips }}</span>
+                
               </span>
-              <!-- input -->
+                <!-- input -->
               <div class="PTYPE_INPUT" v-if="item.type === 'PTYPE_INPUT'">
                 <el-input
                   v-model="node.parameters[index].defaultValue"
@@ -43,174 +45,98 @@
                 <span class="el-from-describe">
                   {{ item.tips }}
                 </span>
-                <div class="subline"></div>
+                 <div class="subline"></div>
               </div>
-              <!-- label -->
+                <!-- label -->
               <div class="PTYPE_LABEL" v-if="item.type === 'PTYPE_LABEL'">
-                <p>{{ item.defaultValue }}</p>
-                <span class="el-from-describe">
+                  <p>{{item.defaultValue}}</p>
+                    <span class="el-from-describe">
                   {{ item.tips }}
                 </span>
-                <div class="subline"></div>
+                 <div class="subline"></div>
               </div>
               <!-- 下拉框 -->
-              <div class="PTYPE_SELECT" v-if="item.type === 'PTYPE_SELECT'">
-                <el-select
-                  v-model="node.parameters[index].defaultValue"
-                  placeholder="请选择"
+               <div class="PTYPE_SELECT" v-if="item.type === 'PTYPE_SELECT'">
+                     <el-select
+                v-model="node.parameters[index].defaultValue"
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="(option,inx) in item.values"
+                  :key="option.value"
+                  :label="option.label"
+                  :value="inx"
                 >
-                  <el-option
-                    v-for="(option, inx) in item.values"
-                    :key="option.value"
-                    :label="option.label"
-                    :value="inx"
-                  >
-                  </el-option>
-                </el-select>
-                <span class="el-from-describe">
-                  {{ node.parameters[index].defaultValue }}
+                </el-option>
+              </el-select>
+                    <span class="el-from-describe">
+                         {{node.parameters[index].defaultValue}}
                   {{ item.tips }}
                 </span>
-                <div class="subline"></div>
+                 <div class="subline"></div>
               </div>
 
               <!-- 特殊下拉框 -->
-              <div
-                class="PTYPE_SELECTGROUP"
-                v-if="item.type === 'PTYPE_SELECTGROUP'"
+                 <div class="PTYPE_SELECTGROUP" v-if="item.type === 'PTYPE_SELECTGROUP'">
+                     <el-select
+                v-model="node.parameters[index].defaultValue"
+                placeholder="请选择"
               >
-                <el-select
-                  v-model="node.parameters[index].defaultValue"
-                  placeholder="请选择"
+                <el-option
+                  v-for="(option,inx) in item.values"
+                  :key="option.value"
+                  :label="option.label"
+                  :value="inx"
+                 
                 >
-                  <el-option
-                    v-for="option in item.values"
-                    :key="option.value"
-                    :label="option.label"
-                    :value="option.value"
-                  >
-                  </el-option>
-                </el-select>
-                <!-- 联动的下拉框 -->
-                <b class="form-item-title">
-                  {{
-                    node.parameters[index].values[
-                      node.parameters[index].defaultValue
-                    ].children.title
-                  }}
-                </b>
-
-                <el-select
-                  v-if="node.parameters[index].defaultValue !== '请选择'"
-                  v-model="
-                    node.parameters[index].values[
-                      node.parameters[index].defaultValue
-                    ].children.selectedList
-                  "
-                  placeholder="请选择"
-                  multiple
-                  collapse-tags
-                  filterable
-                >
-                  <el-option
-                    v-for="(option, inx) in node.parameters[index].values[
-                      node.parameters[index].defaultValue
-                    ].children.values"
-                    :key="option.value"
-                    :label="option.title"
-                    :value="inx"
-                  >
-                  </el-option>
-                  {{
-                    node.parameters[index].values[
-                      node.parameters[index].defaultValue
-                    ].children.selectedList
-                  }}
-                </el-select>
-
-                <!-- 展示区 -->
-                <b class="form-item-title">
-                  {{
-                    "已选择的" +
-                      node.parameters[index].values[
-                        node.parameters[index].defaultValue
-                      ].children.title
-                  }}
-                </b>
-                <div class="select_show">
-                  <li
-                    v-for="(til, inx) in node.parameters[index].values[
-                      node.parameters[index].defaultValue
-                    ].children.selectedList"
-                    :key="inx"
-                  >
-                    <b
-                      @click="
-                        openBox(
-                          node.parameters[index].values[
-                            node.parameters[index].defaultValue
-                          ].children.values[til],
-                          index,
-                          til
-                        )
-                      "
-                    >
-                      {{
-                        node.parameters[index].values[
-                          node.parameters[index].defaultValue
-                        ].children.values[til].title
-                      }}
-                    </b>
-                    <span href=""> 删除 </span>
-                  </li>
-                  <li><a href="">添加</a></li>
-                </div>
-
-                <span class="el-from-describe">
-                  {{ node.parameters[index].defaultValue }}
+                </el-option>
+              </el-select>
+                    <span class="el-from-describe">
+                        {{node.parameters[index].defaultValue}}
                   {{ item.tips }}
                 </span>
-                <div class="subline"></div>
+                 <div class="subline"></div>
               </div>
+           
             </div>
 
             <!-- 折叠面板 -->
-            <div class="PTYPE_GROUP" v-if="item.type === 'PTYPE_GROUP'">
-              <el-collapse
+                       <div class="PTYPE_GROUP" v-if="item.type === 'PTYPE_GROUP'">
+                     <el-collapse
                 v-model="node.parameters[index].defaultValue"
                 placeholder="请选择"
-                type="hidden"
               >
-                <el-collapse-item :title="item.title">
-                  <div v-for="(items, index) in item.children" :key="index">
-                    <div
-                      class="ef-node-form-item"
-                      v-for="(items, index) in node.parameters"
-                      :key="index"
-                    >
-                      <!-- //标题 -->
-                      <b class="form-item-title">
-                        {{ items.title }}
-                      </b>
-                      <!-- 描述信息 -->
-                      <!-- <el-divider></el-divider> -->
+                 <el-collapse-item :title="item.title">
+                   <div v-for="(items, index) in item.children" :key="index">
+                  <div
+                    class="ef-node-form-item"
+                    v-for="(items, index) in node.parameters"
+                    :key="index"
+                  >
+                    <!-- //标题 -->
+                    <b class="form-item-title">
+                      {{ items.title }}
+                    </b>
+                    <!-- 描述信息 -->
+                    <!-- <el-divider></el-divider> -->
 
-                      <!-- 文本标签 -->
-                      <!-- <span class="PTYPE_TEXT">
+                    <!-- 文本标签 -->
+                    <!-- <span class="PTYPE_TEXT">
                       {{ items.defaultValue }}
                       <br />
                       <span> {{ items.tips }}</span>
                     </span> -->
-                    </div>
                   </div>
-                </el-collapse-item>
+                </div>
+                   </el-collapse-item>
               </el-collapse>
-              <span class="el-from-describe">
-                {{ item.tips }}
-              </span>
-              <div class="subline"></div>
-            </div>
+                    <span class="el-from-describe">
+                  {{ item.tips }}
+                </span>
+                 <div class="subline"></div>
+              </div>
 
+         
             <!-- 开关 -->
             <el-form-item v-if="item.type === 'PTYPE_SWITCH'">
               >
@@ -229,8 +155,7 @@
           </div>
           <el-form-item>
             <el-button icon="el-icon-close" @click="Deselect">关闭</el-button>
-            <el-button type="primary" icon="el-icon-check" @click="save"
-              >保存</el-button
+            <el-button type="primary" icon="el-icon-check" @click="save" >保存</el-button
             >
           </el-form-item>
         </el-form>
@@ -272,8 +197,6 @@ export default {
       blacklist: ["PTYPE_GROUP", "PTYPE_SWITCH"], //组件标题黑名单
       switchValue: "",
       activeNames: ["1"],
-      isShowOpenBox: false, //弹框展示
-      op: "", //node弹出框数据
       stateList: [
         {
           state: "success",
@@ -339,14 +262,6 @@ export default {
     },
     handleChange(val) {
       console.log(val);
-    },
-    // 打开弹框
-    openBox(message, index, til) {
-      //
-      this.isShowOpenBox = true;
-      this.op = this.node.parameters[index].values[
-        this.node.parameters[index].defaultValue
-      ].children.values[til];
     }
   }
 };
@@ -364,9 +279,8 @@ export default {
   padding: 20px 20px 0px 20px;
 
   p {
-    color: rgb(52, 137, 158);
+    color: rgb(84, 191, 218);
     font-weight: 700;
-    font-size: 18px;
   }
 
   span {
@@ -374,11 +288,11 @@ export default {
     color: rgb(145, 145, 145);
   }
 }
-.subline {
-  line-height: 100%;
-  height: 2px;
-  background-color: #ccc;
-  margin-top: 20px;
+.subline{
+      line-height: 100%;
+    height: 2px;
+    background-color: #ccc;
+    margin-top: 20px;
 }
 .ef-node-form-body {
   display: flex;
@@ -393,11 +307,11 @@ export default {
 .el-form {
   width: 100%;
 }
-.el-button {
-  margin-left: 5px;
-  width: 45% !important;
-  // border: none;
-}
+    .el-button{
+      margin-left: 5px;
+      width: 45% !important;
+      // border: none;
+    }
 
 .el-node-form-tag {
   position: absolute;
@@ -441,7 +355,7 @@ export default {
       color: rgb(145, 145, 145);
     }
   }
-  .PTYPE_GROUP {
+  .PTYPE_GROUP{
     padding: 0;
   }
   .PTYPE_GROUP {
@@ -450,44 +364,11 @@ export default {
     color: wheat;
     // background-color: #009bd8 !important;
   }
+ 
+
+
 }
-.el-collapse-item__header {
+.el-collapse-item__header{
   background-color: red;
-}
-.el-select {
-  width: 100%;
-  margin-bottom: 10px;
-  overflow: hidden;
-}
-.select_show {
-  margin-top: 10px;
-  width: 100%;
-  height: 300px;
-  background-color: #ccc;
-  li {
-    height: 30px;
-    padding: 0 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    span {
-      color: rgb(95, 92, 92);
-    }
-    span:hover {
-      font-weight: 800;
-      cursor: pointer;
-    }
-    b {
-      color: rgb(11, 145, 255);
-      width: 180px;
-      overflow: hidden; /*超出的部分隐藏起来。*/
-      white-space: nowrap; /*不显示的地方用省略号...代替*/
-    }
-     b:hover {
-       border-bottom: solid 2px #ccc;
-      cursor: pointer;
-    }
-  }
 }
 </style>
