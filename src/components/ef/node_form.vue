@@ -197,7 +197,7 @@
                       </b>
                       <span href=""> 删除 </span>
                     </li>
-                    <li><a href="">添加</a></li>
+                    <li class="select_show_add"><b>添加</b></li>
                   </ul>
 
                   <ul
@@ -517,14 +517,22 @@ export default {
 .select_show {
   margin-top: 10px;
   width: 100%;
-  height: 300px;
+  // height: 300px;
+  padding: 15px 0px;
   background-color: #ccc;
   ul {
     margin-top: 10px;
     width: 100%;
-    height: 300px;
+    // height: 300px;
     background-color: #ccc;
     padding: 0;
+        .select_show_add{
+       display: flex;
+       justify-content: end;
+        b{
+          width: auto;
+        }
+    }
     li {
       height: 30px;
       padding: 0 10px;
@@ -532,7 +540,7 @@ export default {
       justify-content: space-between;
       align-items: center;
       font-size: 13px;
-
+      
       span {
         color: rgb(95, 92, 92);
       }
@@ -551,6 +559,7 @@ export default {
         cursor: pointer;
       }
     }
+
   }
 }
 </style>
