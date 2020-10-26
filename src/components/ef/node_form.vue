@@ -59,6 +59,7 @@
                   v-model="node.parameters[index].defaultValue"
                   placeholder="请选择"
                 >
+            
                   <el-option
                     v-for="(option, inx) in item.values"
                     :key="option.value"
@@ -101,7 +102,9 @@
                 </b>
 
                 <el-select
-                  v-if="node.parameters[index].defaultValue !== '请选择'"
+                  v-show=" node.parameters[index].values[
+                      node.parameters[index].defaultValue
+                    ].type==='PTYPE_BEHAVIOR'"
                   v-model="
                     node.parameters[index].values[
                       node.parameters[index].defaultValue
@@ -121,11 +124,31 @@
                     :value="inx"
                   >
                   </el-option>
-                  {{
+           
+                </el-select>
+
+                          <el-select
+                  v-show=" node.parameters[index].values[
+                      node.parameters[index].defaultValue
+                    ].type==='PTYPE_OLNYSHOW'"
+                  v-model="
                     node.parameters[index].values[
                       node.parameters[index].defaultValue
-                    ].children.selectedList
-                  }}
+                    ].children.defaultValue
+                  "
+                  placeholder="请选择"
+             
+                >
+                  <el-option
+                    v-for="(option, inx) in node.parameters[index].values[
+                      node.parameters[index].defaultValue
+                    ].children.values"
+                    :key="option.value"
+                    :label="option.title"
+                    :value="inx"
+                  >
+                  </el-option>
+           
                 </el-select>
 
                 <!-- 展示区 -->
@@ -137,33 +160,64 @@
                       ].children.title
                   }}
                 </b>
-                <div class="select_show">
-                  <li
-                    v-for="(til, inx) in node.parameters[index].values[
+                <!-- v-if="node.parameters[index].values[
                       node.parameters[index].defaultValue
-                    ].children.selectedList"
-                    :key="inx"
+                    ].type=='PTYPE_BEHAVIOR'" -->
+                <div class="select_show">
+                  <ul
+                    v-if="
+                      node.parameters[index].values[
+                        node.parameters[index].defaultValue
+                      ].type === 'PTYPE_BEHAVIOR'
+                    "
                   >
-                    <b
-                      @click="
-                        openBox(
+                    <li
+                      v-for="(til, inx) in node.parameters[index].values[
+                        node.parameters[index].defaultValue
+                      ].children.selectedList"
+                      :key="inx"
+                    >
+                      <b
+                        @click="
+                          openBox(
+                            //传入node目标属性  所选择的下标
+                            node.parameters[index].values[
+                              node.parameters[index].defaultValue
+                            ].children.values[til],
+                            index,
+                            til
+                          )
+                        "
+                      >
+                        {{
                           node.parameters[index].values[
                             node.parameters[index].defaultValue
-                          ].children.values[til],
-                          index,
-                          til
-                        )
-                      "
+                          ].children.values[til].title
+                        }}
+                      </b>
+                      <span href=""> 删除 </span>
+                    </li>
+                    <li><a href="">添加</a></li>
+                  </ul>
+
+                  <ul
+                    v-if="
+                      node.parameters[index].values[
+                        node.parameters[index].defaultValue
+                      ].type === 'PTYPE_OLNYSHOW'
+                    "
+                  >
+                    <li
+                      v-for="(value,key, inx) in node.parameters[index].values[
+                        node.parameters[index].defaultValue
+                      ].children.values[node.parameters[index].values[
+                        node.parameters[index].defaultValue
+                      ].children.defaultValue]"
+                      :key="inx"
                     >
-                      {{
-                        node.parameters[index].values[
-                          node.parameters[index].defaultValue
-                        ].children.values[til].title
-                      }}
-                    </b>
-                    <span href=""> 删除 </span>
-                  </li>
-                  <li><a href="">添加</a></li>
+                      <b> {{ notelist[inx]+": "+ value }} </b><br>
+                    </li>
+                  </ul>                 
                 </div>
 
                 <span class="el-from-describe">
@@ -274,6 +328,7 @@ export default {
       activeNames: ["1"],
       isShowOpenBox: false, //弹框展示
       op: "", //node弹出框数据
+      notelist:['人群名称','人群ID','有效期至','创建人','创建时间'],
       stateList: [
         {
           state: "success",
@@ -464,29 +519,37 @@ export default {
   width: 100%;
   height: 300px;
   background-color: #ccc;
-  li {
-    height: 30px;
-    padding: 0 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    span {
-      color: rgb(95, 92, 92);
-    }
-    span:hover {
-      font-weight: 800;
-      cursor: pointer;
-    }
-    b {
-      color: rgb(11, 145, 255);
-      width: 180px;
-      overflow: hidden; /*超出的部分隐藏起来。*/
-      white-space: nowrap; /*不显示的地方用省略号...代替*/
-    }
-     b:hover {
-       border-bottom: solid 2px #ccc;
-      cursor: pointer;
+  ul {
+    margin-top: 10px;
+    width: 100%;
+    height: 300px;
+    background-color: #ccc;
+    padding: 0;
+    li {
+      height: 30px;
+      padding: 0 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+
+      span {
+        color: rgb(95, 92, 92);
+      }
+      span:hover {
+        font-weight: 800;
+        cursor: pointer;
+      }
+      b {
+        color: rgb(11, 145, 255);
+        width: 180px;
+        overflow: hidden; /*超出的部分隐藏起来。*/
+        white-space: nowrap; /*不显示的地方用省略号...代替*/
+      }
+      b:hover {
+        border-bottom: solid 2px #ccc;
+        cursor: pointer;
+      }
     }
   }
 }

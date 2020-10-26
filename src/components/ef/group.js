@@ -29,12 +29,14 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                             {
                                 "value": 0,
                                 "label": "人群定时触发",
+                                'type': 'PTYPE_OLNYSHOW',
                                 "children": {
                                     'title': '触发人群',
-                                    'type': 'PTYPE_CROWD ',
+                                    'type': 'PTYPE_CROWD',
                                     'defaultValue': 1,
                                     'values': [
-                                        { 'title': '复购-泰康百万医疗险', 'ID': 'f4asdsa87f9daasd76',
+                                        { 'title': '复购-泰康百万医疗险', 
+                                        'ID': 'f4asdsa87f9daasd76',
                                          'validity': '2020-10-12 12:00:00', 
                                          'creator': 'mark',
                                           'creationTime': '2020-12-29' },
@@ -49,6 +51,7 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                             }, {
                                 "value": 1,
                                 "label": "用户行为触发",
+                                'type': 'PTYPE_BEHAVIOR',
                                 "children": {
                                     "title": "触发行为", //属性的标题
                                     "type": "PTYPE_BEHAVIOR", //控件的类型，详细见《属性控件定义文档》
@@ -69,8 +72,15 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                         "tips": "任务触发条件决定该任务再何种情况下开始执行。",
                         "showInEditor": true,
                     },
+        
                     {
-                        "title": "任务触发行为", //属性的标题
+                        "title": "触发时间", //属性的标题
+                        "type": "PTYPE_INPUT", //控件的类型，详细见《属性控件定义文档》
+                        "defaultValue": "",
+                        "tips": "任务名称用于描述任务主要功能,并与其他任务进行区分"
+                    },
+                    {
+                        "title": "触发周期", //属性的标题
                         "type": "PTYPE_SELECT", //控件的类型，详细见《属性控件定义文档》
                         "defaultValue": "0",
                         "values": ['人群定时触发', '用户行为触发'],
