@@ -40,7 +40,7 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                                          'validity': '2020-10-12 12:00:00', 
                                          'creator': 'mark',
                                           'creationTime': '2020-12-29' },
-                                        { 'title': '复购-泰康二百万医疗险', 'ID': 'f4asdsa87f9daasd76', 'validity': '2020-10-12 12:00:00', 'creator': 'mark', 'creationTime': '2020-12-29' }
+                                        { 'title': '复购-泰康二百万医疗险', 'ID': 'dsadasddadsadsadd', 'validity': '2020-19-123 17:34:22', 'creator': 'jack', 'creationTime': '2020-04-11' }
                                     ],
                                     //触发时间
                                     'triggeringTime': '13:00',
@@ -75,7 +75,7 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
         
                     {
                         "title": "触发时间", //属性的标题
-                        "type": "PTYPE_INPUT", //控件的类型，详细见《属性控件定义文档》
+                        "type": "PTYPE_TIMELIST", //控件的类型，详细见《属性控件定义文档》
                         "defaultValue": "",
                         "tips": "任务名称用于描述任务主要功能,并与其他任务进行区分"
                     },
@@ -252,69 +252,21 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
             },
             {
                 'id': '4',
-                // 自定义覆盖样式
                 "nodeTypeID": 'NID_A/B', //每种控件类型的唯一ID
                 "caption": 'A/B', //控件图标旁边展示的控件名称
                 "image": "AB测试.png", //控件图标
                 "info": "按照不同百分比分流", //描述控件的作用
                 "parameters": [ //该控件属性栏的属性列表
+                    //分流方式  
                     {
-                        "title": "任务ID", //属性的标题
-                        "type": "PTYPE_LABEL", //控件的类型，详细见《属性控件定义文档》
-                        "defaultValue": "CONSTANT_A/B",
-                        "tips": "任务ID用来唯一标识此任务"
-                    },
-                    {
-                        "title": "任务名称", //属性的标题
-                        "type": "PTYPE_TEXT", //控件的类型，详细见《属性控件定义文档》
-                        "defaultValue": "A/B",
-                        "tips": "任务名称用于描述任务主要功能"
-                    },
-                    {
-                        "title": "任务触发设置", //属性的标题
-                        "type": "PTYPE_GROUP", //控件的类型，详细见《属性控件定义文档》
-                        "defaultValue": "0",
-                        "tips": "",
-                        "children": [
-                            {
-                                "title": "任务名称", //属性的标题
-                                "type": "PTYPE_TEXT", //控件的类型，详细见《属性控件定义文档》
-                                "defaultValue": "条件",
-                                "tips": "任务名称用于描述任务主要功能"
-                            },
-                            {
-                                "title": "任务ID", //属性的标题
-                                "type": "PTYPE_LABEL", //控件的类型，详细见《属性控件定义文档》
-                                "defaultValue": "CONSTANT_TASKID",
-                                "tips": "任务ID用来唯一标识此任务"
-                            },
-                            {
-                                "title": "任务触发条件", //属性的标题
-                                "type": "PTYPE_SELECT", //控件的类型，详细见《属性控件定义文档》
-                                "defaultValue": "0",
-                                "values": ['定时定向', '用户行为触发'],
-                                "tips": "………………",
-                                "showInEditor": true
-                            }
-                        ]
-
-                    },
-                    {
-                        "title": "任务触发条件", //属性的标题
-                        "type": "PTYPE_SELECT", //控件的类型，详细见《属性控件定义文档》
-                        "defaultValue": "0",
-                        "values": ['定时定向', '用户行为触发'],
-                        "tips": "………………",
-                        "showInEditor": true
-                    },
-                    //分流方式
-                    {
-                        'shunt':'按首次随机分流',
+                        'defaultValue': 0,
+                        'shuntWay': [{'value':0,'label':'按首次随机分流'},{'value':1,'label': '按天随机分流'},{'value':2,'label':'完全随机分流'}],
                         //观察周期
-                        'period':'4',
+                        'period': '4',
                         //分流比例
-                        'proportion':[10,50,3],
-                    }
+                        // 'groups': [ ['对照',''],['实验一',''] ],
+                        'groups': [ {'id':'0','name':'对照组','num':0},{'id':'1','name':'实验组','num':0} ],
+                      }
                 ]
             }, {
                 'id': '5',

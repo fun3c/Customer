@@ -4,7 +4,6 @@
       class="el-find-from"
       ref="taskquerylist"
       :model="taskquerylist"
-      label-width="80px"
       :inline="true"
       :label-width="auto"
     >

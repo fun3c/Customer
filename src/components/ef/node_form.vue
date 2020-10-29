@@ -59,7 +59,6 @@
                   v-model="node.parameters[index].defaultValue"
                   placeholder="请选择"
                 >
-            
                   <el-option
                     v-for="(option, inx) in item.values"
                     :key="option.value"
@@ -68,6 +67,26 @@
                   >
                   </el-option>
                 </el-select>
+                <span class="el-from-describe">
+                  {{ node.parameters[index].defaultValue }}
+                  {{ item.tips }}
+                </span>
+                <div class="subline"></div>
+              </div>
+
+              <!-- 时间选择器 -->
+              <div class="PTYPE_TIMELIST" v-if="item.type === 'PTYPE_TIMELIST'">
+                <el-time-select
+                  v-model="node.parameters[index].defaultValue"
+                  :picker-options="{
+                    start: '08:30',
+                    step: '00:15',
+                    end: '18:30'
+                  }"
+                  placeholder="选择时间"
+                >
+                </el-time-select>
+
                 <span class="el-from-describe">
                   {{ node.parameters[index].defaultValue }}
                   {{ item.tips }}
@@ -102,9 +121,11 @@
                 </b>
 
                 <el-select
-                  v-show=" node.parameters[index].values[
+                  v-show="
+                    node.parameters[index].values[
                       node.parameters[index].defaultValue
-                    ].type==='PTYPE_BEHAVIOR'"
+                    ].type === 'PTYPE_BEHAVIOR'
+                  "
                   v-model="
                     node.parameters[index].values[
                       node.parameters[index].defaultValue
@@ -124,20 +145,20 @@
                     :value="inx"
                   >
                   </el-option>
-           
                 </el-select>
 
-                          <el-select
-                  v-show=" node.parameters[index].values[
+                <el-select
+                  v-show="
+                    node.parameters[index].values[
                       node.parameters[index].defaultValue
-                    ].type==='PTYPE_OLNYSHOW'"
+                    ].type === 'PTYPE_OLNYSHOW'
+                  "
                   v-model="
                     node.parameters[index].values[
                       node.parameters[index].defaultValue
                     ].children.defaultValue
                   "
                   placeholder="请选择"
-             
                 >
                   <el-option
                     v-for="(option, inx) in node.parameters[index].values[
@@ -148,10 +169,10 @@
                     :value="inx"
                   >
                   </el-option>
-           
                 </el-select>
 
                 <!-- 展示区 -->
+
                 <b class="form-item-title">
                   {{
                     "已选择的" +
@@ -195,9 +216,10 @@
                           ].children.values[til].title
                         }}
                       </b>
-                      <span href=""> 删除 </span>
+
+                      <span @click="delhavior(index, inx)"> 删除 </span>
                     </li>
-                    <li><a href="">添加</a></li>
+                    <li class="select_show_add"><b>添加</b></li>
                   </ul>
 
                   <ul
@@ -208,16 +230,18 @@
                     "
                   >
                     <li
-                      v-for="(value,key, inx) in node.parameters[index].values[
+                      v-for="(value, key, inx) in node.parameters[index].values[
                         node.parameters[index].defaultValue
-                      ].children.values[node.parameters[index].values[
-                        node.parameters[index].defaultValue
-                      ].children.defaultValue]"
+                      ].children.values[
+                        node.parameters[index].values[
+                          node.parameters[index].defaultValue
+                        ].children.defaultValue
+                      ]"
                       :key="inx"
                     >
-                      <b> {{ notelist[inx]+": "+ value }} </b><br>
+                      <b> {{ notelist[inx] + ": " + value }} </b><br />
                     </li>
-                  </ul>                 
+                  </ul>
                 </div>
 
                 <span class="el-from-describe">
@@ -328,7 +352,7 @@ export default {
       activeNames: ["1"],
       isShowOpenBox: false, //弹框展示
       op: "", //node弹出框数据
-      notelist:['人群名称','人群ID','有效期至','创建人','创建时间'],
+      notelist: ["人群名称", "人群ID", "有效期至", "创建人", "创建时间"],
       stateList: [
         {
           state: "success",
@@ -397,11 +421,23 @@ export default {
     },
     // 打开弹框
     openBox(message, index, til) {
+      console.log("d要打开弹框拉");
       //
       this.isShowOpenBox = true;
       this.op = this.node.parameters[index].values[
         this.node.parameters[index].defaultValue
       ].children.values[til];
+    },
+    //删除每项已选择用户行为
+    delhavior(index, inx) {
+      let op = this.node.parameters[index].values[
+        this.node.parameters[index].defaultValue
+      ].children.selectedList;
+      op.splice(inx, 1);
+      this.$message({
+        type: "success",
+        message: "删除成功"
+      });
     }
   }
 };
@@ -517,14 +553,22 @@ export default {
 .select_show {
   margin-top: 10px;
   width: 100%;
-  height: 300px;
+  // height: 300px;
+  padding: 15px 0px;
   background-color: #ccc;
   ul {
     margin-top: 10px;
     width: 100%;
-    height: 300px;
+    // height: 300px;
     background-color: #ccc;
     padding: 0;
+    .select_show_add {
+      display: flex;
+      justify-content: end;
+      b {
+        width: auto;
+      }
+    }
     li {
       height: 30px;
       padding: 0 10px;
