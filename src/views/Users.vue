@@ -4,9 +4,8 @@
       class="el-find-from"
       ref="taskquerylist"
       :model="taskquerylist"
-      label-width="80px"
       :inline="true"
-      :label-width="auto"
+      label-width="auto"
     >
       <div class="one">
         <el-form-item label="任务ID或任务名称">
@@ -108,22 +107,22 @@
       @selection-change="selectChange"
       style="width: 100%"
     >
-      <el-table-column type="selection" width="55"> </el-table-column>
-      <el-table-column sortable prop="ID" label="ID" width="100">
+
+      <el-table-column  :width= "120" sortable prop="ID" label="ID" >
       </el-table-column>
-      <el-table-column prop="name" label="任务名称" width="120">
+      <el-table-column prop="name" label="任务名称" >
       </el-table-column>
-      <el-table-column prop="category" label="任务类别" width="120">
+      <el-table-column prop="category" label="任务类别" >
       </el-table-column>
-      <el-table-column width="120" prop="jobType" label="状态">
+      <el-table-column  prop="jobType" label="状态">
       </el-table-column>
-      <el-table-column prop="startTime" width="150" label="起止时间">
+      <el-table-column prop="startTime"  label="起止时间">
       </el-table-column>
-      <el-table-column prop="createBy" width="150" label="创建人">
+      <el-table-column prop="createBy"  label="创建人">
       </el-table-column>
-      <el-table-column prop="endTime" width="150" label="创建时间">
+      <el-table-column prop="endTime"  label="创建时间">
       </el-table-column>
-      <el-table-column label="操作" fixed="right" width="150">
+      <el-table-column label="操作" fixed="right" >
         <template slot-scope="scope">
           <!-- <el-button
             size="mini"
@@ -161,7 +160,7 @@
     >
     </el-pagination>
     <!-- 新建数据可用 -->
-    <el-dialog
+    <!-- <el-dialog
       :title="dialogTitle"
       width="600px"
       :visible.sync="userFormVisible"
@@ -202,7 +201,7 @@
           >确 定</el-button
         >
       </div>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -291,29 +290,29 @@ export default {
       this.userFormVisible = true;
       this.rowIndex = index;
     },
-    submitUser(formName) {
-      // 表单验证
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          let id = this.user.id;
-          if (id) {
-            // id非空-修改
-            this.users.splice(this.rowIndex, 1, this.user);
-          } else {
-            // id为空-新增
-            this.user.id = this.users.length + 1;
-            this.users.unshift(this.user);
-          }
-          this.userFormVisible = false;
-          this.$message({
-            type: "success",
-            message: id ? "修改成功！" : "新增成功！",
-          });
-          //  新建传参
-          this.$router.push({ path: "/Panel", query: { id: "1" } });
-        }
-      });
-    },
+    // submitUser(formName) {
+    //   // 表单验证
+    //   this.$refs[formName].validate((valid) => {
+    //     if (valid) {
+    //       let id = this.user.id;
+    //       if (id) {
+    //         // id非空-修改
+    //         this.users.splice(this.rowIndex, 1, this.user);
+    //       } else {
+    //         // id为空-新增
+    //         this.user.id = this.users.length + 1;
+    //         this.users.unshift(this.user);
+    //       }
+    //       this.userFormVisible = false;
+    //       this.$message({
+    //         type: "success",
+    //         message: id ? "修改成功！" : "新增成功！",
+    //       });
+    //       //  新建传参
+    //       this.$router.push({ path: "/Panel", query: { id: "1" } });
+    //     }
+    //   });
+    // },
     handleDelete(index, row) {
       this.$confirm(`确定删除用户 【${row.name}】 吗?`, "提示", {
         confirmButtonText: "确定",
@@ -365,6 +364,7 @@ export default {
       this.dialogTitle = "新增";
       this.user = Object.assign({}, this.userBackup);
       this.userFormVisible = true;
+       this.$router.push({ path: "/Panel", query: { id: "1" } });
     },
   },
 };

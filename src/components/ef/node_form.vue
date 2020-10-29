@@ -1,9 +1,9 @@
 <template>
   <div class="form-left">
     <div class="ef-node-form">
-      <div class="ef-node-form-header">
+      <!-- <div class="ef-node-form-header">
         编辑
-      </div>
+      </div> -->
       <div class="ef-node-form-body">
         <!-- 常规控件展示内容 -->
         <el-form :model="node" ref="dataForm" v-show="type === 'node'">
@@ -67,8 +67,27 @@
                   >
                   </el-option>
                 </el-select>
+                <div v-if="node.nodeTypeID === 'NID_WAIT'">
+                  <!-- 等待一段时间 -->
+                  <div
+                    class="block"
+                    v-if="node.parameters[index].defaultValue === 0"
+                  >
+                
+                  </div>
+                  <!-- 等待一段具体的某一时间点 -->
+                  <div class="block"
+                   v-if="node.parameters[index].defaultValue === 1">
+                    <el-date-picker
+                      v-model="node.parameters[index].stretch"
+                      type="datetime"
+                      placeholder="选择日期时间"
+                    >
+                    </el-date-picker>
+                  </div>
+                </div>
+
                 <span class="el-from-describe">
-                  {{ node.parameters[index].defaultValue }}
                   {{ item.tips }}
                 </span>
                 <div class="subline"></div>
@@ -92,6 +111,41 @@
                   {{ item.tips }}
                 </span>
                 <div class="subline"></div>
+              </div>
+              <!-- 多选 -->
+              <div class="MultiSelect" v-if="item.type === 'PTYPE_MULTISELECT'">
+                <el-select
+                  v-model="item.selectedList"
+                  placeholder="请选择"
+                  multiple
+                  collapse-tags
+                  filterable
+                >
+                  <el-option
+                    v-for="(option, inx) in item.values"
+                    :key="option.value"
+                    :label="option.title"
+                    :value="inx"
+                  >
+                  </el-option>
+                </el-select>
+                <!-- 是否展示选中内容 -->
+                <div v-if="item.showInEditor">
+                  <b class="form-item-title">
+                    {{ item.title }}
+                  </b>
+                  <div class="select_show">
+                    <ul>
+                      <li v-for="(til, inx) in item.selectedList" :key="inx">
+                        <b>
+                          {{ item.values[til].title }}
+                        </b>
+
+                        <span @click="delhavior(index, inx)"> 删除 </span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
 
               <!-- 特殊下拉框 -->
@@ -219,7 +273,6 @@
 
                       <span @click="delhavior(index, inx)"> 删除 </span>
                     </li>
-                    <li class="select_show_add"><b>添加</b></li>
                   </ul>
 
                   <ul
@@ -304,8 +357,28 @@
                 </el-switch>
               </el-tooltip>
             </el-form-item>
+
+          
+                        <!-- //条件分支抽出类 -->
+         
+              <conditional
+              v-if="item.type === 'PTYPE_CONDITION_DETAILS'"
+              :data="item.data"
+              @openBox2="openBox2"
+              ></conditional>
+
+                    <abshunt
+              v-if="item.type === 'PTYPE_ABSHUNT'"
+      
+              ></abshunt>
+
           </div>
-          <el-form-item>
+
+
+
+
+
+          <el-form-item >
             <el-button icon="el-icon-close" @click="Deselect">关闭</el-button>
             <el-button type="primary" icon="el-icon-check" @click="save"
               >保存</el-button
@@ -329,15 +402,28 @@
             >
           </el-form-item>
         </el-form>
+
+
       </div>
       <!--            <div class="el-node-form-tag"></div>-->
+    </div>
+    <!-- 弹出框 配置 -->
+    <div class="pop_up" v-show="isShowOpenBox">
+      <div class="pop_up_min">
+        配置内容
+      </div>
+      <el-row>
+        <el-button @click="popAffirm">取消</el-button>
+        <el-button @click="popCancel" type="primary">确定</el-button>
+      </el-row>
     </div>
   </div>
 </template>
 
 <script>
 import { cloneDeep } from "lodash";
-
+import  abshunt  from "../ef/AB"
+import conditional from "../ef/conditional"
 export default {
   data() {
     return {
@@ -374,6 +460,10 @@ export default {
     };
   },
   created() {},
+   components: {
+    conditional,
+    abshunt
+  },
   methods: {
     /**
      * 表单修改，这里可以根据传入的ID进行业务信息获取
@@ -438,6 +528,15 @@ export default {
         type: "success",
         message: "删除成功"
       });
+    },
+    popCancel() {
+      this.isShowOpenBox = false;
+    },
+     openBox2() {
+      this.isShowOpenBox = true;
+    },
+    popAffirm() {
+      this.isShowOpenBox = false;
     }
   }
 };
@@ -458,6 +557,9 @@ export default {
     color: rgb(52, 137, 158);
     font-weight: 700;
     font-size: 18px;
+    width: 100%;
+    overflow: hidden; /*超出的部分隐藏起来。*/
+    white-space: nowrap; /*不显示的地方用省略号...代替*/
   }
 
   span {
@@ -597,4 +699,28 @@ export default {
     }
   }
 }
+.pop_up {
+  width: 300px;
+  height: 500px;
+  background-color: rgb(255, 255, 255);
+  box-shadow: darkgrey 10px 10px 30px 5px;
+  padding: 15px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+
+  .pop_up_min {
+    flex: 1;
+  }
+}
+.block {
+  width: 100%;
+  div {
+    width: 100%;
+  }
+}
+
 </style>

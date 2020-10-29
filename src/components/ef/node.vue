@@ -84,7 +84,7 @@ export default {
     },
     //节点是否展示横线
     isShowBottomLine(){
-     if( this.node.nodeTypeID!=="NID_START"){
+     if( this.node.nodeTypeID!=="NID_START" && this.node.nodeTypeID!=="NID_WAIT" ){
        return true
      }
     },

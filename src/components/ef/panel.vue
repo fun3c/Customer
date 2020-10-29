@@ -131,7 +131,7 @@
       <!-- 右侧表单 -->
       <div
         v-show="this.isShowForm"
-        style="width: 300px;border-left: 1px solid #dce3e8;background-color: #FBFBFB"
+        style="width: 360px;border-left: 1px solid #dce3e8;background-color: #FBFBFB"
       >
         <flow-node-form
           ref="nodeForm"
@@ -247,9 +247,20 @@ export default {
   methods: {
     // 返回唯一标识
     getUUID() {
-      return Math.random()
+      let id= Math.random()
         .toString(36)
         .substr(3, 10);
+
+         var date = new Date();
+    var y = date.getFullYear();
+    var m = date.getMonth() + 1;
+    m = m < 10 ? ('0' + m) : m;
+    var d = date.getDate();
+    d = d < 10 ? ('0' + d) : d;
+    var h = date.getHours();
+    var minute = date.getMinutes();
+    var second = date.getSeconds();
+    return `${y}${m}${d}${h}${minute}${second}${id}`;
     },
     jsPlumbInit() {
       this.jsPlumb.ready(() => {
@@ -274,6 +285,7 @@ export default {
         this.jsPlumb.bind("connection", evt => {
           let from = evt.source.id;
           let to = evt.target.id;
+          console.log()
           if (this.loadEasyFlowFinish) {
             this.data.lineList.push({ from: from, to: to });
           }
@@ -298,6 +310,15 @@ export default {
         this.jsPlumb.bind("beforeDrop", evt => {
           let from = evt.sourceId;
           let to = evt.targetId;
+
+          let  node = this.data.nodeList.filter(function(node) {
+            return node.id === to
+           
+          });
+          if (node[0].nodeTypeID === "NID_START") {
+            this.$message.error("开始节点不许被链接");
+            return false;
+          }
           if (from === to) {
             this.$message.error("节点不支持连接自己");
             return false;
@@ -344,6 +365,8 @@ export default {
         // // 设置目标点，其他源点拖出的线可以连接该节点,开始节点不可链接
         if (node.nodeTypeID !== "NID_START") {
           this.jsPlumb.makeTarget(node.id, this.jsplumbTargetOptions);
+        }else{
+           this.jsPlumb.makeTarget(node.id, this.jsplumbStartSourceOptions);
         }
 
         if (!node.viewOnly) {

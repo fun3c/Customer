@@ -16,7 +16,7 @@ const taskList = () => {
     let user = {
       "ID": 1,
       "name": "模拟流程" + i + 1,
-      "jobType": jobTypeList[Math.round(Math.random()*5)],
+      "jobType": jobTypeList[Math.round(Math.random() * 5)],
       //任务类别
       "category": "类别" + i,
       "jobName": "任务" + i + 1,
@@ -34,7 +34,7 @@ const taskList = () => {
   return users
 }
 const queryList = (taskquerylist) => {
-  let taskquerylistfu=JSON.parse(taskquerylist.body)
+  let taskquerylistfu = JSON.parse(taskquerylist.body)
   let users = []
   let user = {
     "ID": 1,
@@ -56,6 +56,19 @@ const queryList = (taskquerylist) => {
   users.push(user)
   return users
 }
+const abtest = () => {
+  let list = {
+    'defaultValue': "按首次随机分流",
+    'shuntWay': ['按首次随机分流', '按天随机分流', '完全随机分流'],
+    //观察周期
+    'period': '4',
+    //分流比例
+    // 'groups': [ ['对照',''],['实验一',''] ],
+    'groups': [ {'name':'对照组','num':'0'},{'name':'实验组','num':'0','type':1} ],
+  }
+  return list
+}
 Mock.mock('/api/queryList', queryList)
 Mock.mock('/api/taskList', taskList)
+Mock.mock('/api/abtest', abtest)
 

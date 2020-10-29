@@ -14,6 +14,7 @@ export const easyFlowMixin = {
                 // Connector: ['StateMachine', {margin: 5, curviness: 10, proximityLimit: 80}],
                 // 鼠标不能拖动删除线
                 ConnectionsDetachable: false,
+                MaxConnections: 1,
                 // 删除线的时候节点不删除
                 DeleteEndpointsOnDetach: false,
                 /**
@@ -100,7 +101,7 @@ export const easyFlowMixin = {
                 // 动态锚点、提供了4个方向 Continuous、AutoDefault
                 // anchor:['BottomLeft','BottomRight','TopCenter'],
                 connector: ['Flowchart', {curviness: 5}],
-                
+                MaxConnections: 1,
                 // 设置连线上面的label样式
                 labelStyle: {
                     cssClass: 'flowLabel'
@@ -153,7 +154,7 @@ export const easyFlowMixin = {
                 allowLoopback: false,
                 connector: ['Flowchart', {curviness: 5}],
             
-
+                MaxConnections: 1,
                 connectorStyle: {
                     // 线的颜色
                     stroke: 'red',
