@@ -35,18 +35,20 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                                     'type': 'PTYPE_CROWD',
                                     'defaultValue': 1,
                                     'values': [
-                                        { 'title': '复购-泰康百万医疗险', 
-                                        'ID': 'f4asdsa87f9daasd76',
-                                         'validity': '2020-10-12 12:00:00', 
-                                         'creator': 'mark',
-                                          'creationTime': '2020-12-29' },
+                                        {
+                                            'title': '复购-泰康百万医疗险',
+                                            'ID': 'f4asdsa87f9daasd76',
+                                            'validity': '2020-10-12 12:00:00',
+                                            'creator': 'mark',
+                                            'creationTime': '2020-12-29'
+                                        },
                                         { 'title': '复购-泰康二百万医疗险', 'ID': 'dsadasddadsadsadd', 'validity': '2020-19-123 17:34:22', 'creator': 'jack', 'creationTime': '2020-04-11' }
                                     ],
                                     //触发时间
                                     'triggeringTime': '13:00',
                                     //触发周期
                                     'triggerCycle': { 'frequency': '每月', 'time': '2020-02-02' },
-                                    "selectedList":[]
+                                    "selectedList": []
                                 },
                             }, {
                                 "value": 1,
@@ -65,14 +67,14 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                                     ],
                                     "tips": "………………",
                                     "showInEditor": true,
-                                    "selectedList":[]
+                                    "selectedList": []
                                 },
                             }
                         ],
                         "tips": "任务触发条件决定该任务再何种情况下开始执行。",
                         "showInEditor": true,
                     },
-        
+
                     {
                         "title": "触发时间", //属性的标题
                         "type": "PTYPE_TIMELIST", //控件的类型，详细见《属性控件定义文档》
@@ -82,10 +84,10 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                     {
                         "title": "触发周期", //属性的标题
                         "type": "PTYPE_SELECT", //控件的类型，详细见《属性控件定义文档》
-                        "defaultValue": "0",
-                        "values": ['人群定时触发', '用户行为触发'],
-                        "tips": "………………",
-                        "showInEditor": true
+                        "defaultValue": 0,
+                        "values": [{ 'value': 0, 'label': "每天" }, { 'value': 1, 'label': "每月" }, { 'value': 2, 'label': "每小时" }],
+                        "tips": "任务名称用于描述任务主要功能,并与其他任务进行区分",
+                        "selectedList": ""
                     },
                     // 行为触发
                     {
@@ -158,39 +160,73 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                         "tips": "任务名称用于描述任务主要功能"
                     },
                     {
-                        "title": "任务触发设置", //属性的标题
-                        "type": "PTYPE_GROUP", //控件的类型，详细见《属性控件定义文档》
-                        "defaultValue": "0",
-                        "tips": ""
-
-                    },
-                    {
-                        "title": "任务触发条件", //属性的标题
-                        "type": "PTYPE_SELECT", //控件的类型，详细见《属性控件定义文档》
-                        "defaultValue": "0",
-                        "values": ['定时定向', '用户行为触发'],
-                        "tips": "………………",
-                        "showInEditor": true
-                    },
-                    //添加条件组
-                    {
-                        'title': '添加条件组',
-                        'conditionType': [
-                            {
-                                'title': '离线标签', 'type': [
-                                    { 'title': '用户基本信息', 'classify': [''] },
-                                    { 'title': '基金类标签', 'classify': [{'title':'历史最大持仓金额','conditionSetting':{'标签名':'历史最大持仓金额','运算符':'等于','值':['1万','1-10万',],'标签说明':'包含。。。',}}, {'title':'历史最大持仓基金数'}, {'title':'近30天基金账户平均净值'},] },
-                                    { 'title': '保险类标签', 'classify': [''] },
-                                    { 'title': '固收类标签', 'classify': [''] },
+                        "title": "条件缩略图", //属性的标题
+                        "type": "PTYPE_CONDITION_DETAILS", //控件的类型，详细见《属性控件定义文档》
+                        "defaultValue": "条件",
+                        "tips": "任务名称用于描述任务主要功能",
+                        "details": [
+                            {//条件分类信息
+                                "title": "离线标签",//标签分类
+                                "children": [
+                                    {
+                                        'label': "用户基本信息",
+                                        "value": 0,
+                                        "children": [
+                                            {
+                                                "label": "历史最大持仓金额",
+                                                "tips": "******************"//标签说明
+                                            }
+                                        ] //标签
+                                    }
                                 ]
-                            },
-                            { 'title': '实时标签' },
-                            { 'title': '人群' },
-                            { 'title': '变量' },
-                            { 'title': '系统标签' }
+                            }
                         ],
+                        "data": {
+                            "id": 0,
+                            "label": "且",
+                            "swtich": "myred", //标签类名
+                            "children": [
+                                {
+                                    "id": 2,
+                                    "label": "或",
+                                    "swtich": "myred",
+                                    "children": [
+                                        {
+                                            "id": 5,
+                                            "label": "性别=男",
 
-                    }
+                                        },
+                                        {
+                                            "id": 6,
+                                            "label": "账龄>=(30,90)",
+
+                                        },
+
+                                    ]
+                                },
+                                {
+                                    "id": 3,
+                                    "label": "且",
+                                    "swtich": "myred",
+                                    "children": [
+                                        {
+                                            "id": 7,
+                                            "label": "是否实名，已实名",
+                                            // "swtich": "myblue"
+                                        },
+                                        {
+                                            "id": 8,
+                                            "label": "",
+                                            "swtich": false
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+
+
+                    },
+
                 ]
             }, {
                 'id': '3',
@@ -207,49 +243,18 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                         "tips": "任务ID用来唯一标识此任务"
                     },
                     {
-                        "title": "任务触发设置", //属性的标题
-                        "type": "PTYPE_GROUP", //控件的类型，详细见《属性控件定义文档》
-                        "defaultValue": "0",
-                        "tips": "",
-                        "children": [
-                            {
-                                "title": "任务名称", //属性的标题
-                                "type": "PTYPE_TEXT", //控件的类型，详细见《属性控件定义文档》
-                                "defaultValue": "条件",
-                                "tips": "任务名称用于描述任务主要功能"
-                            },
-                            {
-                                "title": "任务ID", //属性的标题
-                                "type": "PTYPE_LABEL", //控件的类型，详细见《属性控件定义文档》
-                                "defaultValue": "CONSTANT_TASKID",
-                                "tips": "任务ID用来唯一标识此任务"
-                            },
-                            {
-                                "title": "任务触发条件", //属性的标题
-                                "type": "PTYPE_SELECT", //控件的类型，详细见《属性控件定义文档》
-                                "defaultValue": "0",
-                                "values": ['定时定向', '用户行为触发'],
-                                "tips": "………………",
-                                "showInEditor": true
-                            }
-                        ]
-                    },
-                    {
-                        "title": "任务名称", //属性的标题
-                        "type": "PTYPE_TEXT", //控件的类型，详细见《属性控件定义文档》
-                        "defaultValue": "短信",
-                        "tips": "任务名称用于描述任务主要功能"
-                    },
-                    {
-                        "title": "任务触发条件", //属性的标题
-                        "type": "PTYPE_SELECT", //控件的类型，详细见《属性控件定义文档》
-                        "defaultValue": "0",
-                        "values": ['定时定向', '用户行为触发'],
-                        "tips": "………………",
-                        "showInEditor": true
+                        'status': true,
+                        'data': {
+                            'smsType': '营销短信',
+                            'smsValue': '尊敬的张三，您好，恭喜您获得豪华游艇，48小时内领取有效，赶紧点击https://pianren.com/keng领取 回复TD退订',
+                            'expiryDate': '2019-2-30',
+                            'approvalStatus': '通过'
+                        },
+
                     }
                 ]
             },
+
             {
                 'id': '4',
                 "nodeTypeID": 'NID_A/B', //每种控件类型的唯一ID
@@ -259,14 +264,15 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                 "parameters": [ //该控件属性栏的属性列表
                     //分流方式  
                     {
+                        
                         'defaultValue': 0,
-                        'shuntWay': [{'value':0,'label':'按首次随机分流'},{'value':1,'label': '按天随机分流'},{'value':2,'label':'完全随机分流'}],
+                        'shuntWay': [{ 'value': 0, 'label': '按首次随机分流' }, { 'value': 1, 'label': '按天随机分流' }, { 'value': 2, 'label': '完全随机分流' }],
                         //观察周期
                         'period': '4',
                         //分流比例
                         // 'groups': [ ['对照',''],['实验一',''] ],
-                        'groups': [ {'id':'0','name':'对照组','num':0},{'id':'1','name':'实验组','num':0} ],
-                      }
+                        'groups': [{ 'id': '0', 'name': '对照组', 'num': 0 }, { 'id': '1', 'name': '实验组', 'num': 0 }],
+                    }
                 ]
             }, {
                 'id': '5',
@@ -289,54 +295,31 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                         "tips": "任务名称用于描述任务主要功能"
                     },
                     {
-                        "title": "任务触发设置", //属性的标题
-                        "type": "PTYPE_GROUP", //控件的类型，详细见《属性控件定义文档》
-                        "defaultValue": "0",
-                        "tips": "",
-                        "children": [
-                            {
-                                "title": "任务名称", //属性的标题
-                                "type": "PTYPE_TEXT", //控件的类型，详细见《属性控件定义文档》
-                                "defaultValue": "条件",
-                                "tips": "任务名称用于描述任务主要功能"
-                            },
-                            {
-                                "title": "任务ID", //属性的标题
-                                "type": "PTYPE_LABEL", //控件的类型，详细见《属性控件定义文档》
-                                "defaultValue": "CONSTANT_TASKID",
-                                "tips": "任务ID用来唯一标识此任务"
-                            },
-                            {
-                                "title": "任务触发条件", //属性的标题
-                                "type": "PTYPE_SELECT", //控件的类型，详细见《属性控件定义文档》
-                                "defaultValue": "0",
-                                "values": ['定时定向', '用户行为触发'],
-                                "tips": "………………",
-                                "showInEditor": true
-                            }
-                        ]
-
-                    },
-                    {
-                        "title": "任务触发条件", //属性的标题
+                        "title": "触发周期", //属性的标题
                         "type": "PTYPE_SELECT", //控件的类型，详细见《属性控件定义文档》
-                        "defaultValue": "0",
-                        "values": ['定时定向', '用户行为触发'],
-                        "tips": "………………",
-                        "showInEditor": true
+                        "defaultValue": 0,
+                        "values": [{ 'value': 0, 'label': "等待一段时间", "tips": " 等待至具体的某个时间点：'yyyy-MM-dd HH:mm:ss'" },
+                        { 'value': 1, 'label': "等待至具体的某个时间点", "tips": "● 等待一段时间：' HH:mm:ss'" },
+                        { 'value': 2, 'label': "等待至...", "tips": "等待至：第N天的' HH:mm:ss'" }],
+                        "tips": "任务名称用于描述任务主要功能,并与其他任务进行区分",
+                        "stretch": ""
                     },
                     {
-                        'waitTime':'等待一段时间',
-                        'time':'几天几时几分几秒',
-                        "defaultValue": "MALL_ADD_CART_BUTTON",
+                        "title": "行为事件规则", //属性的标题
+                        "type": "PTYPE_MULTISELECT", //控件的类型，详细见《属性控件定义文档》
+                        "defaultValue": 0,
                         "values": [
-                            { 'behavior': 'MALL_ADD_CART_BUTTON', 'rules': [{ 'r1': '是否自营', 'r2': '自营' }, { 'r1': '加购商品sku白名单', 'r2': '奶粉.txt' }, { 'r1': '加购商品价格', 'r2': '>=', 'r3': '199' }, { 'r1': '加购商品数量', 'r2': '>=', 'r3': '3' }] },
-                            { 'behavior': 'MALL_IOU_BLACK_GOLD', 'rules': [{ 'r1': '', 'r2': '', 'r3': '' }] },
-                            { 'behavior': 'MALL_COFFERS_INNER', 'rules': [{ 'r1': '', 'r2': '', 'r3': '' }] },
-                            { 'behavior': 'MALL_INDEX_DISCOUNT_ICON', 'rules': [{ 'r1': '', 'r2': '', 'r3': '' }] },
-                            { 'behavior': 'MALL_INDEX_COUPON_ICON', 'rules': [{ 'r1': '当天点击次数', 'r2': '=', 'r3': '3' }] }
+                            { 'title': 'MALL_ADD_CART_BUTTON', 'rules': [{ 'r1': '是否自营', 'r2': '自营' }, { 'r1': '加购商品sku白名单', 'r2': '奶粉.txt' }, { 'r1': '加购商品价格', 'r2': '>=', 'r3': '199' }, { 'r1': '加购商品数量', 'r2': '>=', 'r3': '3' }] },
+                            { 'title': 'MALL_IOU_BLACK_GOLD', 'rules': [{ 'r1': '', 'r2': '', 'r3': '' }] },
+                            { 'title': 'MALL_COFFERS_INNER', 'rules': [{ 'r1': '', 'r2': '', 'r3': '' }] },
+                            { 'title': 'MALL_INDEX_DISCOUNT_ICON', 'rules': [{ 'r1': '', 'r2': '', 'r3': '' }] },
+                            { 'title': 'MALL_INDEX_COUPON_ICON', 'rules': [{ 'r1': '当天点击次数', 'r2': '=', 'r3': '3' }] }
                         ],
+                        "tips": "………………",
+                        "showInEditor": true,
+                        "selectedList": []
                     }
+
                 ]
             },
             {
@@ -521,7 +504,19 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                         "values": ['定时定向', '用户行为触发'],
                         "tips": "………………",
                         "showInEditor": true
-                    }
+                    },
+                    // {
+                    //     "title": "任务重入", //属性的标题
+                    //     "type": "PTYPE_SWITCH", //控件的类型，详细见《属性控件定义文档》
+                    //     "defaultValue": false,
+                    //     "tips": "任务ID用来唯一标识此任务"
+                    // },
+                    // {
+                    //     "title": "任务频控", //属性的标题
+                    //     "type": "PTYPE_SWITCH", //控件的类型，详细见《属性控件定义文档》
+                    //     "defaultValue": false,
+                    //     "tips": "任务ID用来唯一标识此任务"
+                    // },
                 ]
             },
         ]

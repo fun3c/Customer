@@ -104,7 +104,7 @@ export default {
   }
   .index-box .el-aside {
     background-color: #20222A;
-    /* height: 100vh; */
+    height: 100% !important;
     min-height: 100%;
 }
 </style>

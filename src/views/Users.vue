@@ -5,12 +5,12 @@
       ref="taskquerylist"
       :model="taskquerylist"
       :inline="true"
-      :label-width="auto"
+      label-width="auto"
     >
       <div class="one">
         <el-form-item label="任务ID或任务名称">
           <el-input
-            v-model="taskquerylist.name"
+            v-model="IdOrName"
             placeholder="请输入任务名称"
             size="small"
           ></el-input>
@@ -26,35 +26,40 @@
       <div class="one">
         <el-form-item label="任务类别">
           <el-select
-            v-model="taskquerylist.category"
+            v-model="taskquerylist.jobType"
             placeholder="所有类别"
             size="small"
           >
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+            <el-option label="任务类别1" value="类别1"></el-option>
+            <el-option label="任务类别2" value="类别2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="任务状态">
           <el-select
-            v-model="taskquerylist.jobType"
+            v-model="taskquerylist.jobState"
             placeholder="所有状态"
             size="small"
           >
-            <el-option :label="option" :value="option" v-for="option in options" :key="option"></el-option>
+            <el-option
+              :label="option"
+              :value="i"
+              v-for="(option, i) in options"
+              :key="option"
+            ></el-option>
           </el-select>
         </el-form-item>
       </div>
-
       <div class="one">
         <el-form-item label="任务起止时间">
           <el-col :span="11">
             <el-date-picker
-              v-model="taskquerylist.time"
+              v-model="time"
               type="daterange"
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
               size="small"
+              value-format="yyyy-MM-dd"
             >
             </el-date-picker>
           </el-col>
@@ -62,12 +67,12 @@
 
         <el-form-item label="任务性质" class="el-tasknature">
           <el-select
-            v-model="taskquerylist.type"
+            v-model="taskquerylist.nature"
             placeholder="显示全部"
             size="small"
           >
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+            <el-option label="正式任务" value="shanghai"></el-option>
+            <el-option label="测试任务" value="beijing"></el-option>
           </el-select>
         </el-form-item>
       </div>
@@ -81,13 +86,6 @@
             size="small"
             @click="handleAdd"
             >新增</el-button
-          >
-          <el-button
-            type="danger"
-            icon="el-icon-delete"
-            size="small"
-            @click="mulDelete"
-            >批量删除</el-button
           >
         </div>
       </el-col>
@@ -107,101 +105,75 @@
       @selection-change="selectChange"
       style="width: 100%"
     >
-      <el-table-column type="selection" width="55"> </el-table-column>
-      <el-table-column sortable prop="ID" label="ID" width="100">
-      </el-table-column>
-      <el-table-column prop="name" label="任务名称" width="120">
-      </el-table-column>
-      <el-table-column prop="category" label="任务类别" width="120">
-      </el-table-column>
-      <el-table-column width="120" prop="jobType" label="状态">
-      </el-table-column>
-      <el-table-column prop="startTime" width="150" label="起止时间">
-      </el-table-column>
-      <el-table-column prop="createBy" width="150" label="创建人">
-      </el-table-column>
-      <el-table-column prop="endTime" width="150" label="创建时间">
-      </el-table-column>
-      <el-table-column label="操作" fixed="right" width="150">
+      <el-table-column label="ID" width="180">
         <template slot-scope="scope">
-          <!-- <el-button
-            size="mini"
+          <span>{{ scope.row.id }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="任务名称" width="180">
+        <template slot-scope="scope">
+          <span>{{ scope.row.jobName }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="任务类别" width="180">
+        <template slot-scope="scope">
+          <span>{{ scope.row.jobType }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" width="180">
+        <template slot-scope="scope">
+          <span>{{ state[scope.row.jobState].sta }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="开始时间" width="180">
+        <template slot-scope="scope">
+          <span>{{ scope.row.startTime }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="结束时间" width="180">
+        <template slot-scope="scope">
+          <span>{{ scope.row.endTime }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="创建人" width="180">
+        <template slot-scope="scope">
+          <span>{{ scope.row.createBy }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" fixed="right">
+        <template slot-scope="scope">
+          <!-- {{state[scope.row.jobState].options}} -->
+          <el-dropdown
+            size="medium"
+            split-button
             type="primary"
-            plain
-            @click="handleEdit(scope.$index, scope.row)"
-            >编辑</el-button
+            @command="doOptions(command,scope.row.id)"
           >
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
-            >删除</el-button
-          > -->
-          <el-dropdown size="medium" split-button type="primary" @command="handleCommand" @click="skipoptions(optioncommand)">
-            {{optioncommand}}
+            查看
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="查看">查看</el-dropdown-item>
-              <el-dropdown-item command="复制">复制</el-dropdown-item>
-              <el-dropdown-item command="编辑">编辑</el-dropdown-item>
-              <el-dropdown-item command="发布">发布</el-dropdown-item>
-              <el-dropdown-item command="终止任务">终止任务</el-dropdown-item>
-              <el-dropdown-item command="强制终止">强制终止</el-dropdown-item>
+              <el-dropdown-item
+                :command="sco.value"
+                @click="test"
+                v-for="(sco, i) in state[scope.row.jobState].options"
+                :key="i"
+                >{{ sco.key }}</el-dropdown-item
+              >
             </el-dropdown-menu>
           </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
+    <!-- <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
       background
       :page-sizes="[10, 20, 30, 50]"
       :page-size="10"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="400"
+      :total="users.length"
     >
-    </el-pagination>
-    <!-- 新建数据可用 -->
-    <el-dialog
-      :title="dialogTitle"
-      width="600px"
-      :visible.sync="userFormVisible"
-      @close="resetForm('userForm')"
-    >
-      <el-form :model="user" :rules="rules" ref="userForm" style="width:400px">
-        <el-form-item label="项目名称" prop="name" label-width="80px">
-          <el-input v-model="user.name" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="类别" label-width="80px">
-          <el-input v-model="user.phone" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="审批人" label-width="80px">
-          <el-input v-model="user.address" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="日期" label-width="80px">
-          <el-date-picker
-            v-model="user.date"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="选择日期"
-          >
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="状态" label-width="80px">
-          <el-switch
-            v-model="user.status"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            :active-value="1"
-            :inactive-value="0"
-          ></el-switch>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="userFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitUser('userForm')"
-          >确 定</el-button
-        >
-      </div>
-    </el-dialog>
+    </el-pagination> -->
   </div>
 </template>
 
@@ -209,9 +181,46 @@
 export default {
   data() {
     return {
-      optioncommand:'默认',
-      options: ["编辑", "发布", "查看", "复制", "终止任务", "强制终止"],
-      value: "",
+      IdOrName: "",
+      page: 1, //初始页
+      pageSize: 10, //    每页的数据
+      options: [
+        "编辑中",
+        "待审批",
+        "审批中",
+        "待执行",
+        "执行中",
+        "已中止",
+        "已停止",
+        "已完成",
+        "已到期",
+      ],
+      state: [
+        {
+          sta: "编辑中",
+          options: [
+            { key: "复制", value: 1 },
+            { key: "编辑", value: 2 },
+            { key: "发布", value: 3 },
+          ],
+        },
+        { sta: "待审批", options: [{ key: "复制", value: 1 }] },
+        { sta: "审批中", options: [{ key: "复制", value: 1 }] },
+        { sta: "待执行", options: [{ key: "复制", value: 1 }] },
+        {
+          sta: "执行中",
+          options: [
+            { key: "复制", value: 1 },
+            { key: "中止任务", value: 4 },
+            { key: "强制中止", value: 5 },
+          ],
+        },
+        { sta: "已中止", options: [{ key: "复制", value: 1 }] },
+        { sta: "已停止", options: [{ key: "复制", value: 1 }] },
+        { sta: "已完成", options: [{ key: "复制", value: 1 }] },
+        { sta: "已到期", options: [{ key: "复制", value: 1 }] },
+      ],
+      time: "",
       users: [],
       user: {
         id: "",
@@ -222,12 +231,16 @@ export default {
         status: 0,
       },
       taskquerylist: {
-        name: "",
+        id: 0,
+        jobName: "",
         jobType: "",
-        time: "",
+        endTime: "",
+        startTime: "",
         createBy: "",
-        category: "",
+        jobState: "",
         property: "",
+        page: 1, 
+        pageSize: 10,
       },
       userBackup: Object.assign({}, this.user),
       multipleSelection: [],
@@ -246,24 +259,46 @@ export default {
     this.getUsers();
   },
   methods: {
-    skipoptions(pops){
-      this.$message(pops);
+    test(){
+      console.log("xx")
     },
-    handleCommand(command){
-      this.optioncommand=command
+    // 初始页currentPage、初始每页数据数pageSize和数据data
+    handleSizeChange: function (size) {
+      this.pageSize = size;
+    },
+    handleCurrentChange: function (currentPage) {
+      this.currentPage = currentPage;
+    },
+    skipoptions() {
+      this.$message("查看");
+    },
+    handleCommand(command) {
+      this.$message(command);
     },
     defaultList() {
-      this.getUsers();
+      (this.taskquerylist = {
+        jobName: "",
+        jobType: "",
+        endTime: "",
+        startTime: "",
+        createBy: "",
+        jobState: "",
+        property: "",
+      }),
+        (this.time = ""),
+        this.getUsers();
     },
     queryList() {
+      // if(2 instanceof this.IdOrName)
+      this.taskquerylist.startTime = this.time[0];
+      this.taskquerylist.endTime = this.time[1];
       this.$http({
         method: "POST",
-        url: "/api/queryList",
+        url: "http://192.168.1.47:8888/listPage",
         data: this.taskquerylist,
       })
         .then((res) => {
-          console.log(res.data)
-          this.users = res.data;
+          this.users = res.data.content;
         })
         .catch((err) => {
           console.error(err);
@@ -272,46 +307,50 @@ export default {
     dianji() {
       this.$message("这是一条消息提示");
     },
+    //对应操作触发的方法,第一个参数是操作对应的value，第二个是id
+    doOptions(command,va){
+      console.log(command+"x"+va)
+      //为2表示编辑
+      // if(value===2){
+      //   this.$http({
+      //   method: "POST",
+      //   url: "http://192.168.1.47:8888/selectById",
+      //   data: {
+      //     id:id,
+      //   },
+      // })
+      //   .then((res) => {
+      //     console.log(res,data);
+      //   })
+      //   .catch((err) => {
+      //     console.error(err);
+      //   });
+      // }
+    },
     getUsers() {
       this.loading = true;
-      this.$http("/api/taskList")
+      // this.$http({
+      //   method: "POST",
+      //   url: "http://192.168.1.47:8888/listPage",
+      //   data: {
+      //     page:"1",
+      //     pageSize:"10"
+      //   },
+      // })
+      this.$http("/api/defaultList")
         .then((res) => {
-          this.users = res.data;
+          this.users = res.data.content;
+          console.log(this.users);
         })
         .catch((err) => {
           console.error(err);
         });
     },
-    //任务状态对应的可执行操作
-    dooptions() {},
     handleEdit(index, row) {
       this.dialogTitle = "编辑";
       this.user = Object.assign({}, row);
       this.userFormVisible = true;
       this.rowIndex = index;
-    },
-    submitUser(formName) {
-      // 表单验证
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          let id = this.user.id;
-          if (id) {
-            // id非空-修改
-            this.users.splice(this.rowIndex, 1, this.user);
-          } else {
-            // id为空-新增
-            this.user.id = this.users.length + 1;
-            this.users.unshift(this.user);
-          }
-          this.userFormVisible = false;
-          this.$message({
-            type: "success",
-            message: id ? "修改成功！" : "新增成功！",
-          });
-          //  新建传参
-          this.$router.push({ path: "/Panel", query: { id: "1" } });
-        }
-      });
     },
     handleDelete(index, row) {
       this.$confirm(`确定删除用户 【${row.name}】 吗?`, "提示", {
@@ -364,6 +403,7 @@ export default {
       this.dialogTitle = "新增";
       this.user = Object.assign({}, this.userBackup);
       this.userFormVisible = true;
+      this.$router.push({ path: "/Panel", query: { id: "1" } });
     },
   },
 };

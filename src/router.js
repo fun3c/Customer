@@ -9,6 +9,7 @@ import MailList from './views/MailList.vue'
 import NotFound from './views/NotFound.vue'
 import Panel from "./components/ef/panel.vue"
 import ab from "./components/ef/AB.vue"
+import note from "./components/ef/note.vue"
 Vue.use(Router);
 
 const router = new Router({
@@ -18,6 +19,10 @@ const router = new Router({
     {
       path: '/login',
       component: Login
+    },
+    {
+      path: '/note',
+      component: note
     },
     {
       path: '/ab',
