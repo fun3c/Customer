@@ -5,6 +5,7 @@
     style="width:100%"
     label-position="top"
   >
+  {{data}}
     <el-form-item label="分流方式">
       <el-select v-model="form.defaultValue" placeholder="请选择">
         <el-option label="按首次随机分流" :value="0"></el-option>
@@ -79,8 +80,11 @@ export default {
     };
   },
   computed: {},
+  props:["data"],
   mounted() {
-    this.getData();
+    //  this.form =this.props.data;
+  // console.log(this.props.data)
+    // this.getData();
   },
   watch: {},
   methods: {
@@ -99,15 +103,15 @@ export default {
         });
       }
     },
-    getData() {
-      this.$http("/api/abtest")
-        .then((res) => {
-          this.form = res.data;
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    },
+    // getData() {
+    //   this.$http("/api/abtest")
+    //     .then((res) => {
+    //       this.form = res.data;
+    //     })
+    //     .catch((err) => {
+    //       console.error(err);
+    //     });
+    // },
     removeTest(i) {
       this.form.groups.splice(i, 1);
     },

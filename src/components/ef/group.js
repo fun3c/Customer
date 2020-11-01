@@ -14,6 +14,18 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                 "caption": '开始', //控件图标旁边展示的控件名称
                 "image": "start.png", //控件图标
                 "info": "条件控件根据所配置条件的计算结果，决定下一个执行的节点", //描述控件的作用
+                "Output"://输出端点定义
+                {
+                    "pinDistance": 0, //多个输出端点间的间距，单位px
+                    "flexOutput": false, //是否允许动态数量的输出端点
+                    "fixedOutput": [ //固定的输出端点集合，前端根据数组长度来渲染端点个数，可附加端点描述信息
+                        {
+                            "label": "", //端点描述
+                            "pinName": "",
+                            "anchor":"BottomCenter"
+                        }
+                    ]
+                },
                 "parameters": [ //该控件属性栏的属性列表
                     {
                         "title": "任务名称", //属性的标题
@@ -143,6 +155,24 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                 "caption": '条件分支', //控件图标旁边展示的控件名称
                 "image": "条件分支.png", //控件图标
                 "info": "用来判断是否满足某个或者某一组条件", //描述控件的作用
+                "input":"",
+                "Output"://输出端点定义
+                {
+                    "pinDistance": 100, //多个输出端点间的间距，单位px
+                    "flexOutput": false, //是否允许动态数量的输出端点
+                    "fixedOutput": [ //固定的输出端点集合，前端根据数组长度来渲染端点个数，可附加端点描述信息
+                        {
+                            "label": "是", //端点描述
+                            "pinName": "PIN_TRUE",
+                            "anchor":"BottomLeft"
+                        },
+                        {
+                            "label": "否", //端点描述
+                            "pinName": "PIN_FALSE",
+                            "anchor":"BottomRight"
+                        }
+                    ]
+                },
                 "parameters": [ //该控件属性栏的属性列表
 
                     {
@@ -164,13 +194,64 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                                     {
                                         'label': "用户基本信息",
                                         "value": 0,
-                                        "children": [
-                                            {
-                                                "label": "历史最大持仓金额",
-                                                "tips": "******************"//标签说明
-                                            }
-                                        ] //标签
+                                        "children": [{
+                                            "id": 1,
+                                            "label": '一级 1',
+                                            "children": [{
+                                                "id": 4,
+                                                "label": '二级 1-1',
+                                                "children": [{
+                                                    "id": 9,
+                                                    "label": '三级 1-1-1',//标签名称
+                                                    "tips": "包含交易当天申购到账，**********************",//标签说明
+                                                    "operator": "", //运算符
+                                                    "value": "",//值
+                                                    "valueType": 'string'    //标签值型,详见文档
+                                                }, {
+                                                    "id": 10,
+                                                    "label": '三级 1-1-2',
+                                                    "tips": "包含交易当天申购到账，**********************",//标签说明
+                                                    "operator": "", //运算符
+                                                    "value": "",//值
+                                                    "valueType": 'intger',    //标签值型,详见文档
+                                                }, {
+                                                    "id": 10,
+                                                    "label": '三级 1-1-2',
+                                                    "tips": "包含交易当天申购到账，**********************",//标签说明
+                                                    "operator": "", //运算符
+                                                    "value": "",//值
+                                                    "valueType": 'boolean',    //标签值型,详见文档
+                                                }
+                                                ]
+                                            }]
+                                        }, {
+                                            "id": 2,
+                                            "label": '一级 2',
+                                            "children": [{
+                                                "id": 5,
+                                                "label": '二级 2-1'
+                                            }, {
+                                                "id": 6,
+                                                "label": '二级 2-2'
+                                            }]
+                                        }, {
+                                            "id": 3,
+                                            "label": '一级 3',
+                                            "children": [{
+                                                "id": 7,
+                                                "label": '二级 3-1'
+                                            }, {
+                                                "id": 8,
+                                                "label": '二级 3-2'
+                                            }]
+                                        }],//标签
                                     }
+                                ]
+                            },
+                            {//条件分类信息
+                                "title": "实时标签",//标签分类
+                                "children": [
+
                                 ]
                             }
                         ],
@@ -187,12 +268,14 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                                         {
                                             "id": 5,
                                             "label": "性别=男",
-
+                                            "operator": "=", //运算符
+                                            "value": "性别,男",//值
                                         },
                                         {
                                             "id": 6,
                                             "label": "账龄>=(30,90)",
-
+                                            "operator": ">=", //运算符
+                                            "value": "账龄,(30,90)",//值
                                         },
 
                                     ]
@@ -205,12 +288,16 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                                         {
                                             "id": 7,
                                             "label": "是否实名，已实名",
+                                            "operator": "", //运算符
+                                            "value": "",//值
                                             // "swtich": "myblue"
                                         },
                                         {
                                             "id": 8,
                                             "label": "",
-                                            "swtich": false
+                                            "swtich": false,
+                                            "operator": "", //运算符
+                                            "value": "",//值
                                         }
                                     ]
                                 }
@@ -228,6 +315,23 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                 "caption": '短信', //控件图标旁边展示的控件名称
                 "image": "短信.png", //控件图标
                 "info": "向目标发送短信", //描述控件的作用
+                "Output"://输出端点定义
+                {
+                    "pinDistance": 100, //多个输出端点间的间距，单位px
+                    "flexOutput": false, //是否允许动态数量的输出端点
+                    "fixedOutput": [ //固定的输出端点集合，前端根据数组长度来渲染端点个数，可附加端点描述信息
+                        {
+                            "label": "成功", //端点描述
+                            "pinName": "PIN_TRUE",
+                            "anchor":"BottomLeft"
+                        },
+                        {
+                            "label": "失败", //端点描述
+                            "pinName": "PIN_FALSE",
+                            "anchor":"BottomRight"
+                        }
+                    ]
+                },
                 "parameters": [ //该控件属性栏的属性列表
                     {
                         "title": "任务ID", //属性的标题
@@ -288,6 +392,24 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                 "caption": 'A/B', //控件图标旁边展示的控件名称
                 "image": "AB测试.png", //控件图标
                 "info": "按照不同百分比分流", //描述控件的作用
+                "input":"",
+                "Output"://输出端点定义
+                {
+                    "pinDistance": 100, //多个输出端点间的间距，单位px
+                    "flexOutput": false, //是否允许动态数量的输出端点
+                    "fixedOutput": [ //固定的输出端点集合，前端根据数组长度来渲染端点个数，可附加端点描述信息
+                        {
+                            "label": "对照", //端点描述
+                            "pinName": "PIN_TRUE",
+                            "anchor":"BottomLeft"
+                        },
+                        {
+                            "label": "实验", //端点描述
+                            "pinName": "PIN_FALSE",
+                            "anchor":"BottomRight"
+                        },
+                    ]
+                },
                 "parameters": [ //该控件属性栏的属性列表
                     //分流方式
                     {
@@ -308,6 +430,23 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                 "caption": '等待', //控件图标旁边展示的控件名称
                 "image": "wait.png", //控件图标
                 "info": "执行挂起，等待一定时间后执行", //描述控件的作用
+                "Output"://输出端点定义
+                {
+                    "pinDistance": 100, //多个输出端点间的间距，单位px
+                    "flexOutput": false, //是否允许动态数量的输出端点
+                    "fixedOutput": [ //固定的输出端点集合，前端根据数组长度来渲染端点个数，可附加端点描述信息
+                        {
+                            "label": "成功", //端点描述
+                            "pinName": "PIN_TRUE",
+                            "anchor":"BottomLeft"
+                        },
+                        {
+                            "label": "失败", //端点描述
+                            "pinName": "PIN_FALSE",
+                            "anchor":"BottomRight"
+                        }
+                    ]
+                },
                 "parameters": [ //该控件属性栏的属性列表
                     {
                         "title": "任务ID", //属性的标题
@@ -356,6 +495,23 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                 "caption": '推荐', //控件图标旁边展示的控件名称
                 "image": "推荐.png", //控件图标
                 "info": "推荐任务", //描述控件的作用
+                "Output"://输出端点定义
+                {
+                    "pinDistance": 100, //多个输出端点间的间距，单位px
+                    "flexOutput": false, //是否允许动态数量的输出端点
+                    "fixedOutput": [ //固定的输出端点集合，前端根据数组长度来渲染端点个数，可附加端点描述信息
+                        {
+                            "label": "成功", //端点描述
+                            "pinName": "PIN_TRUE",
+                            "anchor":"BottomLeft"
+                        },
+                        {
+                            "label": "失败", //端点描述
+                            "pinName": "PIN_FALSE",
+                            "anchor":"BottomRight"
+                        }
+                    ]
+                },
                 "parameters": [ //该控件属性栏的属性列表
                     {
                         "title": "任务ID", //属性的标题
@@ -414,6 +570,23 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                 "caption": 'Push', //控件图标旁边展示的控件名称
                 "image": "push.png", //控件图标
                 "info": "添加", //描述控件的作用
+                "Output"://输出端点定义
+                {
+                    "pinDistance": 100, //多个输出端点间的间距，单位px
+                    "flexOutput": true, //是否允许动态数量的输出端点
+                    "fixedOutput": [ //固定的输出端点集合，前端根据数组长度来渲染端点个数，可附加端点描述信息
+                        {
+                            "label": "成功", //端点描述
+                            "pinName": "PIN_TRUE",
+                            "anchor":"BottomLeft"
+                        },
+                        {
+                            "label": "失败", //端点描述
+                            "pinName": "PIN_FALSE",
+                            "anchor":"BottomRight"
+                        }
+                    ]
+                },
                 "parameters": [ //该控件属性栏的属性列表
                     {
                         "title": "任务ID", //属性的标题
@@ -482,6 +655,14 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                 "caption": '结束', //控件图标旁边展示的控件名称
                 "image": "stop.png", //控件图标
                 "info": "结束流程", //描述控件的作用
+                "Output"://输出端点定义
+                {
+                    "pinDistance": 0, //多个输出端点间的间距，单位px
+                    "flexOutput": false, //是否允许动态数量的输出端点
+                    "fixedOutput": [ //固定的输出端点集合，前端根据数组长度来渲染端点个数，可附加端点描述信息
+                   
+                    ]
+                },
                 "parameters": [ //该控件属性栏的属性列表
                     {
                         "title": "任务ID", //属性的标题
@@ -492,58 +673,10 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                     {
                         "title": "任务名称", //属性的标题
                         "type": "PTYPE_TEXT", //控件的类型，详细见《属性控件定义文档》
-                        "defaultValue": "开始",
+                        "defaultValue": "结束",
                         "tips": "任务名称用于描述任务主要功能"
                     },
-                    {
-                        "title": "任务触发设置", //属性的标题
-                        "type": "PTYPE_GROUP", //控件的类型，详细见《属性控件定义文档》
-                        "defaultValue": "0",
-                        "tips": "",
-                        "children": [
-                            {
-                                "title": "任务名称", //属性的标题
-                                "type": "PTYPE_TEXT", //控件的类型，详细见《属性控件定义文档》
-                                "defaultValue": "条件",
-                                "tips": "任务名称用于描述任务主要功能"
-                            },
-                            {
-                                "title": "任务ID", //属性的标题
-                                "type": "PTYPE_LABEL", //控件的类型，详细见《属性控件定义文档》
-                                "defaultValue": "CONSTANT_TASKID",
-                                "tips": "任务ID用来唯一标识此任务"
-                            },
-                            {
-                                "title": "任务触发条件", //属性的标题
-                                "type": "PTYPE_SELECT", //控件的类型，详细见《属性控件定义文档》
-                                "defaultValue": "0",
-                                "values": ['定时定向', '用户行为触发'],
-                                "tips": "………………",
-                                "showInEditor": true
-                            }
-                        ]
 
-                    },
-                    {
-                        "title": "任务触发条件", //属性的标题
-                        "type": "PTYPE_SELECT", //控件的类型，详细见《属性控件定义文档》
-                        "defaultValue": "定时定向",
-                        "values": ['定时定向', '用户行为触发'],
-                        "tips": "任务触发条件决定该任务再何种情况下开始执行。",
-                        "showInEditor": true
-                    },
-                    // {
-                    //     "title": "任务重入", //属性的标题
-                    //     "type": "PTYPE_SWITCH", //控件的类型，详细见《属性控件定义文档》
-                    //     "defaultValue": false,
-                    //     "tips": "任务ID用来唯一标识此任务"
-                    // },
-                    // {
-                    //     "title": "任务频控", //属性的标题
-                    //     "type": "PTYPE_SWITCH", //控件的类型，详细见《属性控件定义文档》
-                    //     "defaultValue": false,
-                    //     "tips": "任务ID用来唯一标识此任务"
-                    // },
                 ]
             },
         ]

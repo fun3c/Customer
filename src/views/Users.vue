@@ -124,19 +124,7 @@
       </el-table-column>
       <el-table-column label="操作" fixed="right" >
         <template slot-scope="scope">
-          <!-- <el-button
-            size="mini"
-            type="primary"
-            plain
-            @click="handleEdit(scope.$index, scope.row)"
-            >编辑</el-button
-          >
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
-            >删除</el-button
-          > -->
+
           <el-dropdown size="medium" split-button type="primary" @command="handleCommand" @click="skipoptions(optioncommand)">
             {{optioncommand}}
             <el-dropdown-menu slot="dropdown">
@@ -159,49 +147,6 @@
       :total="400"
     >
     </el-pagination>
-    <!-- 新建数据可用 -->
-    <!-- <el-dialog
-      :title="dialogTitle"
-      width="600px"
-      :visible.sync="userFormVisible"
-      @close="resetForm('userForm')"
-    >
-      <el-form :model="user" :rules="rules" ref="userForm" style="width:400px">
-        <el-form-item label="项目名称" prop="name" label-width="80px">
-          <el-input v-model="user.name" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="类别" label-width="80px">
-          <el-input v-model="user.phone" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="审批人" label-width="80px">
-          <el-input v-model="user.address" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="日期" label-width="80px">
-          <el-date-picker
-            v-model="user.date"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="选择日期"
-          >
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="状态" label-width="80px">
-          <el-switch
-            v-model="user.status"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            :active-value="1"
-            :inactive-value="0"
-          ></el-switch>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="userFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitUser('userForm')"
-          >确 定</el-button
-        >
-      </div>
-    </el-dialog> -->
   </div>
 </template>
 
@@ -290,29 +235,6 @@ export default {
       this.userFormVisible = true;
       this.rowIndex = index;
     },
-    // submitUser(formName) {
-    //   // 表单验证
-    //   this.$refs[formName].validate((valid) => {
-    //     if (valid) {
-    //       let id = this.user.id;
-    //       if (id) {
-    //         // id非空-修改
-    //         this.users.splice(this.rowIndex, 1, this.user);
-    //       } else {
-    //         // id为空-新增
-    //         this.user.id = this.users.length + 1;
-    //         this.users.unshift(this.user);
-    //       }
-    //       this.userFormVisible = false;
-    //       this.$message({
-    //         type: "success",
-    //         message: id ? "修改成功！" : "新增成功！",
-    //       });
-    //       //  新建传参
-    //       this.$router.push({ path: "/Panel", query: { id: "1" } });
-    //     }
-    //   });
-    // },
     handleDelete(index, row) {
       this.$confirm(`确定删除用户 【${row.name}】 吗?`, "提示", {
         confirmButtonText: "确定",
@@ -364,7 +286,7 @@ export default {
       this.dialogTitle = "新增";
       this.user = Object.assign({}, this.userBackup);
       this.userFormVisible = true;
-       this.$router.push({ path: "/Panel", query: { id: "1" } });
+       this.$router.push({ path: "/Panel", query: { id: "待测试" } });
     },
   },
 };

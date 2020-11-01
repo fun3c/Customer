@@ -364,12 +364,13 @@
               <conditional
               v-if="item.type === 'PTYPE_CONDITION_DETAILS'"
               :data="item.data"
+              :details="item.details"
               @openBox2="openBox2"
               ></conditional>
-
+            <!-- // A/B分流抽出类 -->
                     <abshunt
               v-if="item.type === 'PTYPE_ABSHUNT'"
-      
+                :data="item"
               ></abshunt>
 
           </div>
@@ -478,7 +479,6 @@ export default {
           this.node = cloneDeep(node);
         }
       });
-      console.log(this.node, "wwwwwwwwwwwwwwwww");
     },
 
     lineInit(line) {
@@ -532,12 +532,13 @@ export default {
     popCancel() {
       this.isShowOpenBox = false;
     },
-     openBox2() {
-      this.isShowOpenBox = true;
+     openBox2() { // 条件控件弹框修改数据方法
+      // this.isShowOpenBox = true;
     },
     popAffirm() {
       this.isShowOpenBox = false;
     }
+    
   }
 };
 </script>

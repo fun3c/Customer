@@ -143,7 +143,7 @@
     </div>
     <!-- 流程数据详情 -->
     <flow-info v-if="flowInfoVisible" ref="flowInfo" :data="data"></flow-info>
-    <flow-help v-if="flowHelpVisible" ref="flowHelp"></flow-help>
+
   </div>
 </template>
 
@@ -156,7 +156,7 @@ import { easyFlowMixin } from "@/components/ef/mixins";
 import flowNode from "@/components/ef/node";
 import nodeMenu from "@/components/ef/node_menu";
 import FlowInfo from "@/components/ef/info";
-import FlowHelp from "@/components/ef/help";
+
 import FlowNodeForm from "./node_form";
 import lodash from "lodash";
 
@@ -173,8 +173,8 @@ export default {
       flowInfoVisible: false,
       // 是否加载完毕标志位
       loadEasyFlowFinish: false,
-      flowHelpVisible: false,
-      // 数据
+
+      //  数据
       data: {},
       // 激活的元素、可能是节点、可能是连线
       activeElement: {
@@ -198,7 +198,7 @@ export default {
     nodeMenu,
     FlowInfo,
     FlowNodeForm,
-    FlowHelp
+
   },
   directives: {
     flowDrag: {
@@ -247,20 +247,19 @@ export default {
   methods: {
     // 返回唯一标识
     getUUID() {
-      let id= Math.random()
+      let id = Math.random()
         .toString(36)
         .substr(3, 10);
-
-         var date = new Date();
-    var y = date.getFullYear();
-    var m = date.getMonth() + 1;
-    m = m < 10 ? ('0' + m) : m;
-    var d = date.getDate();
-    d = d < 10 ? ('0' + d) : d;
-    var h = date.getHours();
-    var minute = date.getMinutes();
-    var second = date.getSeconds();
-    return `${y}${m}${d}${h}${minute}${second}${id}`;
+      var date = new Date();
+      var y = date.getFullYear();
+      var m = date.getMonth() + 1;
+      m = m < 10 ? "0" + m : m;
+      var d = date.getDate();
+      d = d < 10 ? "0" + d : d;
+      var h = date.getHours();
+      var minute = date.getMinutes();
+      var second = date.getSeconds();
+      return `${y}${m}${d}${h}${minute}${second}${id}`;
     },
     jsPlumbInit() {
       this.jsPlumb.ready(() => {
@@ -285,9 +284,12 @@ export default {
         this.jsPlumb.bind("connection", evt => {
           let from = evt.source.id;
           let to = evt.target.id;
-          console.log()
+          // console.log(evt.sourceEndpoint.canvas.classList[1],);
+          let pinName = evt.sourceEndpoint.canvas.classList[1];
+          this.nodeList;
+
           if (this.loadEasyFlowFinish) {
-            this.data.lineList.push({ from: from, to: to });
+            this.data.lineList.push({ from: from, to: to, pinName: pinName });
           }
         });
 
@@ -311,10 +313,17 @@ export default {
           let from = evt.sourceId;
           let to = evt.targetId;
 
-          let  node = this.data.nodeList.filter(function(node) {
-            return node.id === to
-           
+          let node = this.data.nodeList.filter(function(node) {
+            return node.id === to;
           });
+          let toArr = this.data.lineList.filter(function(line) {
+            return line.to === to;
+          });
+          console.log(node, "连线的回环信息");
+          if (toArr.length > 0) {
+            this.$message.error("链接不能出现循环");
+            return false;
+          }
           if (node[0].nodeTypeID === "NID_START") {
             this.$message.error("开始节点不许被链接");
             return false;
@@ -334,7 +343,8 @@ export default {
 
           this.$message.success("连接成功");
           //连线成功后应该怎么做  删除连线节点
-          console.log(this.$refs.flowNode[0].showEndpoint());
+
+          // console.log(this.$refs.flowNode[0].showEndpoint(),'wwwwwwwwwwwwwwwwww');
           return true;
         });
 
@@ -352,29 +362,29 @@ export default {
         let node = this.data.nodeList[i];
         // 设置源点，可以拖出线连接其他节点
 
-       if(node.nodeTypeID==='NID_START'){
+        if (node.nodeTypeID === "NID_START") {
           this.jsPlumb.makeSource(
-          node.id,
-          lodash.merge(this.jsplumbStartSourceOptions, {}))
-       }else{
+            node.id,
+            lodash.merge(this.jsplumbStartSourceOptions, {})
+          );
+        } else {
           this.jsPlumb.makeSource(
-          node.id,
-          lodash.merge(this.jsplumbSourceOptions, {})
-        );
-       }
+            node.id,
+            lodash.merge(this.jsplumbSourceOptions, {})
+          );
+        }
         // // 设置目标点，其他源点拖出的线可以连接该节点,开始节点不可链接
         if (node.nodeTypeID !== "NID_START") {
           this.jsPlumb.makeTarget(node.id, this.jsplumbTargetOptions);
-        }else{
-           this.jsPlumb.makeTarget(node.id, this.jsplumbStartSourceOptions);
+        } else {
+          this.jsPlumb.makeTarget(node.id, this.jsplumbStartSourceOptions);
         }
-
         if (!node.viewOnly) {
           //是否是不可移动元素
           this.jsPlumb.draggable(node.id, {
             //可拖动元素
             grid: [15, 15], //网格设置
-             Anchors: [ 'TopCenter', 'Bottom','BottomRight', 'BottomLeft'],
+            //  Anchors: [ 'TopCenter', 'Bottom','BottomRight', 'BottomLeft'],
             containment: "parent",
             stop: function(el) {
               // 拖拽节点结束后的对调
@@ -382,20 +392,14 @@ export default {
             }
           });
         }
-        //初始化添加端点
-        //          this.jsPlumb.addEndpoint(node.id, {
-        //         anchor:[
-        //   [ 0.5, 0, 0, -1, 0, 0, "top" ],
-
-        // ]
-            // })
       }
       // 初始化连线
-      for (var i = 0; i < this.data.lineList.length; i++) {
+      for (var i = 0; i < this.data.lineList.length; i++) { //uuid连线
         let line = this.data.lineList[i];
         var connParam = {
           source: line.from,
           target: line.to,
+          uuids: line.uuids,
           label: line.label ? line.label : "",
           connector: line.connector ? line.connector : "Flowchart",
           anchors: line.anchors ? line.anchors : undefined,
@@ -432,7 +436,6 @@ export default {
     // 删除激活的元素
     deleteElement() {
       if (this.activeElement.type === "node") {
-        console.log(this.activeElement);
         this.deleteNode(this.activeElement.nodeId);
       } else if (this.activeElement.type === "line") {
         this.$confirm("确定删除所点击的线吗?", "提示", {
@@ -506,8 +509,6 @@ export default {
       // 动态生成名字
 
       var origName = nodeMenu.caption;
-      console.log(nodeMenu, "fwwwwwwwwwwwwwwwwwww");
-
       var nodeName = origName;
       var index = 1;
       while (index < 10000) {
@@ -530,23 +531,20 @@ export default {
         id: nodeId,
         caption: nodeName,
         nodeTypeID: nodeMenu.nodeTypeID,
-        info:nodeMenu.info,
+        info: nodeMenu.info,
         left: left + "px",
         top: top + "px",
         controlState: "success",
         image: nodeMenu.image,
+        output: nodeMenu.Output,
         parameters: nodeMenu.parameters
       };
-      console.log(node,'ppppppppppppp')
       // 判断节点类型，如果是开始的话，就有且只能有一个
       if (node.nodeTypeID === "NID_START") {
         let startArr = this.data.nodeList.filter((item, index) => {
-          console.log(item.nodeTypeID);
           return item.nodeTypeID == "NID_START";
         });
-        console.log(startArr);
         if (startArr.length == 1) {
-          console.log(startArr.length);
           this.$message.error("画布中只允许存在一个开始控件");
           return;
         }
@@ -559,6 +557,19 @@ export default {
           this.jsPlumb.makeSource(nodeId, this.jsplumbSourceOptions);
         } else {
           this.jsPlumb.makeSource(nodeId, this.jsplumbStartSourceOptions);
+        }
+        if (!node.flexOutput) {
+          let outputs = node.output;
+          outputs.fixedOutput.forEach((item, index) => {
+            let uuid = this.getUUID();
+            this.jsPlumb.addEndpoint(nodeId, {
+              uuid: uuid,
+              anchors: item.anchor,
+              paintStyle: { fill: " #a1a1a1", radius: 5 },
+              isSource: true,
+              cssClass: item.pinName
+            });
+          });
         }
 
         // this.jsPlumb.makeSource(nodeId, this.jsplumbSourceOptions); //元节点配置
@@ -620,7 +631,6 @@ export default {
 
     isHideFrom(is) {
       // 右侧信息栏显隐控制
-      console.log(is);
       this.isShowForm = is;
     },
     // 是否具有该线
@@ -702,7 +712,6 @@ export default {
       })
         .then(() => {
           var datastr = JSON.stringify(this.data, null, "\t");
-          console.log(datastr);
           this.$message.success("正在提交中,请稍后...");
           this.$message.success("保存成功");
         })
@@ -717,7 +726,6 @@ export default {
         closeOnClickModal: false
       })
         .then(() => {
-          console.log(this.data.id);
           this.$message.success("正在执行中,请稍后...");
           this.$message.success("执行完毕");
         })
@@ -764,12 +772,7 @@ export default {
         });
     },
 
-    openHelp() {
-      this.flowHelpVisible = true;
-      this.$nextTick(function() {
-        this.$refs.flowHelp.init();
-      });
-    }
+
   }
 };
 </script>

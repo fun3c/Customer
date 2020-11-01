@@ -6,35 +6,36 @@
     @mouseup="changeNodeSite"
     :class="nodeContainerClass"
   >
-   
     <!-- 节点类型的图标 -->
     <div class="el-node-top ">
-          <img
-      :class="nodeClass"
-      style="width: 50px; height: 50px"
-      :src="require('@/assets/' + node.image )"
-      alt=""
-    />
- 
-    <div class="ef-node-text" :show-overflow-tooltip="true">
-      {{ node.caption }}
+      <img
+        :class="nodeClass"
+        style="width: 50px; height: 50px"
+        :src="require('@/assets/' + node.image)"
+        alt=""
+      />
+
+      <div class="ef-node-text" :show-overflow-tooltip="true">
+        {{ node.caption }}
+      </div>
     </div>
+    <div v-if="node.nodeTypeID !== 'NID_END'" class="el-node-bottom">
+      <!-- 最中间的那条竖线 -->
+      <div>
+        <div class="ef-node-center"></div>
+        <div
+          v-if="isShowBottomLine !== true"
+          class="flow-node-drag start-endpoint"
+        ></div>
+      </div>
+      <!-- 最下边的横线 -->
+      <div v-if="isShowBottomLine" class="ef-bottom-line ">
+         <span class="ef-bottom-label" v-for="(item,index) in node.output.fixedOutput" :key="index">{{item.label}}</span>
+        <!-- 这里根据后端给的节点出口信息来渲染 -->
+        <!-- <div class="flow-node-drag endpoint" v-for="(item) in endpointSum" :key="item" ></div> -->
+      </div>
     </div>
-   <div v-if="node.nodeTypeID!=='NID_END'" class="el-node-bottom">
- <!-- 最中间的那条竖线 -->
- <div>
-      <div class="ef-node-center">
-     
-    </div>
-     <div v-if="isShowBottomLine!==true" class="flow-node-drag start-endpoint"></div>
- </div>
-    <!-- 最下边的横线 -->
-       <div v-if="isShowBottomLine" class="ef-bottom-line ">
-         <!-- 这里根据后端给的节点出口信息来渲染 -->
-            <div class="flow-node-drag endpoint" v-for="(item) in 2" :key="item" ></div>
-        </div>
-   </div>
-       <!-- <div class="ef-node-left-ico flow-node-drag">
+    <!-- <div class="ef-node-left-ico flow-node-drag">
             <i :class="nodeIcoClass"></i>
         </div> -->
     <!-- 节点名称 -->
@@ -59,23 +60,21 @@ export default {
     return {};
   },
   created() {
-    console.log(this.node);
   },
   computed: {
     nodeContainerClass() {
       return {
         "ef-node-container": true,
         //是否选中
-        [this.node.type]: true,
+        [this.node.type]: true
       };
     },
-    clssss(){
-        console.log("gggggggggggggggggg")
+    clssss() {
     },
-        nodeClass() {
+    nodeClass() {
       return {
         //是否选中
-        'el-node-img': true,
+        "el-node-img": true,
         "ef-node-active":
           this.activeElement.type == "node"
             ? this.activeElement.nodeId === this.node.id
@@ -83,13 +82,13 @@ export default {
       };
     },
     //节点是否展示横线
-    isShowBottomLine(){
-     if( this.node.nodeTypeID!=="NID_START" && this.node.nodeTypeID!=="NID_WAIT" ){
-       return true
-     }
+    isShowBottomLine() {
+      if (this.node.output && this.node.output.fixedOutput.length >= 2) {
+        return true;
+      } else {
+        return false;
+      }
     },
-
-
     // 节点容器样式
     nodeContainerStyle() {
       return {

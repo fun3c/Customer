@@ -5,8 +5,7 @@ import Console from './views/Console.vue'
 import Users from './views/Users.vue'
 import Articles from './views/Articles.vue'
 import Login from './views/Login.vue'
-import MailList from './views/MailList.vue'
-import NotFound from './views/NotFound.vue'
+
 import Panel from "./components/ef/panel.vue"
 Vue.use(Router);
 
@@ -36,17 +35,6 @@ const router = new Router({
           path: '/articles',
           name: 'articles',
           component: Articles
-        },
-  
-        {
-          path: '/mailList',
-          name: 'mailList',
-          component: MailList
-        },
-     
-        {
-          path: '/404',
-          component: NotFound
         },
        
       ]

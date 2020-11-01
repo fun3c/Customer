@@ -73,7 +73,6 @@
             // 拖拽开始时触发
             move(evt, a, b, c) {
                 var type = evt.item.attributes.type.nodeValue
-                console.log( this.getMenuByType(type),type)
                 this.nodeMenu = this.getMenuByType(type)
             },
             // 拖拽结束时触发
