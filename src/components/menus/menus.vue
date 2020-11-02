@@ -7,15 +7,15 @@
     text-color="rgba(255,255,255,.8)"
     active-text-color="#ffd04b"
     :collapse="isCollapse">
-    <el-menu-item index="/console">
+    <!-- <el-menu-item index="/console">
       <i class="el-icon-location"></i>
       <span slot="title">主页</span>
-    </el-menu-item>
+    </el-menu-item> -->
 
         <el-submenu index="4">
       <template slot="title">
         <i class="el-icon-setting"></i>
-        <span>智能营销</span>
+        <span>任务管理</span>
       </template>
         <el-menu-item index="/users">
       <i class="el-icon-menu"></i>

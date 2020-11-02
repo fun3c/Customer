@@ -73,7 +73,7 @@ export default {
       if(''!==this.id){
       this.$http({
         method: "POST",
-        url: "/api/queryNote",
+        url: "http://49.233.45.33:8888/messageTemplate/getSmsMessageTemplateInfo",
         data: that.id,
       })
         .then((res) => {
