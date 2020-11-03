@@ -272,7 +272,7 @@ export default {
       this.$message(command);
     },
     defaultList() {
-      (this.taskquerylist = {
+      this.taskquerylist = {
         jobName: "",
         jobType: "",
         endTime: "",
@@ -280,20 +280,24 @@ export default {
         createBy: "",
         jobState: "",
         property: "",
-      }),
-        (this.time = ""),
+      }
+      this.idOrName=""
+        this.time = ""
         this.getUsers(1, 10);
     },
     queryList() {
+      if(this.taskquerylist.jobName!=""){
+        this.taskquerylist.jobName=""
+      }
+      if(this.taskquerylist.id!=""){
+        this.taskquerylist.id=""
+      }
       if(isNaN(this.idOrName)){
         this.taskquerylist.jobName=this.idOrName
       }else{
         this.taskquerylist.id=this.idOrName
       }
-      if (this.time === "") {
-        this.taskquerylist.startTime = "";
-        this.taskquerylist.endTime = "";
-      } else {
+      if (this.time !== "") {
         this.taskquerylist.startTime = this.time[0];
         this.taskquerylist.endTime = this.time[1];
       }
