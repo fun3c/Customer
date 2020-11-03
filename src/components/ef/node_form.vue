@@ -58,6 +58,7 @@
                 <el-select
                   v-model="node.parameters[index].defaultValue"
                   placeholder="请选择"
+                  @change="node.parameters[index].selectedList=[]"
                 >
                   <el-option
                     v-for="(option, inx) in item.values"
@@ -67,17 +68,75 @@
                   >
                   </el-option>
                 </el-select>
-                <div v-if="node.nodeTypeID === 'NID_WAIT'">
+                <!-- 如果是开始控件 -->
+                <div v-if="node.nodeTypeID === 'NID_START'">
                   <!-- 等待一段时间 -->
                   <div
                     class="block"
                     v-if="node.parameters[index].defaultValue === 0"
                   >
-                
+                    <el-date-picker
+                      v-model="node.parameters[index].selectedList"
+                      type="date"
+                      placeholder="选择日期"
+                    >
+                    </el-date-picker>
                   </div>
                   <!-- 等待一段具体的某一时间点 -->
-                  <div class="block"
-                   v-if="node.parameters[index].defaultValue === 1">
+                  <div
+                    class="block"
+                    v-if="node.parameters[index].defaultValue === 1"
+                  ></div>
+                  <div
+                    class="block"
+                    v-if="node.parameters[index].defaultValue === 2"
+                  >
+                    <!-- @change="node.parameters[index].selectedList=[]" -->
+                    <el-select
+                      v-model="node.parameters[index].selectedList"
+                      multiple
+                      placeholder="请选择"
+                    >
+                      <el-option
+                        v-for="item in 31"
+                        :key="item"
+                        :label="item + '号'"
+                        :value="item"
+                      >
+                      </el-option>
+                    </el-select>
+                  </div>
+                  <div
+                    class="block"
+                    v-if="node.parameters[index].defaultValue === 3"
+                  >
+                    <el-select
+                      v-model="node.parameters[index].selectedList"
+                      multiple
+                      placeholder="请选择"
+                    >
+                      <el-option
+                        v-for="item in 7"
+                        :key="item"
+                        :label="'周' + item"
+                        :value="item"
+                      >
+                      </el-option>
+                    </el-select>
+                  </div>
+                </div>
+
+                <div v-if="node.nodeTypeID === 'NID_WAIT'">
+                  <!-- 等待一段时间 -->
+                  <div
+                    class="block"
+                    v-if="node.parameters[index].defaultValue === 0"
+                  ></div>
+                  <!-- 等待一段具体的某一时间点 -->
+                  <div
+                    class="block"
+                    v-if="node.parameters[index].defaultValue === 1"
+                  >
                     <el-date-picker
                       v-model="node.parameters[index].stretch"
                       type="datetime"
@@ -358,28 +417,22 @@
               </el-tooltip>
             </el-form-item>
 
-          
-                        <!-- //条件分支抽出类 -->
-         
-              <conditional
+            <!-- //条件分支抽出类 -->
+
+            <conditional
               v-if="item.type === 'PTYPE_CONDITION_DETAILS'"
               :data="item.data"
               :details="item.details"
               @openBox2="openBox2"
-              ></conditional>
+            ></conditional>
             <!-- // A/B分流抽出类 -->
-                    <abshunt
+            <abshunt
               v-if="item.type === 'PTYPE_ABSHUNT'"
-                :data="item"
-              ></abshunt>
-
+              :data="item"
+            ></abshunt>
           </div>
 
-
-
-
-
-          <el-form-item >
+          <el-form-item>
             <el-button icon="el-icon-close" @click="Deselect">关闭</el-button>
             <el-button type="primary" icon="el-icon-check" @click="save"
               >保存</el-button
@@ -403,8 +456,6 @@
             >
           </el-form-item>
         </el-form>
-
-
       </div>
       <!--            <div class="el-node-form-tag"></div>-->
     </div>
@@ -423,8 +474,8 @@
 
 <script>
 import { cloneDeep } from "lodash";
-import  abshunt  from "../ef/AB"
-import conditional from "../ef/conditional"
+import abshunt from "../ef/AB";
+import conditional from "../ef/conditional";
 export default {
   data() {
     return {
@@ -461,7 +512,7 @@ export default {
     };
   },
   created() {},
-   components: {
+  components: {
     conditional,
     abshunt
   },
@@ -532,13 +583,13 @@ export default {
     popCancel() {
       this.isShowOpenBox = false;
     },
-     openBox2() { // 条件控件弹框修改数据方法
+    openBox2() {
+      // 条件控件弹框修改数据方法
       // this.isShowOpenBox = true;
     },
     popAffirm() {
       this.isShowOpenBox = false;
     }
-    
   }
 };
 </script>
@@ -723,5 +774,4 @@ export default {
     width: 100%;
   }
 }
-
 </style>

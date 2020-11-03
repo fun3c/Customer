@@ -1,5 +1,6 @@
 <template>
   <div v-if="easyFlowVisible" style="height: calc(100vh);">
+ <div> <el-row v-if="data.jobName" class="panel-header"> <span>{{data.jobID}}</span> <span>{{data.jobName}}</span>  <span>{{dateFormat(data.startTime)}}-{{dateFormat(data.endTime)}}</span>   </el-row></div>
     <el-row>
       <!--顶部工具菜单-->
       <el-col :span="24">
@@ -29,7 +30,7 @@
               round
               icon="el-icon-refresh"
               size="mini"
-              @click="setTask"
+              @click="setCurrentTask"
               >任务设置</el-button
             >
             <el-button
@@ -141,9 +142,10 @@
         ></flow-node-form>
       </div>
     </div>
+
     <!-- 流程数据详情 -->
     <flow-info v-if="flowInfoVisible" ref="flowInfo" :data="data"></flow-info>
-
+    <setTask v-if="setTaskVisible" ref="setTask" :data="data"></setTask>
   </div>
 </template>
 
@@ -156,21 +158,24 @@ import { easyFlowMixin } from "@/components/ef/mixins";
 import flowNode from "@/components/ef/node";
 import nodeMenu from "@/components/ef/node_menu";
 import FlowInfo from "@/components/ef/info";
-
+import setTask from "./set_task";
 import FlowNodeForm from "./node_form";
 import lodash from "lodash";
-
+import axios from "axios";
 import { getDataC } from "./data_C";
 
 export default {
   data() {
     return {
+      UUID: 0,
       // jsPlumb 实例
       jsPlumb: null,
       // 控制画布销毁
       easyFlowVisible: true,
       // 控制流程数据显示与隐藏
       flowInfoVisible: false,
+      // 控制任务设置栏的显示隐藏
+      setTaskVisible: true,
       // 是否加载完毕标志位
       loadEasyFlowFinish: false,
 
@@ -198,7 +203,7 @@ export default {
     nodeMenu,
     FlowInfo,
     FlowNodeForm,
-
+    setTask
   },
   directives: {
     flowDrag: {
@@ -247,19 +252,14 @@ export default {
   methods: {
     // 返回唯一标识
     getUUID() {
-      let id = Math.random()
-        .toString(36)
-        .substr(3, 10);
-      var date = new Date();
-      var y = date.getFullYear();
-      var m = date.getMonth() + 1;
-      m = m < 10 ? "0" + m : m;
-      var d = date.getDate();
-      d = d < 10 ? "0" + d : d;
-      var h = date.getHours();
-      var minute = date.getMinutes();
-      var second = date.getSeconds();
-      return `${y}${m}${d}${h}${minute}${second}${id}`;
+      let charactors = "1234567890";
+      let value = "",
+        i;
+      for (let j = 1; j <= 4; j++) {
+        i = parseInt(10 * Math.random());
+        value = value + charactors.charAt(i);
+      }
+      return value;
     },
     jsPlumbInit() {
       this.jsPlumb.ready(() => {
@@ -394,7 +394,8 @@ export default {
         }
       }
       // 初始化连线
-      for (var i = 0; i < this.data.lineList.length; i++) { //uuid连线
+      for (var i = 0; i < this.data.lineList.length; i++) {
+        //uuid连线
         let line = this.data.lineList[i];
         var connParam = {
           source: line.from,
@@ -536,7 +537,7 @@ export default {
         top: top + "px",
         controlState: "success",
         image: nodeMenu.image,
-        output: nodeMenu.Output,
+        output: nodeMenu.output,
         parameters: nodeMenu.parameters
       };
       // 判断节点类型，如果是开始的话，就有且只能有一个
@@ -560,12 +561,13 @@ export default {
         }
         if (!node.flexOutput) {
           let outputs = node.output;
+          //根据控件端点信息，动态添加端点
           outputs.fixedOutput.forEach((item, index) => {
             let uuid = this.getUUID();
             this.jsPlumb.addEndpoint(nodeId, {
               uuid: uuid,
               anchors: item.anchor,
-              paintStyle: { fill: " #a1a1a1", radius: 5 },
+              paintStyle: { fill: "#a1a1a1", radius: 5 },
               isSource: true,
               cssClass: item.pinName
             });
@@ -663,6 +665,13 @@ export default {
         this.$refs.flowInfo.init();
       });
     },
+    // 任务设置
+    setCurrentTask() {
+      this.flowInfoVisible = true;
+      this.$nextTick(function() {
+        this.$refs.setTask.init();
+      });
+    },
     // 加载流程图
     dataReload(data) {
       this.easyFlowVisible = false;
@@ -685,6 +694,54 @@ export default {
       this.dataReload(getDataC());
     },
 
+//时间转换
+
+/**
+
+ * 将时间戳或者中国标准时间处理成 2018-05-01 00:00:00  这种格式
+
+ * @param {时间戳或者中国标准时间} timestamp 
+
+ * @param {一状态 } state   ture要时分秒  false不要时分秒 
+
+ */
+
+// dateFormat(dateData) {
+
+//     var date = new Date(dateData);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+
+//     var Y = date.getFullYear() + '-';
+
+//     var M = (date.getMonth()+1).padStart(2,0) + '-';
+
+//     var D = date.getDate().padStart(2,0)+ ' ';
+
+//     var h = date.getHours().padStart(2,0)+ ':';
+
+//     var m = date.getMinutes.padStart(2,0)+ ':';
+
+//     var  s = date.getSeconds().padStart(2,0);
+
+//     return Y+M+D+h+m+s;
+
+//   },
+
+dateFormat(dateData) {
+      var date = new Date(dateData)
+      var y = date.getFullYear()
+      var m = date.getMonth() + 1
+      m = m < 10 ? ('0' + m) : m
+      var d = date.getDate()
+      d = d < 10 ? ('0' + d) : d
+      var h = date.getHours()
+       h = h < 10 ? ('0' + h) : h
+      var M = date.getMinutes()
+       M = M < 10 ? ('0' + M) : M
+          var s = date.getSeconds()
+       s = s < 10 ? ('0' + s) : s
+      const time = y + '-' + m + '-' + d +" " +h+":"+M +':'+s
+      return time
+},
     zoomAdd() {
       if (this.zoom >= 1) {
         return;
@@ -712,10 +769,35 @@ export default {
       })
         .then(() => {
           var datastr = JSON.stringify(this.data, null, "\t");
-          this.$message.success("正在提交中,请稍后...");
-          this.$message.success("保存成功");
+
+          //对数据信息完整性进行校验 ,校验成功保存任务，校验失败抛出错误
+          if (
+            this.data.jobName === "" ||
+            this.data.taskObject.length === 0 ||
+            this.data.taskObject.startTime === ""
+          ) {
+   
+              this.$message.warning("任务信息不完整");
+          } else {
+            axios
+              .post("/test-2/save", { data: this.data })
+              .then(res => {
+                console.log(this.data,'wwwwwwwwwwwwwwwwww');
+                if (res.data.status === 200) {
+                  this.$message.success("保存成功");
+                  this.$router.push({
+                    path: "/users",
+                    query: { id: "待测试" }
+                  });
+                }
+              })
+
+          }
         })
-        .catch(() => {});
+        .catch(() => {
+          console.log(this.data);
+          this.$message.warning("任务信息不完整");
+        });
     },
     //执行流程
     Operation() {
@@ -744,6 +826,10 @@ export default {
         }
       )
         .then(() => {
+               this.$router.push({
+                    path: "/users",
+                    query: { id: "待测试" }
+                  });
           //   console.log(this.data.id);
           //   this.$message.success("正在执行中,请稍后...");
           //   this.$message.success("执行完毕");
@@ -770,9 +856,7 @@ export default {
             message: "取消输入"
           });
         });
-    },
-
-
+    }
   }
 };
 </script>

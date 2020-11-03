@@ -1,10 +1,10 @@
 <template>
     <div class="flow-menu" ref="tool">
-        <div v-for="menu  in  menuList" :key="menu.id">
-            <span class="ef-node-pmenu" @click="menu.open = !menu.open"><i :class="{'el-icon-caret-bottom': menu.open,'el-icon-caret-right': !menu.open}"></i>&nbsp;{{menu.name}}</span>
-            <ul v-show="menu.open" class="ef-node-menu-ul">
+        <div  v-for="menu  in  menuList" :key="menu.id">
+            <span v-if="menu && menu.name!=='开始节点'" class="ef-node-pmenu" @click="menu.open = !menu.open"><i :class="{'el-icon-caret-bottom': menu.open,'el-icon-caret-right': !menu.open}"></i>&nbsp;{{menu.name}}</span>
+            <ul v-if="menu && menu.name!=='开始节点'" v-show="menu.open" class="ef-node-menu-ul">
                 <draggable class="drag-box" @end="end" @start="move" v-model="menu.children" :options="draggableOptions">
-                    <li v-for="subMenu in menu.children" :class="'ef-node-menu-li '+ subMenu.nodeTypeID"  :key="subMenu.id" :type="subMenu.nodeTypeID">
+                    <li  v-for="subMenu in menu.children" :class="'ef-node-menu-li '+ subMenu.nodeTypeID"  :key="subMenu.id" :type="subMenu.nodeTypeID">
                         <img 
                               style="width: 50px; height: 50px"
                              :src="require('@/assets/'+subMenu.image)" 

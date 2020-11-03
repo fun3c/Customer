@@ -33,7 +33,7 @@
 
                 <el-tree
                   class="filter-tree"
-                  :data="item.children"
+                  :data="tabeldata"
                   :props="defaultProps"
                   default-expand-all
                   :filter-node-method="filterNode"
@@ -86,6 +86,7 @@
 </template>
 
 <script>
+import axios from "axios"
 export default {
   data() {
     return {
@@ -99,14 +100,15 @@ export default {
       expandAll: false,
       activeName: 0,
       localOperator: "",
+      tabeldata:[],
       localvalue: undefined,
       rightData: undefined, //树结构数据信息
       labelData: null, // 条件缩略图信息
       filterText: "", //搜索字段
       defaultProps: {
         //树形控件的配置项
-        children: "children",
-        label: "label"
+        children: "childLabelList",
+        label: "labelName"
       },
       labelClassName: "org-bg-res"
     };
@@ -144,6 +146,17 @@ export default {
   },
   props: ["data", "details"],
   created() {
+    axios.post("/test-1/list/label",{labelType:1}).then(res=>{
+     
+      this.tabeldata=res.data.data
+             console.log( this.tabeldata,"请求的树")
+      this.tabeldata.forEach((item,index)=>{
+        item.childLabelList.forEach((itm,index)=>{
+            console.log(itm)
+        })
+      })
+
+    })
     this.expandChange();
   },
   methods: {

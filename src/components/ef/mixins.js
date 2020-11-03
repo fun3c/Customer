@@ -42,7 +42,7 @@ export const easyFlowMixin = {
                  * fill: 颜色值，如：#12aabb，为空不显示
                  * outlineWidth: 外边线宽度
                  */
-                EndpointStyle: { fill: '#1879ffa1', outlineWidth: 1 },
+                EndpointStyle: { fill: '#a1a1a1', outlineWidth: 1,height: 8, width: 8, },
                 // 是否打开jsPlumb的内部日志记录
                 LogEnabled: true,
                 /**
@@ -121,9 +121,9 @@ export const easyFlowMixin = {
                 filterExclude: false,
                 // anchor: 'Continuous',
 
-                anchor: ["BottomLeft", "BottomRight", [0.25, 1, 0, 1], [0.75, 1, 0, 1]
-                ],
-             
+                // anchor: ["BottomLeft", "BottomRight", [0.25, 1, 0, 1], [0.75, 1, 0, 1]
+                // ],
+                anchor: ["BottomLeft", "BottomRight"],
                 allowLoopback: true, //形成回环
                 maxConnections: 4,
                 onMaxConnections: function (info, e) {

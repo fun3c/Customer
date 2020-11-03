@@ -11,6 +11,9 @@ export default {
 </script>
 
 <style lang="scss">
+*{
+margin: 0;
+}
 #app {
   width: 100%;
   height: 100%;
@@ -18,8 +21,8 @@ export default {
 }
 
 ::-webkit-scrollbar {
-width: 10px; /*对垂直流动条有效*/
-height: 10px; /*对水平流动条有效*/
+width: 0px; /*对垂直流动条有效*/
+height: 0px; /*对水平流动条有效*/
 }
 
 /*定义滚动条的轨道颜色、内阴影及圆角*/

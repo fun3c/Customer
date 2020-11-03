@@ -1,36 +1,35 @@
 var dataC ={
-    "id": 1,
-    "name": "模拟流程",
-    "jobType": "",
-    "jobName": "",
-    "jobDescription": "",
-    "jobVersion": "",
-    "triggerWay": "",
-    "startTime": "",
-    "endTime": "",
-    "jobState": "",
-    "createBy": "",
-    "approvalTime": "",
+    "jobId": "", //任务ID
+    "jobType": "", //任务类型
+    "jobName": "",//任务名称
+    "jobDescription": "", //任务描述
+    "jobVersion": "", //任务版本信息
+    "triggerWay": "",//触发方式
+    "startTime": "",//开始时间
+    "endTime": "",//结束时间
+    "jobState": "",//任务状态
+    "createBy": "",//创建人
+    "approvalTime": "",//审批时间
+    "delivery":"", //是否测试任务
+    "taskObject":[], //任务目标
     "nodeList": [
-        {
-            "id": "20201030144957l51q6hhcmf",
+          {
+            "id": "9661",
             "caption": "开始",
             "nodeTypeID": "NID_START",
             "info": "条件控件根据所配置条件的计算结果，决定下一个执行的节点",
-            "left": "720px",
-            "top": "90px",
+            "left": "675px",
+            "top": "60px",
             "controlState": "success",
             "image": "start.png",
-            "viewOnly": true,
-            "Output"://输出端点定义
-            {
-                "pinDistance": 0, //多个输出端点间的间距，单位px
-                "flexOutput": false, //是否允许动态数量的输出端点
-                "fixedOutput": [ //固定的输出端点集合，前端根据数组长度来渲染端点个数，可附加端点描述信息
+            "output": {
+                "pinDistance": 0,
+                "flexOutput": false,
+                "fixedOutput": [
                     {
-                        "label": "是", //端点描述
-                        "pinName": "PIN_TRUE",
-                        "anchor":"BottomCenter"
+                        "label": "",
+                        "pinName": "",
+                        "anchor": "BottomCenter"
                     }
                 ]
             },
@@ -179,26 +178,28 @@ var dataC ={
                     "values": [
                         {
                             "value": 0,
-                            "label": "每天"
+                            "label": "单次"
                         },
                         {
                             "value": 1,
-                            "label": "每月"
+                            "label": "每天"
                         },
                         {
                             "value": 2,
-                            "label": "每小时"
+                            "label": "每月"
+                        },
+                        {
+                            "value": 3,
+                            "label": "每周"
                         }
                     ],
                     "tips": "任务名称用于描述任务主要功能,并与其他任务进行区分",
                     "selectedList": ""
                 }
             ]
-        },
-      
-    ],
-    "lineList": [
-    ]
+        }
+     ],//节点信息
+    "lineList": [ ]//连线信息
 }
 export function getDataC() {
     return dataC

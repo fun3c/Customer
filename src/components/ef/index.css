@@ -358,3 +358,12 @@
     color:white;
     background-color: rgb(23, 174, 194);
   }
+  .panel-header{
+      background-color: rgb(49, 47, 47);height: 40px;
+      line-height: 40px;
+  }
+  .panel-header>span{
+      margin-left: 10px;
+      color: whitesmoke;
+  
+  }
