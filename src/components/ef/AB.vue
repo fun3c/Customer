@@ -2,15 +2,13 @@
   <el-form
     ref="form"
     label-width="80px"
-    style="width:100%"
+    style="width: 50%"
     label-position="top"
   >
   {{data}}
     <el-form-item label="分流方式">
-      <el-select v-model="form.defaultValue" placeholder="请选择">
-        <el-option label="按首次随机分流" :value="0"></el-option>
-        <el-option label="按天随机分流" :value="0"></el-option>
-        <el-option label="完全随机分流" :value="0"></el-option>
+      <el-select v-model="form.defaultValue" placeholder="请选择" >
+        <el-option :label="s.label" :value="s.value" v-for="(s,i) in form.shuntWay" :key="i"></el-option>
       </el-select>
     </el-form-item>
     <el-form-item label="观察周期">
@@ -44,7 +42,7 @@
         >
         <el-input
           maxlength="10"
-          placeholder="可输入汉字、字母、数字"
+          placeholder="汉字、字母、数字、_"
           onkeyup="value=value.replace(/[^\w\u4E00-\u9FA5]/g,'')"
           v-model="group.name"
           style="width: 200px; text-align: center; height: 40px"
@@ -160,6 +158,9 @@ export default {
   width: 38px;
   height: 38px;
   border: 1px solid #dcdfe6;
+  text-align: center;
+}
+.el-input input{
   text-align: center;
 }
 </style>

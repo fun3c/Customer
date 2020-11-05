@@ -18,8 +18,6 @@ Vue.prototype.$http = axios;
 Vue.prototype.Utils = Utils;
 Vue.prototype.$qs = qs;
 
- 
-
 new Vue({
   router,
   store,

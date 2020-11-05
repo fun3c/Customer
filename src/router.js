@@ -7,6 +7,9 @@ import Articles from './views/Articles.vue'
 import Login from './views/Login.vue'
 
 import Panel from "./components/ef/panel.vue"
+import ab from "./components/ef/AB.vue"
+import note from "./components/ef/note.vue"
+import anniu from "./components/ef/anniu.vue"
 Vue.use(Router);
 
 const router = new Router({
@@ -14,8 +17,20 @@ const router = new Router({
   base: process.env.BASE_URL,
   routes: [
     {
+      path: '/anniu',
+      component: anniu
+    },
+    {
       path: '/login',
       component: Login
+    },
+    {
+      path: '/note',
+      component: note
+    },
+    {
+      path: '/ab',
+      component: ab
     },
     {
       path: '/',

@@ -1,10 +1,10 @@
 <template>
   <div class="header-box">
     <el-row type="flex" justify="space-between">
-      <el-col :span="4" style="font-size:34px">
+      <el-col :span="6" style="font-size:34px">
         D-Customer
       </el-col>
-      <el-col :span="4" :offset="15" >
+      <el-col :span="6" :offset="14" >
         <button class="btn-tool" title="折叠" @click="collapse" >
             <i class="el-icon-d-arrow-left"></i>
         </button>
@@ -18,7 +18,7 @@
           <i class="el-icon-edit"></i>
         </button>
       </el-col>
-      <el-col :span="2" align="right">
+      <el-col :span="4" align="right">
         <!-- <span>{{ Utils.todayDate() }}</span> -->
         <el-dropdown trigger="click" class="user-name" @command="handleCommand">
           <span class="el-dropdown-link">
@@ -96,7 +96,15 @@ export default {
   .user-name {
     margin-left: 20px;
   }
-  .header-box{
-    border-bottom: 1px solid gray;
+  
+</style>
+<style>
+.index-box .el-header{
+    border-bottom: 1px solid black;
   }
+  .index-box .el-aside {
+    background-color: #20222A;
+    height: 100% !important;
+    min-height: 100%;
+}
 </style>
