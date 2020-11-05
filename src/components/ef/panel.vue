@@ -118,7 +118,13 @@
         <node-menu @addNode="addNode" ref="nodeMenu"></node-menu>
       </div>
       <div class="wiper">
-        <div id="efContainer" ref="efContainer" class="container" v-flowDrag>
+        <div
+          id="efContainer"
+          ref="efContainer"
+          class="container"
+          @mousewheel.prevent.ctrl="scrollFn"
+          v-flowDrag
+        >
           <template v-for="node in data.nodeList">
             <!-- 画布要展示的组件 -->
 
