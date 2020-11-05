@@ -485,6 +485,7 @@ export default {
       node: {},
       line: {},
       data: {},
+      currId: 0,
       blacklist: ["PTYPE_GROUP", "PTYPE_SWITCH"], //组件标题黑名单
       switchValue: "",
       activeNames: ["1"],
@@ -525,6 +526,7 @@ export default {
     nodeInit(data, id) {
       this.type = "node";
       this.data = data;
+      console.log('data', this.node)
       data.nodeList.filter(node => {
         if (node.id === id) {
           this.node = cloneDeep(node);
@@ -580,8 +582,13 @@ export default {
         message: "删除成功"
       });
     },
+    getNode(id) {
+      const {nodeList} = this.node;
+      console.log('nodeList', nodeList)
+    },
     popCancel() {
       this.isShowOpenBox = false;
+      
     },
     openBox2() {
       // 条件控件弹框修改数据方法

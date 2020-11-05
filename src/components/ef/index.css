@@ -25,11 +25,12 @@
 
 /*画布容器*/
 #efContainer {
-    width: 2000px;
+    width: 100%;
     min-height: 100%;
     position  : absolute;
     z-index   : 1;
     flex      : 1;
+    background-color: #eeeeee80;
 }
 
 /* 网格背景 */

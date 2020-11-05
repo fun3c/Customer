@@ -791,11 +791,12 @@ export default {
     },
     doZoom(step) {
       this.zoom += step;
+      if(this.zoom <= 0.2 || this.zoom >= 2) return;
       this.setZoom(this.zoom, this.jsPlumb, null, this.$refs.efContainer);
 
       if (this.zoomEnabled) {
         this.zoom += step;
-        this.timer = setTimeout(() => this.doZoom(step), 100);
+        this.timer = setTimeout(() => this.doZoom(step), 200);
       }
     },
 
