@@ -424,22 +424,12 @@
               :data="item.data"
               :details="item.details"
               @openBox2="openBox2"
-<<<<<<< HEAD
             ></conditional>
             <!-- // A/B分流抽出类 -->
             <abshunt
               v-if="item.type === 'PTYPE_ABSHUNT'"
               :data="item"
             ></abshunt>
-=======
-              ></conditional>
-
-                    <abshunt
-        
-      
-              ></abshunt>
-
->>>>>>> 7d3b3a5cf10a4a43fafaf1f2ee49d0f01a4034f2
           </div>
 
           <el-form-item>
@@ -484,13 +474,8 @@
 
 <script>
 import { cloneDeep } from "lodash";
-<<<<<<< HEAD
 import abshunt from "../ef/AB";
 import conditional from "../ef/conditional";
-=======
-import  abshunt  from "./AB"
-import conditional from "../ef/conditional"
->>>>>>> 7d3b3a5cf10a4a43fafaf1f2ee49d0f01a4034f2
 export default {
   data() {
     return {

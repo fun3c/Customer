@@ -1,11 +1,18 @@
 <template>
-  <div v-if="easyFlowVisible" style="height: calc(100vh);">
- <div> <el-row v-if="data.jobName" class="panel-header"> <span>{{data.jobID}}</span> <span>{{data.jobName}}</span>  <span>{{dateFormat(data.startTime)}}-{{dateFormat(data.endTime)}}</span>   </el-row></div>
+  <div v-if="easyFlowVisible" style="height: calc(100vh)">
+    <div>
+      <el-row v-if="data.jobName" class="panel-header">
+        <span>{{ data.jobID }}</span> <span>{{ data.jobName }}</span>
+        <span
+          >{{ dateFormat(data.startTime) }}-{{ dateFormat(data.endTime) }}</span
+        >
+      </el-row>
+    </div>
     <el-row>
       <!--顶部工具菜单-->
       <el-col :span="24">
         <div class="ef-tooltar">
-          <div style="float: left;margin-left: 5px">
+          <div style="float: left; margin-left: 5px">
             <el-button
               type="primary"
               plain
@@ -52,7 +59,7 @@
             >
           </div>
 
-          <div style="float: right;margin-right: 5px">
+          <div style="float: right; margin-right: 5px">
             <el-link type="primary" :underline="false">{{ data.name }}</el-link>
             <el-divider direction="vertical"></el-divider>
             <el-button
@@ -69,14 +76,16 @@
               type="text"
               icon="el-icon-plus"
               size="large"
-              @click="zoomAdd"
+              @mousedown.native="zoomAdd"
+              @mouseup.native="celZoom"
             ></el-button>
             <el-divider direction="vertical"></el-divider>
             <el-button
               type="text"
               icon="el-icon-minus"
               size="large"
-              @click="zoomSub"
+              @mousedown.native="zoomSub"
+              @mouseup.native="celZoom"
             ></el-button>
             <el-button
               type="info"
@@ -104,8 +113,8 @@
         </div>
       </el-col>
     </el-row>
-    <div style="display: flex;height: calc(100% - 47px);">
-      <div style="width: 230px;border-right: 1px solid #dce3e8;">
+    <div style="display: flex; height: calc(100% - 47px)">
+      <div style="width: 230px; border-right: 1px solid #dce3e8">
         <node-menu @addNode="addNode" ref="nodeMenu"></node-menu>
       </div>
       <div class="wiper">
@@ -132,7 +141,11 @@
       <!-- 右侧表单 -->
       <div
         v-show="this.isShowForm"
-        style="width: 360px;border-left: 1px solid #dce3e8;background-color: #FBFBFB"
+        style="
+          width: 360px;
+          border-left: 1px solid #dce3e8;
+          background-color: #fbfbfb;
+        "
       >
         <flow-node-form
           ref="nodeForm"
@@ -189,10 +202,12 @@ export default {
         nodeId: undefined,
         // 连线ID
         sourceId: undefined,
-        targetId: undefined
+        targetId: undefined,
       },
-      zoom: 0.5,
-      isShowForm: false
+      zoom: 1,
+      zoomStep: 0.035,
+      zoomEnabled: false,
+      isShowForm: false,
     };
   },
   // 一些基础配置移动该文件中
@@ -203,7 +218,7 @@ export default {
     nodeMenu,
     FlowInfo,
     FlowNodeForm,
-    setTask
+    setTask,
   },
   directives: {
     flowDrag: {
@@ -211,36 +226,38 @@ export default {
         if (!binding) {
           return;
         }
-        el.onmousedown = e => {
+        el.onmousedown = (e) => {
           if (e.button == 2) {
             // 右键不管
             return;
           }
           //  鼠标按下，计算当前原始距离可视区的高度
-          let disX = e.clientX;
-          let disY = e.clientY;
+          let disX = e.clientX - el.offsetLeft;
+          let disY = e.clientY - el.offsetTop;
           el.style.cursor = "move";
 
-          document.onmousemove = function(e) {
+          document.onmousemove = function (e) {
             // 移动时禁止默认事件
             e.preventDefault();
             const left = e.clientX - disX;
-            disX = e.clientX;
-            el.scrollLeft += -left;
+            // disX = e.clientX;
+            // el.scrollLeft += -left;
 
             const top = e.clientY - disY;
-            disY = e.clientY;
-            el.scrollTop += -top;
+            // disY = e.clientY;
+            // el.scrollTop += -top;
+            el.style.left = `${left}px`;
+            el.style.top = `${top}px`;
           };
 
-          document.onmouseup = function(e) {
+          document.onmouseup = function (e) {
             el.style.cursor = "auto";
             document.onmousemove = null;
             document.onmouseup = null;
           };
         };
-      }
-    }
+      },
+    },
   },
   mounted() {
     this.jsPlumb = jsPlumb.getInstance();
@@ -277,11 +294,11 @@ export default {
           this.$refs.nodeForm.lineInit({
             from: conn.sourceId,
             to: conn.targetId,
-            label: conn.getLabel()
+            label: conn.getLabel(),
           });
         });
         // 连线
-        this.jsPlumb.bind("connection", evt => {
+        this.jsPlumb.bind("connection", (evt) => {
           let from = evt.source.id;
           let to = evt.target.id;
           // console.log(evt.sourceEndpoint.canvas.classList[1],);
@@ -294,29 +311,29 @@ export default {
         });
 
         // 删除连线回调
-        this.jsPlumb.bind("connectionDetached", evt => {
+        this.jsPlumb.bind("connectionDetached", (evt) => {
           this.deleteLine(evt.sourceId, evt.targetId);
         });
 
         // 改变线的连接节点
-        this.jsPlumb.bind("connectionMoved", evt => {
+        this.jsPlumb.bind("connectionMoved", (evt) => {
           this.changeLine(evt.originalSourceId, evt.originalTargetId);
         });
 
         // 连线右击
-        this.jsPlumb.bind("contextmenu", evt => {
+        this.jsPlumb.bind("contextmenu", (evt) => {
           console.log("contextmenu", evt);
         });
 
         // 连线
-        this.jsPlumb.bind("beforeDrop", evt => {
+        this.jsPlumb.bind("beforeDrop", (evt) => {
           let from = evt.sourceId;
           let to = evt.targetId;
 
-          let node = this.data.nodeList.filter(function(node) {
+          let node = this.data.nodeList.filter(function (node) {
             return node.id === to;
           });
-          let toArr = this.data.lineList.filter(function(line) {
+          let toArr = this.data.lineList.filter(function (line) {
             return line.to === to;
           });
           console.log(node, "连线的回环信息");
@@ -349,7 +366,7 @@ export default {
         });
 
         // beforeDetach
-        this.jsPlumb.bind("beforeDetach", evt => {
+        this.jsPlumb.bind("beforeDetach", (evt) => {
           console.log("beforeDetach", evt);
         });
         this.jsPlumb.setContainer(this.$refs.efContainer);
@@ -386,10 +403,10 @@ export default {
             grid: [15, 15], //网格设置
             //  Anchors: [ 'TopCenter', 'Bottom','BottomRight', 'BottomLeft'],
             containment: "parent",
-            stop: function(el) {
+            stop: function (el) {
               // 拖拽节点结束后的对调
               console.log("拖拽结束: ", el);
-            }
+            },
           });
         }
       }
@@ -404,11 +421,11 @@ export default {
           label: line.label ? line.label : "",
           connector: line.connector ? line.connector : "Flowchart",
           anchors: line.anchors ? line.anchors : undefined,
-          paintStyle: line.paintStyle ? line.paintStyle : undefined
+          paintStyle: line.paintStyle ? line.paintStyle : undefined,
         };
         this.jsPlumb.connect(connParam, this.jsplumbConnectOptions);
       }
-      this.$nextTick(function() {
+      this.$nextTick(function () {
         this.loadEasyFlowFinish = true;
       });
     },
@@ -416,7 +433,7 @@ export default {
     setLineLabel(from, to, label) {
       var conn = this.jsPlumb.getConnections({
         source: from,
-        target: to
+        target: to,
       })[0];
       if (!label || label === "") {
         conn.removeClass("flowLabel");
@@ -426,9 +443,9 @@ export default {
       }
       conn.setLabel({
         grid: [15, 15],
-        label: label
+        label: label,
       });
-      this.data.lineList.forEach(function(line) {
+      this.data.lineList.forEach(function (line) {
         if (line.from == from && line.to == to) {
           line.label = label;
         }
@@ -442,12 +459,12 @@ export default {
         this.$confirm("确定删除所点击的线吗?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         })
           .then(() => {
             var conn = this.jsPlumb.getConnections({
               source: this.activeElement.sourceId,
-              target: this.activeElement.targetId
+              target: this.activeElement.targetId,
             })[0];
             this.jsPlumb.deleteConnection(conn);
           })
@@ -456,7 +473,7 @@ export default {
     },
     // 删除线
     deleteLine(from, to) {
-      this.data.lineList = this.data.lineList.filter(function(line) {
+      this.data.lineList = this.data.lineList.filter(function (line) {
         if (line.from == from && line.to == to) {
           return false;
         }
@@ -538,7 +555,7 @@ export default {
         controlState: "success",
         image: nodeMenu.image,
         output: nodeMenu.output,
-        parameters: nodeMenu.parameters
+        parameters: nodeMenu.parameters,
       };
       // 判断节点类型，如果是开始的话，就有且只能有一个
       if (node.nodeTypeID === "NID_START") {
@@ -552,7 +569,7 @@ export default {
       }
 
       this.data.nodeList.push(node);
-      this.$nextTick(function() {
+      this.$nextTick(function () {
         // // 设置目标点，其他源点拖出的线可以连接该节点,开始节点不可链接
         if (node.nodeTypeID !== "NID_START") {
           this.jsPlumb.makeSource(nodeId, this.jsplumbSourceOptions);
@@ -569,7 +586,7 @@ export default {
               anchors: item.anchor,
               paintStyle: { fill: "#a1a1a1", radius: 5 },
               isSource: true,
-              cssClass: item.pinName
+              cssClass: item.pinName,
             });
           });
         }
@@ -580,10 +597,10 @@ export default {
           //可拖动元素
           containment: "parent",
           grid: [15, 15],
-          stop: function(el) {
+          stop: function (el) {
             // 拖拽节点结束后的对调
             console.log("拖拽结束: ", el);
-          }
+          },
         });
       });
     },
@@ -596,7 +613,7 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-        closeOnClickModal: false
+        closeOnClickModal: false,
       })
         .then(() => {
           //判断节点是否可以删除
@@ -604,7 +621,7 @@ export default {
             this.$message.warning("开始节点不可删除");
             return;
           }
-          this.data.nodeList = this.data.nodeList.filter(function(node) {
+          this.data.nodeList = this.data.nodeList.filter(function (node) {
             if (node.id === nodeId) {
               // 伪删除，将节点隐藏，否则会导致位置错位
               // node.show = false
@@ -612,7 +629,7 @@ export default {
             }
             return true;
           });
-          this.$nextTick(function() {
+          this.$nextTick(function () {
             this.jsPlumb.removeAllEndpoints(nodeId);
           });
         })
@@ -661,14 +678,14 @@ export default {
     // 流程数据信息
     dataInfo() {
       this.flowInfoVisible = true;
-      this.$nextTick(function() {
+      this.$nextTick(function () {
         this.$refs.flowInfo.init();
       });
     },
     // 任务设置
     setCurrentTask() {
       this.flowInfoVisible = true;
-      this.$nextTick(function() {
+      this.$nextTick(function () {
         this.$refs.setTask.init();
       });
     },
@@ -694,9 +711,9 @@ export default {
       this.dataReload(getDataC());
     },
 
-//时间转换
+    //时间转换
 
-/**
+    /**
 
  * 将时间戳或者中国标准时间处理成 2018-05-01 00:00:00  这种格式
 
@@ -706,57 +723,103 @@ export default {
 
  */
 
-// dateFormat(dateData) {
+    // dateFormat(dateData) {
 
-//     var date = new Date(dateData);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    //     var date = new Date(dateData);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
 
-//     var Y = date.getFullYear() + '-';
+    //     var Y = date.getFullYear() + '-';
 
-//     var M = (date.getMonth()+1).padStart(2,0) + '-';
+    //     var M = (date.getMonth()+1).padStart(2,0) + '-';
 
-//     var D = date.getDate().padStart(2,0)+ ' ';
+    //     var D = date.getDate().padStart(2,0)+ ' ';
 
-//     var h = date.getHours().padStart(2,0)+ ':';
+    //     var h = date.getHours().padStart(2,0)+ ':';
 
-//     var m = date.getMinutes.padStart(2,0)+ ':';
+    //     var m = date.getMinutes.padStart(2,0)+ ':';
 
-//     var  s = date.getSeconds().padStart(2,0);
+    //     var  s = date.getSeconds().padStart(2,0);
 
-//     return Y+M+D+h+m+s;
+    //     return Y+M+D+h+m+s;
 
-//   },
+    //   },
 
-dateFormat(dateData) {
-      var date = new Date(dateData)
-      var y = date.getFullYear()
-      var m = date.getMonth() + 1
-      m = m < 10 ? ('0' + m) : m
-      var d = date.getDate()
-      d = d < 10 ? ('0' + d) : d
-      var h = date.getHours()
-       h = h < 10 ? ('0' + h) : h
-      var M = date.getMinutes()
-       M = M < 10 ? ('0' + M) : M
-          var s = date.getSeconds()
-       s = s < 10 ? ('0' + s) : s
-      const time = y + '-' + m + '-' + d +" " +h+":"+M +':'+s
-      return time
-},
+    dateFormat(dateData) {
+      var date = new Date(dateData);
+      var y = date.getFullYear();
+      var m = date.getMonth() + 1;
+      m = m < 10 ? "0" + m : m;
+      var d = date.getDate();
+      d = d < 10 ? "0" + d : d;
+      var h = date.getHours();
+      h = h < 10 ? "0" + h : h;
+      var M = date.getMinutes();
+      M = M < 10 ? "0" + M : M;
+      var s = date.getSeconds();
+      s = s < 10 ? "0" + s : s;
+      const time = y + "-" + m + "-" + d + " " + h + ":" + M + ":" + s;
+      return time;
+    },
     zoomAdd() {
-      if (this.zoom >= 1) {
-        return;
-      }
-      this.zoom = this.zoom + 0.1;
-      this.$refs.efContainer.style.transform = `scale(${this.zoom})`;
-      this.jsPlumb.setZoom(this.zoom);
+      // if (this.zoom >= 1) {
+      //   return;
+      // }
+      this.zoomEnabled = true;
+      this.doZoom(+this.zoomStep);
+      // this.zoom = this.zoom + 0.1;
+      // // this.$refs.efContainer.style.transform = `scale(${this.zoom})`;
+      // this.jsPlumb.setZoom(this.zoom);
     },
     zoomSub() {
-      if (this.zoom <= 0) {
-        return;
+      this.zoomEnabled = true;
+      this.doZoom(0 - this.zoomStep);
+      // if (this.zoom <= 0) {
+      //   return;
+      // }
+      // this.zoom = this.zoom - 0.1;
+      // // this.$refs.efContainer.style.transform = `scale(${this.zoom})`;
+      // this.jsPlumb.setZoom(this.zoom, true);
+    },
+    celZoom() {
+      this.zoomEnabled = false;
+      clearTimeout(this.timer);
+    },
+    doZoom(step) {
+      this.zoom += step;
+      this.setZoom(this.zoom, this.jsPlumb, null, this.$refs.efContainer);
+
+      if (this.zoomEnabled) {
+        this.zoom += step;
+        this.timer = setTimeout(() => this.doZoom(step), 100);
       }
-      this.zoom = this.zoom - 0.1;
-      this.$refs.efContainer.style.transform = `scale(${this.zoom})`;
-      this.jsPlumb.setZoom(this.zoom);
+    },
+
+    setZoom(zoom, instance, transformOrigin, el) {
+      transformOrigin = transformOrigin || [0.5, 0.5];
+      instance = instance || jsPlumb;
+      el = el || instance.getContainer();
+      var p = ["webkit", "moz", "ms", "o"],
+        s = "scale(" + zoom + ")",
+        oString =
+          transformOrigin[0] * 100 + "% " + transformOrigin[1] * 100 + "%";
+
+      for (var i = 0; i < p.length; i++) {
+        el.style[p[i] + "Transform"] = s;
+        el.style[p[i] + "TransformOrigin"] = oString;
+      }
+
+      el.style["transform"] = s;
+      el.style["transformOrigin"] = oString;
+
+      instance.setZoom(zoom);
+    },
+
+    scrollFn(event) {
+      if (event.wheelDelta > 0) {
+        this.doZoom(+this.zoomStep);
+      }
+      if (event.wheelDelta < 0) {
+        this.doZoom(0 - this.zoomStep);
+      }
     },
     // -------------------------------------------------------------------顶部按键
     //提交流程  保存流程
@@ -765,7 +828,7 @@ dateFormat(dateData) {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-        closeOnClickModal: false
+        closeOnClickModal: false,
       })
         .then(() => {
           var datastr = JSON.stringify(this.data, null, "\t");
@@ -776,22 +839,18 @@ dateFormat(dateData) {
             this.data.taskObject.length === 0 ||
             this.data.taskObject.startTime === ""
           ) {
-   
-              this.$message.warning("任务信息不完整");
+            this.$message.warning("任务信息不完整");
           } else {
-            axios
-              .post("/test-2/save", { data: this.data })
-              .then(res => {
-                console.log(this.data,'wwwwwwwwwwwwwwwwww');
-                if (res.data.status === 200) {
-                  this.$message.success("保存成功");
-                  this.$router.push({
-                    path: "/users",
-                    query: { id: "待测试" }
-                  });
-                }
-              })
-
+            axios.post("/test-2/save", { data: this.data }).then((res) => {
+              console.log(this.data, "wwwwwwwwwwwwwwwwww");
+              if (res.data.status === 200) {
+                this.$message.success("保存成功");
+                this.$router.push({
+                  path: "/users",
+                  query: { id: "待测试" },
+                });
+              }
+            });
           }
         })
         .catch(() => {
@@ -805,7 +864,7 @@ dateFormat(dateData) {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-        closeOnClickModal: false
+        closeOnClickModal: false,
       })
         .then(() => {
           this.$message.success("正在执行中,请稍后...");
@@ -822,14 +881,14 @@ dateFormat(dateData) {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
-          closeOnClickModal: false
+          closeOnClickModal: false,
         }
       )
         .then(() => {
-               this.$router.push({
-                    path: "/users",
-                    query: { id: "待测试" }
-                  });
+          this.$router.push({
+            path: "/users",
+            query: { id: "待测试" },
+          });
           //   console.log(this.data.id);
           //   this.$message.success("正在执行中,请稍后...");
           //   this.$message.success("执行完毕");
@@ -842,21 +901,21 @@ dateFormat(dateData) {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-        inputErrorMessage: "邮箱格式不正确"
+        inputErrorMessage: "邮箱格式不正确",
       })
         .then(({ value }) => {
           this.$message({
             type: "success",
-            message: "你的邮箱是: " + value
+            message: "你的邮箱是: " + value,
           });
         })
         .catch(() => {
           this.$message({
             type: "info",
-            message: "取消输入"
+            message: "取消输入",
           });
         });
-    }
-  }
+    },
+  },
 };
 </script>

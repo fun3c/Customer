@@ -131,25 +131,9 @@
       </el-table-column>
       <el-table-column label="创建人" min-width="10%">
         <template slot-scope="scope">
-<<<<<<< HEAD
 
           <el-dropdown size="medium" split-button type="primary" @command="handleCommand" @click="skipoptions(optioncommand)">
             {{optioncommand}}
-=======
-          <span>{{ scope.row.createBy }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" fixed="right" min-width="35%">
-        <template slot-scope="scope" style="position: relative">
-          <!-- {{state[scope.row.jobState].options}} -->
-          <!-- <el-dropdown
-            size="medium"
-            split-button
-            type="primary"
-            @command="doOptions()"
-          >
-            查看
->>>>>>> 7d3b3a5cf10a4a43fafaf1f2ee49d0f01a4034f2
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item
                 :command="[scope.row.id,sco.value]"
@@ -437,11 +421,7 @@ export default {
       this.dialogTitle = "新增";
       this.user = Object.assign({}, this.userBackup);
       this.userFormVisible = true;
-<<<<<<< HEAD
        this.$router.push({ path: "/Panel", query: { id: "待测试" } });
-=======
-      this.$router.push({ path: "/Panel", query: { id: "1" } });
->>>>>>> 7d3b3a5cf10a4a43fafaf1f2ee49d0f01a4034f2
     },
   },
 };
