@@ -61,7 +61,7 @@
           X
         </div>
       </div>
-      <el-button size="mini" @click="add">添加实验组</el-button>
+      <!-- <el-button size="mini" @click="add">添加实验组</el-button> -->
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="saveTest">保存</el-button>
@@ -122,12 +122,12 @@ export default {
         });
       } else {
 
-            this.output.fixedOutput.push({
-                            "label": "实验3", //端点描述
-                            "pinName": "3",
-                            "anchor": "BottomCenter"
-                        })
-                        console.log( this.output)
+            // this.output.fixedOutput.push({
+            //                 "label": "实验3", //端点描述
+            //                 "pinName": "3",
+            //                 "anchor": "BottomCenter"
+            //             })
+            //             console.log( this.output)
   
         this.$message({
           message: "保存成功",

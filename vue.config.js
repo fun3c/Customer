@@ -21,11 +21,12 @@ module.exports = {
             changeOrigin: true,
             pathRewrite: {"^/test-2": ""}
           },
-          '/test_3': { //人群包
+
+          '/test-4': { //短信
             // target: "http://192.168.1.49:8081",
-            target: "http://81.70.46.16:8081",
+            target: "http://49.233.45.33:8888",
             changeOrigin: true,
-            pathRewrite: {"^/api": ""}
+            pathRewrite: {"^/test-4": ""}
           },
           "/production":{
             target: "http://81.70.46.16:8888", //任务保存

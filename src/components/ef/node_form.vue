@@ -571,7 +571,7 @@ export default {
   },
   created() {
 
-    axios.post("/test-1/list/crowd",{}).then(res=>{//人群包信息
+    axios.post("/test-4/list/crowd",{}).then(res=>{//人群包信息
     this.crowdList = res.data.data
 
     })

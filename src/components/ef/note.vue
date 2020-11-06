@@ -7,12 +7,11 @@
     label-position="top"
   >
     <el-form-item label="短信模板ID">
-
       <el-input
         onkeyup="this.value=this.value.replace(/\D/g,'')"
         v-model="data.id"
         @blur="queryNote"
-        :class="{ noteFailure: status===''?false:!status }"
+        :class="{ noteFailure: status === '' ? false : !status }"
       ></el-input>
       <div
         style="
@@ -22,7 +21,7 @@
           color: red;
           line-height: 20px;
         "
-        v-if="status===''?false:!status"
+        v-if="status === '' ? false : !status"
       >
         短信模板不存在
       </div>
@@ -32,21 +31,21 @@
         <div v-if="status">
           <div class="noteprecont">
             <span style="flex: 1; color: gray">短信类型</span>
-            <span style="flex: 4.5">{{form.smsType}}</span>
+            <span style="flex: 4.5">{{ form.smsType }}</span>
           </div>
           <div class="noteprecont">
             <span style="flex: 1; color: gray">短信内容</span>
-            <span style="flex: 4.5; font-size: 13px; line-height: 25px"
-              >{{form.smsValue}}</span
-            >
+            <span style="flex: 4.5; font-size: 13px; line-height: 25px">{{
+              form.smsValue
+            }}</span>
           </div>
           <div class="noteprecont">
             <span style="flex: 1; color: gray">有效期限</span>
-            <span style="flex: 4.5">{{form.expiryDate}}</span>
+            <span style="flex: 4.5">{{ form.expiryDate }}</span>
           </div>
           <div class="noteprecont">
             <span style="flex: 1; color: gray">审批状态</span>
-            <span style="flex: 4.5">{{form.approvalStatus}}</span>
+            <span style="flex: 4.5">{{ form.approvalStatus }}</span>
           </div>
         </div>
         <div style="width:100%;height:20px; background-color: #e4e7e7;"></div>
@@ -56,41 +55,48 @@
   </el-form>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
       id: "",
       form: {},
       value1: false,
-      status: '',
+      status: ""
     };
   },
-  props:["data"],
+  props: ["data"],
   computed: {},
   mounted() {},
   watch: {},
   methods: {
     queryNote() {
-      let that=this
-      if(''!==this.data.id){
-      this.$http({
-        method: "POST",
-        url: "http://49.233.45.33:8888/messageTemplate/getSmsMessageTemplateInfo",
-        data: this.data.id,
-      })
-        .then((res) => {
-          if (res.data.status) {
-            this.form = res.data.data;
-            this.status = true;
-          }else
-          this.status=false
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+      let that = this;
+      console.log(this.id);
+      if ("" !== this.data.id) {
+        axios
+          .post(
+            "test-4/messageTemplate/getSmsMessageTemplateInfo",
+             {"id": this.data.id }
+          )
+          .then(res => {
+            if (res.status) {
+              this.form = res.data;
+              this.status = true;
+              this.data.smsType=this.form.smsType
+               this.data.smsValue=this.form.smsValue
+                this.data.expiryDate=this.form.expiryDate
+                 this.data.isRetry=this.form.isRetry
+                  this.data.phoneNumber=this.form.phoneNumber
+
+            } else this.status = false;
+          })
+          .catch(err => {
+            console.error(err);
+          });
       }
-    },
-  },
+    }
+  }
 };
 </script>
 <style>

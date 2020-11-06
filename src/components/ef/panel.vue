@@ -244,10 +244,11 @@ export default {
     this.jsPlumb = jsPlumb.getInstance();
 
     // 进入画布，先判断是新增，编辑，查看
-    if (1) {
+    console.log(this.$route.params.value)
+    if (!this.$route.params.value) {
       //新增
       // 发起ID请求
-      axios.get("/test-1/v1/get/job/id").then(res => {
+      axios.get("/test-4/v1/get/job/id").then(res => {
         this.taskID = res.data.data.jobId;
         let data = (getDataC().nodeList[0].id =
           this.taskID + "_" + this.localnodeID);
@@ -258,7 +259,7 @@ export default {
           this.dataReload(getDataC()); // 默认流程图的数据
         });
       });
-    } else if (job) {      //查看
+    } else if (this.$route.params.value===0) {      //查看
       // 请求画布数据
       axios.post("",{}).then(res=>{
         let data=res.data.data
@@ -271,7 +272,7 @@ export default {
         })
       })
    
-    } else if (job) {
+    } else if (this.$route.params.value===2) {
        // 请求画布数据
       axios.post("",{}).then(res=>{
         let data=res.data.data
@@ -817,11 +818,12 @@ export default {
             this.$message.warning("任务信息不完整");
           } else {
             let data = this.data;
-            this.$http({
-              method: "POST",
-              url: "http://81.70.46.16:8888/save",
-              data: data
-            })
+            axios.post("/test-4/save",data)
+            // this.$http({
+            //   method: "POST",
+            //   url: "http://81.70.46.16:8888/save",
+            //   data: data
+            // })
               .then(res => {
                 console.log(res, "wwwwwwwwww");
                 if (res.status === 200) {
