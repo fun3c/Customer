@@ -267,6 +267,7 @@ export default {
   },
   mounted() {
     this.jsPlumb = jsPlumb.getInstance();
+    console.log('this.jsPlumb', this.jsPlumb)
     this.$nextTick(() => {
       // 默认加载流程A的数据
       this.dataReload(getDataC());
@@ -307,9 +308,10 @@ export default {
         this.jsPlumb.bind("connection", (evt) => {
           let from = evt.source.id;
           let to = evt.target.id;
+          
           // console.log(evt.sourceEndpoint.canvas.classList[1],);
           let pinName = evt.sourceEndpoint.canvas.classList[1];
-          this.nodeList;
+         
 
           if (this.loadEasyFlowFinish) {
             this.data.lineList.push({ from: from, to: to, pinName: pinName });
@@ -333,6 +335,7 @@ export default {
 
         // 连线
         this.jsPlumb.bind("beforeDrop", (evt) => {
+          console.log("evt", evt);
           let from = evt.sourceId;
           let to = evt.targetId;
 
@@ -378,59 +381,108 @@ export default {
         this.jsPlumb.setContainer(this.$refs.efContainer);
       });
     },
+    getCurrSource(item) {
+      const currNode = this.data.nodeList.filter(node => {
+        if(node.id === item.from) return node;
+      })
+      const currOutput = currNode[0].output.fixedOutput;
+      const currEndpoint = currOutput.filter(op => op.pinName === item.pinName);
+      
+      return currEndpoint[0];
+    },
     // 加载流程图
     loadEasyFlow() {
       // 初始化节点
-      for (var i = 0; i < this.data.nodeList.length; i++) {
-        let node = this.data.nodeList[i];
-        // 设置源点，可以拖出线连接其他节点
+      this.data.nodeList.forEach((node) => {
+        const output = node.nodeTypeID !== 'NID_START' ? node.output.fixedOutput : [];
 
         if (node.nodeTypeID === "NID_START") {
-          this.jsPlumb.makeSource(
-            node.id,
-            lodash.merge(this.jsplumbStartSourceOptions, {})
-          );
-        } else {
-          this.jsPlumb.makeSource(
-            node.id,
-            lodash.merge(this.jsplumbSourceOptions, {})
-          );
-        }
-        // // 设置目标点，其他源点拖出的线可以连接该节点,开始节点不可链接
-        if (node.nodeTypeID !== "NID_START") {
-          this.jsPlumb.makeTarget(node.id, this.jsplumbTargetOptions);
-        } else {
+          this.jsPlumb.makeSource( node.id, lodash.merge(this.jsplumbStartSourceOptions) );
           this.jsPlumb.makeTarget(node.id, this.jsplumbStartSourceOptions);
+        } else {
+          this.jsPlumb.makeSource( node.id, lodash.merge(this.jsplumbSourceOptions) );
+          this.jsPlumb.makeTarget(node.id, this.jsplumbTargetOptions);
         }
-        if (!node.viewOnly) {
-          //是否是不可移动元素
-          this.jsPlumb.draggable(node.id, {
-            //可拖动元素
-            grid: [15, 15], //网格设置
-            //  Anchors: [ 'TopCenter', 'Bottom','BottomRight', 'BottomLeft'],
-            containment: "parent",
-            stop: function (el) {
-              // 拖拽节点结束后的对调
-              console.log("拖拽结束: ", el);
-            },
+        output.forEach((item) => {
+          this.jsPlumb.addEndpoint(node.id, {
+            anchors: item.anchor,
+            uuid: item.id,
+            paintStyle: { fill: "#a1a1a1", radius: 5 },
+            isSource: true,
+            cssClass: item.pinName,
           });
+        });
+        this.jsPlumb.draggable(node.id);
+      });
+      
+      this.data.lineList.forEach((line) => {
+        if (line.pinName === "jtk-endpoint-anchor") {
+          this.jsPlumb.connect({
+              source: line.from,
+              target: line.to,
+            }, this.jsplumbConnectOptions);
+        } else {
+          const currSource = this.getCurrSource(line);
+          // console.log('currSource', currSource)
+          this.jsPlumb.connect({
+            uuids: [currSource.id, line.to], 
+            source: currSource.id,
+            target: line.to,
+          },this.jsplumbConnectOptions);
         }
-      }
+      });
+
+      // for (var i = 0; i < this.data.nodeList.length; i++) {
+      //   let node = this.data.nodeList[i];
+      //   // 设置源点，可以拖出线连接其他节点
+
+      //   if (node.nodeTypeID === "NID_START") {
+      //     this.jsPlumb.makeSource(
+      //       node.id,
+      //       lodash.merge(this.jsplumbStartSourceOptions, {})
+      //     );
+      //   } else {
+      //     this.jsPlumb.makeSource(
+      //       node.id,
+      //       lodash.merge(this.jsplumbSourceOptions, {})
+      //     );
+      //   }
+      //   // // 设置目标点，其他源点拖出的线可以连接该节点,开始节点不可链接
+      //   if (node.nodeTypeID !== "NID_START") {
+      //     this.jsPlumb.makeTarget(node.id, this.jsplumbTargetOptions);
+      //   } else {
+      //     this.jsPlumb.makeTarget(node.id, this.jsplumbStartSourceOptions);
+      //   }
+      //   if (!node.viewOnly) {
+      //     //是否是不可移动元素
+      //     this.jsPlumb.draggable(node.id, {
+      //       //可拖动元素
+      //       grid: [15, 15], //网格设置
+      //       //  Anchors: [ 'TopCenter', 'Bottom','BottomRight', 'BottomLeft'],
+      //       containment: "parent",
+      //       stop: function (el) {
+      //         // 拖拽节点结束后的对调
+      //         console.log("拖拽结束: ", el);
+      //       },
+      //     });
+      //   }
+      // }
       // 初始化连线
-      for (var i = 0; i < this.data.lineList.length; i++) {
-        //uuid连线
-        let line = this.data.lineList[i];
-        var connParam = {
-          source: line.from,
-          target: line.to,
-          uuids: line.uuids,
-          label: line.label ? line.label : "",
-          connector: line.connector ? line.connector : "Flowchart",
-          anchors: line.anchors ? line.anchors : undefined,
-          paintStyle: line.paintStyle ? line.paintStyle : undefined,
-        };
-        this.jsPlumb.connect(connParam, this.jsplumbConnectOptions);
-      }
+      // for (var i = 0; i < this.data.lineList.length; i++) {
+      //   //uuid连线
+      //   let line = this.data.lineList[i];
+      //   console.log('line.uuids', line.uuids)
+      //   var connParam = {
+      //     source: line.from,
+      //     target: line.to,
+      //     uuids: line.uuids,
+      //     label: line.label ? line.label : "",
+      //     connector: line.connector ? line.connector : "Flowchart",
+      //     anchors: line.anchors ? line.anchors : undefined,
+      //     paintStyle: line.paintStyle ? line.paintStyle : undefined,
+      //   };
+      //   this.jsPlumb.connect(connParam, this.jsplumbConnectOptions);
+      // }
       this.$nextTick(function () {
         this.loadEasyFlowFinish = true;
       });
@@ -550,6 +602,11 @@ export default {
         }
         break;
       }
+      nodeMenu.output.fixedOutput = nodeMenu.output.fixedOutput.map((item) => {
+        item.id = `${this.getUUID()}-${new Date().getTime()}`;
+        return item;
+      });
+
       //传递给画布控件的属性
       var node = {
         id: nodeId,
@@ -791,7 +848,7 @@ export default {
     },
     doZoom(step) {
       this.zoom += step;
-      if(this.zoom <= 0.2 || this.zoom >= 2) return;
+      if (this.zoom <= 0.2 || this.zoom >= 2) return;
       this.setZoom(this.zoom, this.jsPlumb, null, this.$refs.efContainer);
 
       if (this.zoomEnabled) {
