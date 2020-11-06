@@ -1,6 +1,14 @@
 <template>
   <div v-if="easyFlowVisible" style="height: calc(100vh);">
- <div> <el-row v-if="data.jobName" class="panel-header"> <span>{{data.jobID}}</span> <span>{{data.jobName}}</span>  <span>{{dateFormat(data.startTime)}}-{{dateFormat(data.endTime)}}</span>   </el-row></div>
+    <el-row class="panel-header">
+      <div v-if="data.jobName">
+        <span>{{ data.jobID }}</span> <span>{{ data.jobName }}</span>
+        <span
+          >{{ dateFormat(data.startTime) }}-{{ dateFormat(data.endTime) }}</span
+        >
+      </div>
+    </el-row>
+
     <el-row>
       <!--顶部工具菜单-->
       <el-col :span="24">
@@ -32,23 +40,6 @@
               size="mini"
               @click="setCurrentTask"
               >任务设置</el-button
-            >
-            <el-button
-              type="primary"
-              plain
-              round
-              icon="el-icon-refresh"
-              size="mini"
-              >自定义变量</el-button
-            >
-            <el-button
-              type="primary"
-              plain
-              round
-              icon="el-icon-refresh"
-              size="mini"
-              @click="Operation"
-              >执行流程</el-button
             >
           </div>
 
@@ -88,7 +79,7 @@
               >流程信息</el-button
             >
             <!-- <el-button type="primary" plain round @click="dataReloadA" icon="el-icon-refresh" size="mini">切换流程A</el-button> -->
-            <el-button
+            <!-- <el-button
               type="primary"
               plain
               round
@@ -96,7 +87,7 @@
               icon="el-icon-refresh"
               size="mini"
               >默认样式</el-button
-            >
+            > -->
             <!-- <el-button type="primary" plain round @click="dataReloadC" icon="el-icon-refresh" size="mini">切换流程C</el-button> -->
             <!-- <el-button type="primary" plain round @click="dataReloadD" icon="el-icon-refresh" size="mini">自定义样式</el-button> -->
             <!-- <el-button type="info" plain round icon="el-icon-document" @click="openHelp" size="mini">帮助</el-button> -->
@@ -145,7 +136,12 @@
 
     <!-- 流程数据详情 -->
     <flow-info v-if="flowInfoVisible" ref="flowInfo" :data="data"></flow-info>
-    <setTask v-if="setTaskVisible" ref="setTask" :data="data"></setTask>
+    <setTask
+      v-if="setTaskVisible"
+      @setCurrentTask="setCurrentTask"
+      ref="setTask"
+      :data="data"
+    ></setTask>
   </div>
 </template>
 
@@ -178,7 +174,9 @@ export default {
       setTaskVisible: true,
       // 是否加载完毕标志位
       loadEasyFlowFinish: false,
-
+      //后端返回唯一ID
+      taskID: "",
+      localnodeID: 0,
       //  数据
       data: {},
       // 激活的元素、可能是节点、可能是连线
@@ -244,21 +242,54 @@ export default {
   },
   mounted() {
     this.jsPlumb = jsPlumb.getInstance();
-    this.$nextTick(() => {
-      // 默认加载流程A的数据
-      this.dataReload(getDataC());
-    });
+
+    // 进入画布，先判断是新增，编辑，查看
+    if (1) {
+      //新增
+      // 发起ID请求
+      axios.get("/test-1/v1/get/job/id").then(res => {
+        this.taskID = res.data.data.jobId;
+        let data = (getDataC().nodeList[0].id =
+          this.taskID + "_" + this.localnodeID);
+        console.log(getDataC());
+        getDataC().jobId=this.taskID
+        this.$nextTick(() => {
+          // 默认加载流程A的数据
+          this.dataReload(getDataC()); // 默认流程图的数据
+        });
+      });
+    } else if (job) {      //查看
+      // 请求画布数据
+      axios.post("",{}).then(res=>{
+        let data=res.data.data
+        data.nodeList.forEach(item=>{
+          item.viewOnly=true
+             this.$nextTick(() => {
+          // 默认加载流程A的数据
+          this.dataReload(data); // 默认流程图的数据
+        });
+        })
+      })
+   
+    } else if (job) {
+       // 请求画布数据
+      axios.post("",{}).then(res=>{
+        let data=res.data.data
+        data.nodeList.forEach(item=>{
+             this.$nextTick(() => {
+          // 默认加载流程A的数据
+          this.dataReload(data); // 默认流程图的数据
+        });
+        })
+      })
+    }
   },
   methods: {
     // 返回唯一标识
     getUUID() {
-      let charactors = "1234567890";
-      let value = "",
-        i;
-      for (let j = 1; j <= 4; j++) {
-        i = parseInt(10 * Math.random());
-        value = value + charactors.charAt(i);
-      }
+  let value = ""
+    value = this.taskID+"_"+(this.localnodeID+1)
+    this.localnodeID=this.localnodeID+1
       return value;
     },
     jsPlumbInit() {
@@ -289,7 +320,13 @@ export default {
           this.nodeList;
 
           if (this.loadEasyFlowFinish) {
-            this.data.lineList.push({ from: from, to: to, pinName: pinName });
+            this.data.lineList.push({
+              from: from,
+              to: to,
+              pinName: pinName,
+              from_uuid: "",
+              to_uuid: ""
+            });
           }
         });
 
@@ -562,6 +599,7 @@ export default {
         if (!node.flexOutput) {
           let outputs = node.output;
           //根据控件端点信息，动态添加端点
+          console.log("动态添加端点");
           outputs.fixedOutput.forEach((item, index) => {
             let uuid = this.getUUID();
             this.jsPlumb.addEndpoint(nodeId, {
@@ -667,7 +705,7 @@ export default {
     },
     // 任务设置
     setCurrentTask() {
-      this.flowInfoVisible = true;
+      this.setTaskVisible = true;
       this.$nextTick(function() {
         this.$refs.setTask.init();
       });
@@ -694,9 +732,9 @@ export default {
       this.dataReload(getDataC());
     },
 
-//时间转换
+    //时间转换
 
-/**
+    /**
 
  * 将时间戳或者中国标准时间处理成 2018-05-01 00:00:00  这种格式
 
@@ -706,42 +744,42 @@ export default {
 
  */
 
-// dateFormat(dateData) {
+    // dateFormat(dateData) {
 
-//     var date = new Date(dateData);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    //     var date = new Date(dateData);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
 
-//     var Y = date.getFullYear() + '-';
+    //     var Y = date.getFullYear() + '-';
 
-//     var M = (date.getMonth()+1).padStart(2,0) + '-';
+    //     var M = (date.getMonth()+1).padStart(2,0) + '-';
 
-//     var D = date.getDate().padStart(2,0)+ ' ';
+    //     var D = date.getDate().padStart(2,0)+ ' ';
 
-//     var h = date.getHours().padStart(2,0)+ ':';
+    //     var h = date.getHours().padStart(2,0)+ ':';
 
-//     var m = date.getMinutes.padStart(2,0)+ ':';
+    //     var m = date.getMinutes.padStart(2,0)+ ':';
 
-//     var  s = date.getSeconds().padStart(2,0);
+    //     var  s = date.getSeconds().padStart(2,0);
 
-//     return Y+M+D+h+m+s;
+    //     return Y+M+D+h+m+s;
 
-//   },
+    //   },
 
-dateFormat(dateData) {
-      var date = new Date(dateData)
-      var y = date.getFullYear()
-      var m = date.getMonth() + 1
-      m = m < 10 ? ('0' + m) : m
-      var d = date.getDate()
-      d = d < 10 ? ('0' + d) : d
-      var h = date.getHours()
-       h = h < 10 ? ('0' + h) : h
-      var M = date.getMinutes()
-       M = M < 10 ? ('0' + M) : M
-          var s = date.getSeconds()
-       s = s < 10 ? ('0' + s) : s
-      const time = y + '-' + m + '-' + d +" " +h+":"+M +':'+s
-      return time
-},
+    dateFormat(dateData) {
+      var date = new Date(dateData);
+      var y = date.getFullYear();
+      var m = date.getMonth() + 1;
+      m = m < 10 ? "0" + m : m;
+      var d = date.getDate();
+      d = d < 10 ? "0" + d : d;
+      var h = date.getHours();
+      h = h < 10 ? "0" + h : h;
+      var M = date.getMinutes();
+      M = M < 10 ? "0" + M : M;
+      var s = date.getSeconds();
+      s = s < 10 ? "0" + s : s;
+      const time = y + "-" + m + "-" + d + " " + h + ":" + M + ":" + s;
+      return time;
+    },
     zoomAdd() {
       if (this.zoom >= 1) {
         return;
@@ -761,7 +799,7 @@ dateFormat(dateData) {
     // -------------------------------------------------------------------顶部按键
     //提交流程  保存流程
     conserve() {
-      this.$confirm("确定要保执行流程数据吗？", "提示", {
+      this.$confirm("确定要保存该流程数据吗？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -776,14 +814,17 @@ dateFormat(dateData) {
             this.data.taskObject.length === 0 ||
             this.data.taskObject.startTime === ""
           ) {
-   
-              this.$message.warning("任务信息不完整");
+            this.$message.warning("任务信息不完整");
           } else {
-            axios
-              .post("/test-2/save", { data: this.data })
+            let data = this.data;
+            this.$http({
+              method: "POST",
+              url: "http://81.70.46.16:8888/save",
+              data: data
+            })
               .then(res => {
-                console.log(this.data,'wwwwwwwwwwwwwwwwww');
-                if (res.data.status === 200) {
+                console.log(res, "wwwwwwwwww");
+                if (res.status === 200) {
                   this.$message.success("保存成功");
                   this.$router.push({
                     path: "/users",
@@ -791,13 +832,24 @@ dateFormat(dateData) {
                   });
                 }
               })
-
+              .catch(err => {
+                console.error(err);
+              });
+            // axios
+            //   .post("/test-2/save",data)
+            //   .then(res => {
+            //     console.log(this.data,'wwwwwwwwwwwwwwwwww');
+            //     if (res.data.status === 200) {
+            //       this.$message.success("保存成功");
+            //       this.$router.push({
+            //         path: "/users",
+            //         query: { id: "待测试" }
+            //       });
+            //     }
+            //   })
           }
         })
-        .catch(() => {
-          console.log(this.data);
-          this.$message.warning("任务信息不完整");
-        });
+        .catch(() => {});
     },
     //执行流程
     Operation() {
@@ -826,10 +878,10 @@ dateFormat(dateData) {
         }
       )
         .then(() => {
-               this.$router.push({
-                    path: "/users",
-                    query: { id: "待测试" }
-                  });
+          this.$router.push({
+            path: "/users",
+            query: { id: "待测试" }
+          });
           //   console.log(this.data.id);
           //   this.$message.success("正在执行中,请稍后...");
           //   this.$message.success("执行完毕");

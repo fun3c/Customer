@@ -3,13 +3,13 @@
     ref="form"
     :model="form"
     label-width="100px"
-    style="width: 20%"
+    style="width: 100%"
     label-position="top"
   >
     <el-form-item label="push模板ID">
       <el-input
         onkeyup="this.value=this.value.replace(/\D/g,'')"
-        v-model="id"
+        v-model="data.id"
         @blur="queryNote"
         :class="{ noteFailure: status===''?false:!status }"
       ></el-input>
@@ -51,7 +51,7 @@
         <div style="width:100%;height:20px; background-color: #e4e7e7;"></div>
       </div>
     </el-form-item>
-    <el-switch v-model="value1" inactive-text="失败重试"> </el-switch>
+    <el-switch v-model="data.status" inactive-text="失败重试"> </el-switch>
   </el-form>
 </template>
 <script>
@@ -64,17 +64,18 @@ export default {
       status: '',
     };
   },
+    props:["data"],
   computed: {},
   mounted() {},
   watch: {},
   methods: {
     queryNote() {
       let that=this
-      if(''!==this.id){
+      if(''!==this.data.id){
       this.$http({
         method: "POST",
         url: "http://49.233.45.33:8888/messageTemplate/getSmsMessageTemplateInfo",
-        data: that.id,
+        data: this.data.id,
       })
         .then((res) => {
           if (res.data.status) {

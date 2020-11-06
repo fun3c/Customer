@@ -1,6 +1,5 @@
 module.exports = {
     lintOnSave: false,
-<<<<<<< HEAD
     devServer: {
         proxy: {
           '/api': {
@@ -11,20 +10,30 @@ module.exports = {
           },
           '/test-1': {
             // target: "http://192.168.1.49:8081",
-            target: "http://81.70.46.16:8081",  //条件树信息
+            target: "http://49.233.45.33:8081",  //条件树信息
             changeOrigin: true,
             pathRewrite: {"^/test-1": ""}
           },
-          
+        
           '/test-2': {
             // target: "http://192.168.1.49:8081",
             target: "http://192.168.1.47:8888", //任务保存
             changeOrigin: true,
             pathRewrite: {"^/test-2": ""}
           },
+          '/test_3': { //人群包
+            // target: "http://192.168.1.49:8081",
+            target: "http://81.70.46.16:8081",
+            changeOrigin: true,
+            pathRewrite: {"^/api": ""}
+          },
+          "/production":{
+            target: "http://81.70.46.16:8888", //任务保存
+            changeOrigin: true,
+            pathRewrite: {"^/production": ""}
+          }
         }
-      }
+      },
 }
-=======
-}
->>>>>>> 7d3b3a5cf10a4a43fafaf1f2ee49d0f01a4034f2
+
+

@@ -2,21 +2,21 @@
   <el-form
     ref="form"
     label-width="80px"
-    style="width: 50%"
+    style="width: 100%"
     label-position="top"
   >
-  {{data}}
+
     <el-form-item label="分流方式">
-      <el-select v-model="form.defaultValue" placeholder="请选择" >
-        <el-option :label="s.label" :value="s.value" v-for="(s,i) in form.shuntWay" :key="i"></el-option>
+      <el-select v-model="data.defaultValue" placeholder="请选择" >
+        <el-option :label="s.label" :value="s.value" v-for="(s,i) in data.shuntWay" :key="i"></el-option>
       </el-select>
     </el-form-item>
     <el-form-item label="观察周期">
-      <div style="display: flex">
+  <div style="display: flex">
         <el-input-number
-          v-model="form.period"
+          v-model="data.period"
           :min="1"
-          :max="9"
+          :max="99"
           :controls="false"
         ></el-input-number>
         <div class="baifen">天</div>
@@ -26,7 +26,7 @@
       分流比例<br />
       <div
         style="display: flex; margin-bottom: 20px"
-        v-for="(group, i) in form.groups"
+        v-for="(group, i) in data.groups"
         :key="group.id"
       >
         <el-tag
@@ -78,7 +78,7 @@ export default {
     };
   },
   computed: {},
-  props:["data"],
+  props:["data","output"],
   mounted() {
     //  this.form =this.props.data;
   // console.log(this.props.data)
@@ -88,12 +88,13 @@ export default {
   methods: {
     //实验组长度是否超过20组
     examgleng() {
-      if (this.form.groups.length > 19) return false;
+      if (this.data.groups.length > 19) return false;
       else return true;
     },
     add() {
+
       if (this.examgleng()) {
-        this.form.groups.push({ name: "", num: 0});
+        this.data.groups.push({ name: "", num: 0});
       } else {
         this.$message({
           message: "最多存在20组实验",
@@ -101,22 +102,14 @@ export default {
         });
       }
     },
-    // getData() {
-    //   this.$http("/api/abtest")
-    //     .then((res) => {
-    //       this.form = res.data;
-    //     })
-    //     .catch((err) => {
-    //       console.error(err);
-    //     });
-    // },
+
     removeTest(i) {
-      this.form.groups.splice(i, 1);
+      this.data.groups.splice(i, 1);
     },
     //判断实验组的名称是否存在''
     nameIsNull() {
       var result = false;
-      for (var item of this.form.groups) {
+      for (var item of this.data.groups) {
         if (item.name === "") result = true;
       }
       return result;
@@ -128,6 +121,14 @@ export default {
           type: "warning",
         });
       } else {
+
+            this.output.fixedOutput.push({
+                            "label": "实验3", //端点描述
+                            "pinName": "3",
+                            "anchor": "BottomCenter"
+                        })
+                        console.log( this.output)
+  
         this.$message({
           message: "保存成功",
           type: "success",

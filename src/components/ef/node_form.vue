@@ -58,7 +58,7 @@
                 <el-select
                   v-model="node.parameters[index].defaultValue"
                   placeholder="请选择"
-                  @change="node.parameters[index].selectedList=[]"
+                  @change="node.parameters[index].selectedList = []"
                 >
                   <el-option
                     v-for="(option, inx) in item.values"
@@ -131,7 +131,17 @@
                   <div
                     class="block"
                     v-if="node.parameters[index].defaultValue === 0"
-                  ></div>
+                  >
+                    <el-time-picker
+                      v-model="node.parameters[index].stretch"
+                      :picker-options="{
+                        selectableRange: '00:00:00 - 23:59:59'
+                      }"
+                      format="HH:mm:ss"
+                      placeholder="任意时间点"
+                    >
+                    </el-time-picker>
+                  </div>
                   <!-- 等待一段具体的某一时间点 -->
                   <div
                     class="block"
@@ -143,6 +153,30 @@
                       placeholder="选择日期时间"
                     >
                     </el-date-picker>
+                  </div>
+                  <!-- 等待至 -->
+                  <div
+                    class="block"
+                    v-if="node.parameters[index].defaultValue === 2"
+                  >
+                    <div style="display: flex">
+                      <el-input-number
+                        v-model="node.parameters[index].dayTime"
+                        :min="1"
+                        :max="99"
+                        :controls="false"
+                      ></el-input-number>
+                      <div class="baifen">天</div>
+                    </div>
+                    <el-time-picker
+                      v-model="node.parameters[index].stretch"
+                      :picker-options="{
+                        selectableRange: '00:00:00 - 23:59:59'
+                      }"
+                      format="HH:mm:ss"
+                      placeholder="任意时间点"
+                    >
+                    </el-time-picker>
                   </div>
                 </div>
 
@@ -259,7 +293,7 @@
                   >
                   </el-option>
                 </el-select>
-
+            <!-- //人群定时触发 -->
                 <el-select
                   v-show="
                     node.parameters[index].values[
@@ -271,15 +305,13 @@
                       node.parameters[index].defaultValue
                     ].children.defaultValue
                   "
-                  placeholder="请选择"
+                  placeholder="请选择人群包"
                 >
                   <el-option
-                    v-for="(option, inx) in node.parameters[index].values[
-                      node.parameters[index].defaultValue
-                    ].children.values"
-                    :key="option.value"
-                    :label="option.title"
-                    :value="inx"
+                    v-for="(option, inx) in crowdList"
+                    :key="inx"
+                    :label="option.crowdName"
+                    :value="option.crowdId"
                   >
                   </el-option>
                 </el-select>
@@ -333,7 +365,7 @@
                       <span @click="delhavior(index, inx)"> 删除 </span>
                     </li>
                   </ul>
-
+                  <!-- //人群包展示 -->
                   <ul
                     v-if="
                       node.parameters[index].values[
@@ -342,16 +374,15 @@
                     "
                   >
                     <li
-                      v-for="(value, key, inx) in node.parameters[index].values[
-                        node.parameters[index].defaultValue
-                      ].children.values[
-                        node.parameters[index].values[
-                          node.parameters[index].defaultValue
-                        ].children.defaultValue
-                      ]"
-                      :key="inx"
+                    v-for="(Crowitem,inx) in notelist"
+                   :key="inx"
                     >
-                      <b> {{ notelist[inx] + ": " + value }} </b><br />
+                
+                      <b    v-for="(value, key, inx) in crowdList.filter(item=>{return item.crowdId=== node.parameters[index].values[
+                      node.parameters[index].defaultValue
+                    ].children.defaultValue})"
+                      :key="inx"> {{   Crowitem.tit +" ："+ value[Crowitem.key]  }} </b><br />
+        
                     </li>
                   </ul>
                 </div>
@@ -424,23 +455,31 @@
               :data="item.data"
               :details="item.details"
               @openBox2="openBox2"
-<<<<<<< HEAD
             ></conditional>
             <!-- // A/B分流抽出类 -->
             <abshunt
-              v-if="item.type === 'PTYPE_ABSHUNT'"
+              v-if="node.nodeTypeID === 'NID_A/B'"
               :data="item"
+              :output="node.output"
+   
             ></abshunt>
-=======
-              ></conditional>
 
-                    <abshunt
-        
-      
-              ></abshunt>
 
->>>>>>> 7d3b3a5cf10a4a43fafaf1f2ee49d0f01a4034f2
+                   <!-- // 短信控件抽出类 -->
+            <note
+              v-if="item.type === 'NOTE_TEMPLATE'"
+              :data="item"
+            ></note>
+
+                             <!-- // push控件抽出类 -->
+            <push
+              v-if="item.type === 'PUSH_TEMPLATE'"
+              :data="item"
+            ></push>
           </div>
+          
+
+
 
           <el-form-item>
             <el-button icon="el-icon-close" @click="Deselect">关闭</el-button>
@@ -484,28 +523,32 @@
 
 <script>
 import { cloneDeep } from "lodash";
-<<<<<<< HEAD
 import abshunt from "../ef/AB";
 import conditional from "../ef/conditional";
-=======
-import  abshunt  from "./AB"
-import conditional from "../ef/conditional"
->>>>>>> 7d3b3a5cf10a4a43fafaf1f2ee49d0f01a4034f2
+import note from "./note"
+import  push   from "./push"
+import axios from "axios"
 export default {
   data() {
     return {
       visible: true,
       // node 或 line
       type: "node",
+      crowdList:"",
       node: {},
       line: {},
       data: {},
+      Daytime: "",
       blacklist: ["PTYPE_GROUP", "PTYPE_SWITCH"], //组件标题黑名单
       switchValue: "",
       activeNames: ["1"],
       isShowOpenBox: false, //弹框展示
       op: "", //node弹出框数据
-      notelist: ["人群名称", "人群ID", "有效期至", "创建人", "创建时间"],
+      notelist: [{tit:"人群名称",key:"crowdName"},
+      {tit:"人群ID",key:"crowdId"},
+      {tit:"有效期至",key:"validPeriodTime"},
+      {tit:"创建人",key:"createUserName"},
+      {tit:"创建时间",key:"createTime"}],
       stateList: [
         {
           state: "success",
@@ -526,10 +569,18 @@ export default {
       ]
     };
   },
-  created() {},
+  created() {
+
+    axios.post("/test-1/list/crowd",{}).then(res=>{//人群包信息
+    this.crowdList = res.data.data
+
+    })
+  },
   components: {
     conditional,
     abshunt,
+    note,
+    push
   },
   methods: {
     /**
@@ -566,6 +617,8 @@ export default {
           // node.name = this.node.name;
           node.left = this.node.left;
           node.top = this.node.top;
+          console.log(node.parameters);
+          node.output =this.node.output
           node.parameters = this.node.parameters;
           this.$emit("repaintEverything");
         }

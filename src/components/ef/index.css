@@ -362,7 +362,7 @@
       background-color: rgb(49, 47, 47);height: 40px;
       line-height: 40px;
   }
-  .panel-header>span{
+  .panel-header>div>span{
       margin-left: 10px;
       color: whitesmoke;
   

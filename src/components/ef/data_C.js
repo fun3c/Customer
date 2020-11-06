@@ -1,4 +1,5 @@
 var dataC ={
+    "id":"",
     "jobId": "", //任务ID
     "jobType": "", //任务类型
     "jobName": "",//任务名称
@@ -10,7 +11,7 @@ var dataC ={
     "jobState": "",//任务状态
     "createBy": "",//创建人
     "approvalTime": "",//审批时间
-    "delivery":"", //是否测试任务
+    "delivery":false, //是否测试任务
     "taskObject":[], //任务目标
     "nodeList": [
           {
@@ -22,30 +23,20 @@ var dataC ={
             "top": "60px",
             "controlState": "success",
             "image": "start.png",
+            "viewOnly":true,
             "output": {
                 "pinDistance": 0,
                 "flexOutput": false,
                 "fixedOutput": [
                     {
                         "label": "",
-                        "pinName": "",
+                        "pinName": "jtk-endpoint-anchor",
                         "anchor": "BottomCenter"
                     }
                 ]
             },
             "parameters": [
-                {
-                    "title": "任务名称",
-                    "type": "PTYPE_INPUT",
-                    "defaultValue": "开始",
-                    "tips": "任务名称用于描述任务主要功能,并与其他任务进行区分"
-                },
-                {
-                    "title": "任务ID",
-                    "type": "PTYPE_LABEL",
-                    "defaultValue": "CONSTANT_START",
-                    "tips": "任务ID用来唯一标识此任务"
-                },
+  
                 {
                     "title": "任务触发方式",
                     "type": "PTYPE_SELECTGROUP",
@@ -58,7 +49,7 @@ var dataC ={
                             "children": {
                                 "title": "触发人群",
                                 "type": "PTYPE_CROWD",
-                                "defaultValue": 1,
+                                "defaultValue": "",
                                 "values": [
                                     {
                                         "title": "复购-泰康百万医疗险",
@@ -204,6 +195,8 @@ var dataC ={
 export function getDataC() {
     return dataC
 }
+
+
 
 
 
