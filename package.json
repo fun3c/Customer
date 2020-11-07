@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "ceshi":"vue-cli-service build --mode ceshi"
+    "ceshi": "vue-cli-service build --mode ceshi"
   },
   "dependencies": {
     "@form-create/element-ui": "^1.0.19",

@@ -1,5 +1,4 @@
 var dataC ={
-    "id":"",
     "jobId": "", //任务ID
     "jobType": "", //任务类型
     "jobName": "",//任务名称

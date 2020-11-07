@@ -367,3 +367,6 @@
       color: whitesmoke;
   
   }
+  .el-form-item__content>div{
+      width: 100%;
+  }

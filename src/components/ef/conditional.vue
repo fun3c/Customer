@@ -18,7 +18,6 @@
 
     <!-- 弹出框 配置 -->
     <div class="pop_up" v-if="isShowOpenBox">
-               11111
       <div class="pop_up_min">
         <div class="pop_up_min_left">
           <h2>选择条件</h2>
@@ -314,12 +313,12 @@ export default {
             labelInfo =
               labelInfo + this.rightData.labelDataList[item].labelInfo + ",";
           });
-          this.targetData.labelNo = labelNo;
+          this.targetData.labelNo = this.rightData.labelDataList[0].labelNo;
           this.targetData.dataNo = dataNo;
           this.targetData.dataValue = dataValue;
           this.targetData.labelInfo = labelInfo;
         } else {
-          this.targetData.labelNo = this.localData.dataValue.dataValue;
+          this.targetData.labelNo = this.localData.dataValue.labelNo;
           this.targetData.dataNo = this.localData.dataValue.dataNo;
           this.targetData.dataValue = this.localData.dataValue.dataValue;
           this.targetData.labelInfo = this.localData.dataValue.labelInfo;
@@ -329,8 +328,10 @@ export default {
         this.targetData.operatorValue = this.localData.operator.operatorValue;
         this.targetData.operatorInfo = this.localData.operator.operatorInfo;
         this.targetData.operatorNo = this.localData.operator.operatorNo;
-
         this.targetData.label = this.labelName+  this.targetData.operatorInfo+ this.targetData.labelInfo;
+
+
+        console.log(this.localData.dataValue)
         this.$message.success("保存成功");
         this.isShowOpenBox = false;
       }

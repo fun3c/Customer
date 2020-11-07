@@ -55,6 +55,7 @@
   </el-form>
 </template>
 <script>
+import axios from "axios"
 export default {
   data() {
     return {
@@ -72,21 +73,29 @@ export default {
     queryNote() {
       let that=this
       if(''!==this.data.id){
-      this.$http({
-        method: "POST",
-        url: "http://49.233.45.33:8888/messageTemplate/getSmsMessageTemplateInfo",
-        data: this.data.id,
-      })
-        .then((res) => {
-          if (res.data.status) {
-            this.form = res.data.data;
-            this.status = true;
-          }else
-          this.status=false
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+        axios
+          .post(
+            "/test-2/messageTemplate/getSmsMessageTemplateInfo",
+             {"id": this.data.id }
+          )
+          .then(res => {
+            if (res.status) {
+              this.form = res.data;
+              this.status = true;
+              this.data.appPushType=this.form.smsType
+               this.data.appPushValue=this.form.smsValue
+                this.data.expiryDate=this.form.expiryDate
+                 this.data.isRetry=this.form.isRetry
+                  this.data.appUrl=this.form.phoneNumber
+
+
+
+      
+            } else this.status = false;
+          })
+          .catch(err => {
+            console.error(err);
+          });
       }
     },
   },
