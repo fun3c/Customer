@@ -463,6 +463,19 @@
               :output="node.output"
    
             ></abshunt>
+
+
+                   <!-- // 短信控件抽出类 -->
+            <note
+              v-if="item.type === 'NOTE_TEMPLATE'"
+              :data="item"
+            ></note>
+
+                             <!-- // push控件抽出类 -->
+            <push
+              v-if="item.type === 'PUSH_TEMPLATE'"
+              :data="item"
+            ></push>
           </div>
           
 
@@ -512,6 +525,9 @@
 import { cloneDeep } from "lodash";
 import abshunt from "../ef/AB";
 import conditional from "../ef/conditional";
+import note from "./note"
+import  push   from "./push"
+import axios from "axios"
 export default {
   data() {
     return {
@@ -522,7 +538,7 @@ export default {
       node: {},
       line: {},
       data: {},
-      currId: 0,
+      Daytime: "",
       blacklist: ["PTYPE_GROUP", "PTYPE_SWITCH"], //组件标题黑名单
       switchValue: "",
       activeNames: ["1"],
@@ -575,7 +591,6 @@ export default {
     nodeInit(data, id) {
       this.type = "node";
       this.data = data;
-      console.log('data', this.node)
       data.nodeList.filter(node => {
         if (node.id === id) {
           this.node = cloneDeep(node);
@@ -633,13 +648,8 @@ export default {
         message: "删除成功"
       });
     },
-    getNode(id) {
-      const {nodeList} = this.node;
-      console.log('nodeList', nodeList)
-    },
     popCancel() {
       this.isShowOpenBox = false;
-      
     },
     openBox2() {
       // 条件控件弹框修改数据方法

@@ -1,18 +1,19 @@
 <template>
-  <div v-if="easyFlowVisible" style="height: calc(100vh)">
-    <div>
-      <el-row v-if="data.jobName" class="panel-header">
+  <div v-if="easyFlowVisible" style="height: calc(100vh);">
+    <el-row class="panel-header">
+      <div v-if="data.jobName">
         <span>{{ data.jobID }}</span> <span>{{ data.jobName }}</span>
         <span
           >{{ dateFormat(data.startTime) }}-{{ dateFormat(data.endTime) }}</span
         >
-      </el-row>
-    </div>
+      </div>
+    </el-row>
+
     <el-row>
       <!--顶部工具菜单-->
       <el-col :span="24">
         <div class="ef-tooltar">
-          <div style="float: left; margin-left: 5px">
+          <div style="float: left;margin-left: 5px">
             <el-button
               type="primary"
               plain
@@ -42,7 +43,7 @@
             >
           </div>
 
-          <div style="float: right; margin-right: 5px">
+          <div style="float: right;margin-right: 5px">
             <el-link type="primary" :underline="false">{{ data.name }}</el-link>
             <el-divider direction="vertical"></el-divider>
             <el-button
@@ -96,8 +97,8 @@
         </div>
       </el-col>
     </el-row>
-    <div style="display: flex; height: calc(100% - 47px)">
-      <div style="width: 230px; border-right: 1px solid #dce3e8">
+    <div style="display: flex;height: calc(100% - 47px);">
+      <div style="width: 230px;border-right: 1px solid #dce3e8;">
         <node-menu @addNode="addNode" ref="nodeMenu"></node-menu>
       </div>
       <div class="wiper">
@@ -130,11 +131,7 @@
       <!-- 右侧表单 -->
       <div
         v-show="this.isShowForm"
-        style="
-          width: 360px;
-          border-left: 1px solid #dce3e8;
-          background-color: #fbfbfb;
-        "
+        style="width: 360px;border-left: 1px solid #dce3e8;background-color: #FBFBFB"
       >
         <flow-node-form
           ref="nodeForm"
@@ -199,12 +196,12 @@ export default {
         nodeId: undefined,
         // 连线ID
         sourceId: undefined,
-        targetId: undefined,
+        targetId: undefined
       },
       zoom: 1,
       zoomStep: 0.035,
       zoomEnabled: false,
-      isShowForm: false,
+      isShowForm: false
     };
   },
   // 一些基础配置移动该文件中
@@ -215,7 +212,7 @@ export default {
     nodeMenu,
     FlowInfo,
     FlowNodeForm,
-    setTask,
+    setTask
   },
   directives: {
     flowDrag: {
@@ -223,8 +220,7 @@ export default {
         if (!binding) {
           return;
         }
-        el.onmousedown = (e) => {
-          console.log('e', e)
+        el.onmousedown = e => {
           if (e.button == 2) {
             // 右键不管
             return;
@@ -234,7 +230,7 @@ export default {
           let disY = e.clientY - el.offsetTop;
           el.style.cursor = "move";
 
-          document.onmousemove = function (e) {
+          document.onmousemove = function(e) {
             // 移动时禁止默认事件
             e.preventDefault();
             const left = e.clientX - disX;
@@ -248,22 +244,62 @@ export default {
             el.style.top = `${top}px`;
           };
 
-          document.onmouseup = function (e) {
+          document.onmouseup = function(e) {
             el.style.cursor = "auto";
             document.onmousemove = null;
             document.onmouseup = null;
           };
         };
-      },
-    },
+      }
+    }
   },
   mounted() {
     this.jsPlumb = jsPlumb.getInstance();
-    console.log('this.jsPlumb', this.jsPlumb)
-    this.$nextTick(() => {
-      // 默认加载流程A的数据
-      this.dataReload(getDataC());
-    });
+
+    // 进入画布，先判断是新增，编辑，查看
+    if (false) {
+      //新增
+      // 发起ID请求
+      axios.get("http://49.233.45.33:8081/v1/get/job/id").then(res => {
+        this.taskID = res.data.data.jobId;
+        let data = (getDataC().nodeList[0].id =
+          this.taskID + "_" + this.localnodeID);
+        console.log(getDataC());
+        getDataC().jobId = this.taskID;
+        this.$nextTick(() => {
+          // 默认加载流程A的数据
+          this.dataReload(getDataC()); // 默认流程图的数据
+        });
+      });
+    } else if (true) {
+      //查看
+      // 请求画布数据   getCheckdata
+      // axios.post("",{}).then(res=>{
+      //   let data=res.data.data
+      //   data.nodeList.forEach(item=>{
+      //     item.viewOnly=true
+      //        this.$nextTick(() => {
+      //     // 默认加载流程A的数据
+      //     this.dataReload(data); // 默认流程图的数据
+      //   });
+      //   })
+      // })
+      this.$nextTick(() => {
+        // 默认加载流程A的数据
+        this.dataReload(getCheckdata()); // 默认流程图的数据
+      });
+    } else if (false) {
+      // 请求画布数据
+      axios.post("", {}).then(res => {
+        let data = res.data.data;
+        data.nodeList.forEach(item => {
+          this.$nextTick(() => {
+            // 默认加载流程A的数据
+            this.dataReload(data); // 默认流程图的数据
+          });
+        });
+      });
+    }
   },
   methods: {
     // 返回唯一标识
@@ -289,17 +325,15 @@ export default {
           this.$refs.nodeForm.lineInit({
             from: conn.sourceId,
             to: conn.targetId,
-            label: conn.getLabel(),
+            label: conn.getLabel()
           });
         });
         // 连线
-        this.jsPlumb.bind("connection", (evt) => {
+        this.jsPlumb.bind("connection", evt => {
           let from = evt.source.id;
           let to = evt.target.id;
-          
           // console.log(evt.sourceEndpoint.canvas.classList[1],);
           let pinName = evt.sourceEndpoint.canvas.classList[1];
-         
 
           if (this.loadEasyFlowFinish) {
             this.data.lineList.push({
@@ -313,30 +347,29 @@ export default {
         });
 
         // 删除连线回调
-        this.jsPlumb.bind("connectionDetached", (evt) => {
+        this.jsPlumb.bind("connectionDetached", evt => {
           this.deleteLine(evt.sourceId, evt.targetId);
         });
 
         // 改变线的连接节点
-        this.jsPlumb.bind("connectionMoved", (evt) => {
+        this.jsPlumb.bind("connectionMoved", evt => {
           this.changeLine(evt.originalSourceId, evt.originalTargetId);
         });
 
         // 连线右击
-        this.jsPlumb.bind("contextmenu", (evt) => {
+        this.jsPlumb.bind("contextmenu", evt => {
           console.log("contextmenu", evt);
         });
 
         // 连线
-        this.jsPlumb.bind("beforeDrop", (evt) => {
-          console.log("evt", evt);
+        this.jsPlumb.bind("beforeDrop", evt => {
           let from = evt.sourceId;
           let to = evt.targetId;
 
-          let node = this.data.nodeList.filter(function (node) {
+          let node = this.data.nodeList.filter(function(node) {
             return node.id === to;
           });
-          let toArr = this.data.lineList.filter(function (line) {
+          let toArr = this.data.lineList.filter(function(line) {
             return line.to === to;
           });
           console.log(node, "连线的回环信息");
@@ -369,7 +402,7 @@ export default {
         });
 
         // beforeDetach
-        this.jsPlumb.bind("beforeDetach", (evt) => {
+        this.jsPlumb.bind("beforeDetach", evt => {
           console.log("beforeDetach", evt);
         });
         this.jsPlumb.setContainer(this.$refs.efContainer);
@@ -377,52 +410,67 @@ export default {
     },
     getCurrSource(item) {
       const currNode = this.data.nodeList.filter(node => {
-        if(node.id === item.from) return node;
-      })
+        if (node.id === item.from) return node;
+      });
       const currOutput = currNode[0].output.fixedOutput;
       const currEndpoint = currOutput.filter(op => op.pinName === item.pinName);
-      
+
       return currEndpoint[0];
     },
     // 加载流程图
     loadEasyFlow() {
       // 初始化节点
-      this.data.nodeList.forEach((node) => {
-        const output = node.nodeTypeID !== 'NID_START' ? node.output.fixedOutput : [];
+      this.data.nodeList.forEach(node => {
+        const output =
+          node.nodeTypeID !== "NID_START" ? node.output.fixedOutput : [];
 
         if (node.nodeTypeID === "NID_START") {
-          this.jsPlumb.makeSource( node.id, lodash.merge(this.jsplumbStartSourceOptions) );
+          this.jsPlumb.makeSource(
+            node.id,
+            lodash.merge(this.jsplumbStartSourceOptions)
+          );
           this.jsPlumb.makeTarget(node.id, this.jsplumbStartSourceOptions);
         } else {
-          this.jsPlumb.makeSource( node.id, lodash.merge(this.jsplumbSourceOptions) );
+          this.jsPlumb.makeSource(
+            node.id,
+            lodash.merge(this.jsplumbSourceOptions)
+          );
           this.jsPlumb.makeTarget(node.id, this.jsplumbTargetOptions);
         }
-        output.forEach((item) => {
+        output.forEach(item => {
           this.jsPlumb.addEndpoint(node.id, {
             anchors: item.anchor,
             uuid: item.id,
             paintStyle: { fill: "#a1a1a1", radius: 5 },
             isSource: true,
-            cssClass: item.pinName,
+            cssClass: item.pinName
           });
         });
         this.jsPlumb.draggable(node.id);
       });
 
-      this.data.lineList.forEach((line) => {
+      this.data.lineList.forEach(line => {
         if (line.pinName === "jtk-endpoint-anchor") {
-          this.jsPlumb.connect({ source: line.from, target: line.to, }, this.jsplumbConnectOptions);
+          this.jsPlumb.connect(
+            {
+              source: line.from,
+              target: line.to
+            },
+            this.jsplumbConnectOptions
+          );
         } else {
           const currSource = this.getCurrSource(line);
           // console.log('currSource', currSource)
-          this.jsPlumb.connect({
-            uuids: [currSource.id, line.to], 
-            source: currSource.id,
-            target: line.to,
-          },this.jsplumbConnectOptions);
+          this.jsPlumb.connect(
+            {
+              uuids: [currSource.id, line.to],
+              source: currSource.id,
+              target: line.to
+            },
+            this.jsplumbConnectOptions
+          );
         }
       });
-
       // for (var i = 0; i < this.data.nodeList.length; i++) {
       //   let node = this.data.nodeList[i];
       //   // 设置源点，可以拖出线连接其他节点
@@ -451,18 +499,17 @@ export default {
       //       grid: [15, 15], //网格设置
       //       //  Anchors: [ 'TopCenter', 'Bottom','BottomRight', 'BottomLeft'],
       //       containment: "parent",
-      //       stop: function (el) {
+      //       stop: function(el) {
       //         // 拖拽节点结束后的对调
       //         console.log("拖拽结束: ", el);
-      //       },
+      //       }
       //     });
       //   }
       // }
-      // 初始化连线
+      // // 初始化连线
       // for (var i = 0; i < this.data.lineList.length; i++) {
       //   //uuid连线
       //   let line = this.data.lineList[i];
-      //   console.log('line.uuids', line.uuids)
       //   var connParam = {
       //     source: line.from,
       //     target: line.to,
@@ -470,11 +517,11 @@ export default {
       //     label: line.label ? line.label : "",
       //     connector: line.connector ? line.connector : "Flowchart",
       //     anchors: line.anchors ? line.anchors : undefined,
-      //     paintStyle: line.paintStyle ? line.paintStyle : undefined,
+      //     paintStyle: line.paintStyle ? line.paintStyle : undefined
       //   };
       //   this.jsPlumb.connect(connParam, this.jsplumbConnectOptions);
       // }
-      this.$nextTick(function () {
+      this.$nextTick(function() {
         this.loadEasyFlowFinish = true;
       });
     },
@@ -482,7 +529,7 @@ export default {
     setLineLabel(from, to, label) {
       var conn = this.jsPlumb.getConnections({
         source: from,
-        target: to,
+        target: to
       })[0];
       if (!label || label === "") {
         conn.removeClass("flowLabel");
@@ -492,9 +539,9 @@ export default {
       }
       conn.setLabel({
         grid: [15, 15],
-        label: label,
+        label: label
       });
-      this.data.lineList.forEach(function (line) {
+      this.data.lineList.forEach(function(line) {
         if (line.from == from && line.to == to) {
           line.label = label;
         }
@@ -508,12 +555,12 @@ export default {
         this.$confirm("确定删除所点击的线吗?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning",
+          type: "warning"
         })
           .then(() => {
             var conn = this.jsPlumb.getConnections({
               source: this.activeElement.sourceId,
-              target: this.activeElement.targetId,
+              target: this.activeElement.targetId
             })[0];
             this.jsPlumb.deleteConnection(conn);
           })
@@ -522,7 +569,7 @@ export default {
     },
     // 删除线
     deleteLine(from, to) {
-      this.data.lineList = this.data.lineList.filter(function (line) {
+      this.data.lineList = this.data.lineList.filter(function(line) {
         if (line.from == from && line.to == to) {
           return false;
         }
@@ -593,11 +640,10 @@ export default {
         }
         break;
       }
-      nodeMenu.output.fixedOutput = nodeMenu.output.fixedOutput.map((item) => {
+      nodeMenu.output.fixedOutput = nodeMenu.output.fixedOutput.map(item => {
         item.id = `${this.getUUID()}-${new Date().getTime()}`;
         return item;
       });
-
       //传递给画布控件的属性
       var node = {
         id: nodeId,
@@ -609,7 +655,7 @@ export default {
         controlState: "success",
         image: nodeMenu.image,
         output: nodeMenu.output,
-        parameters: nodeMenu.parameters,
+        parameters: nodeMenu.parameters
       };
       // 判断节点类型，如果是开始的话，就有且只能有一个
       if (node.nodeTypeID === "NID_START") {
@@ -623,7 +669,7 @@ export default {
       }
 
       this.data.nodeList.push(node);
-      this.$nextTick(function () {
+      this.$nextTick(function() {
         // // 设置目标点，其他源点拖出的线可以连接该节点,开始节点不可链接
         if (node.nodeTypeID !== "NID_START") {
           this.jsPlumb.makeSource(nodeId, this.jsplumbSourceOptions);
@@ -641,7 +687,7 @@ export default {
               anchors: item.anchor,
               paintStyle: { fill: "#a1a1a1", radius: 5 },
               isSource: true,
-              cssClass: item.pinName,
+              cssClass: item.pinName
             });
           });
         }
@@ -652,10 +698,10 @@ export default {
           //可拖动元素
           containment: "parent",
           grid: [15, 15],
-          stop: function (el) {
+          stop: function(el) {
             // 拖拽节点结束后的对调
             console.log("拖拽结束: ", el);
-          },
+          }
         });
       });
     },
@@ -668,7 +714,7 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-        closeOnClickModal: false,
+        closeOnClickModal: false
       })
         .then(() => {
           //判断节点是否可以删除
@@ -676,7 +722,7 @@ export default {
             this.$message.warning("开始节点不可删除");
             return;
           }
-          this.data.nodeList = this.data.nodeList.filter(function (node) {
+          this.data.nodeList = this.data.nodeList.filter(function(node) {
             if (node.id === nodeId) {
               // 伪删除，将节点隐藏，否则会导致位置错位
               // node.show = false
@@ -684,7 +730,7 @@ export default {
             }
             return true;
           });
-          this.$nextTick(function () {
+          this.$nextTick(function() {
             this.jsPlumb.removeAllEndpoints(nodeId);
           });
         })
@@ -733,14 +779,14 @@ export default {
     // 流程数据信息
     dataInfo() {
       this.flowInfoVisible = true;
-      this.$nextTick(function () {
+      this.$nextTick(function() {
         this.$refs.flowInfo.init();
       });
     },
     // 任务设置
     setCurrentTask() {
-      this.flowInfoVisible = true;
-      this.$nextTick(function () {
+      this.setTaskVisible = true;
+      this.$nextTick(function() {
         this.$refs.setTask.init();
       });
     },
@@ -884,7 +930,7 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-        closeOnClickModal: false,
+        closeOnClickModal: false
       })
         .then(() => {
           var datastr = JSON.stringify(this.data, null, "\t");
@@ -897,13 +943,32 @@ export default {
           ) {
             this.$message.warning("任务信息不完整");
           } else {
-            axios.post("/test-2/save", { data: this.data }).then((res) => {
+            let data = this.data;
+            // this.axios({
+            //   method: "POST",
+            //   url: "/save",
+            //   data: data
+            // })
+            //   .then(res => {
+            //     console.log(res, "wwwwwwwwww");
+            //     if (res.status === 200) {
+            //       this.$message.success("保存成功");
+            //       this.$router.push({
+            //         path: "/users",
+            //         query: { id: "待测试" }
+            //       });
+            //     }
+            //   })
+            //   .catch(err => {
+            //     console.error(err);
+            //   });
+            axios.post("/test-2/save", data).then(res => {
               console.log(this.data, "wwwwwwwwwwwwwwwwww");
               if (res.data.status === 200) {
                 this.$message.success("保存成功");
                 this.$router.push({
                   path: "/users",
-                  query: { id: "待测试" },
+                  query: { id: "待测试" }
                 });
               }
             });
@@ -917,7 +982,7 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-        closeOnClickModal: false,
+        closeOnClickModal: false
       })
         .then(() => {
           this.$message.success("正在执行中,请稍后...");
@@ -934,13 +999,13 @@ export default {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
-          closeOnClickModal: false,
+          closeOnClickModal: false
         }
       )
         .then(() => {
           this.$router.push({
             path: "/users",
-            query: { id: "待测试" },
+            query: { id: "待测试" }
           });
           //   console.log(this.data.id);
           //   this.$message.success("正在执行中,请稍后...");
@@ -954,21 +1019,21 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-        inputErrorMessage: "邮箱格式不正确",
+        inputErrorMessage: "邮箱格式不正确"
       })
         .then(({ value }) => {
           this.$message({
             type: "success",
-            message: "你的邮箱是: " + value,
+            message: "你的邮箱是: " + value
           });
         })
         .catch(() => {
           this.$message({
             type: "info",
-            message: "取消输入",
+            message: "取消输入"
           });
         });
-    },
-  },
+    }
+  }
 };
 </script>
