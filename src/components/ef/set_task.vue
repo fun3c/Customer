@@ -42,6 +42,7 @@
             <el-date-picker
               width="30%"
               v-model="ruleForm.date1"
+              :picker-options="pickerOptions"
               type="datetimerange"
               range-separator="至"
               start-placeholder="开始日期"
@@ -143,7 +144,13 @@ export default {
         ],
         desc: [{ required: true, message: "请填写活动形式", trigger: "blur" }]
       },
-      dialogVisible: false
+      dialogVisible: false,
+        pickerOptions:{                                 //禁用当前日期之前的日期
+            disabledDate(time) {
+            //Date.now()是javascript中的内置函数，它返回自1970年1月1日00:00:00 UTC以来经过的毫秒数。
+                return time.getTime() < Date.now() - 8.64e7;
+            },
+        },
     };
   },
   props: {

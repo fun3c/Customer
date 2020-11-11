@@ -11,7 +11,6 @@ module.exports = {
           
         
           '/test-2': {//短信
-         
             target: "http://49.233.45.33:8888", //任务保存
             changeOrigin: true,
             pathRewrite: {"^/test-2": ""}

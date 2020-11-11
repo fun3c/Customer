@@ -2,7 +2,7 @@
   <div v-if="easyFlowVisible" style="height: calc(100vh);">
     <el-row class="panel-header">
       <div v-if="data.jobName">
-        <span>{{ data.jobID }}</span> <span>{{ data.jobName }}</span>
+        <span>{{ data.jobId }}</span> <span>{{ data.jobName }}</span>
         <span
           >{{ dateFormat(data.startTime) }}-{{ dateFormat(data.endTime) }}</span
         >
@@ -289,6 +289,7 @@ export default {
         this.dataReload(getCheckdata()); // 默认流程图的数据
       });
     } else if (false) {
+      //编辑
       // 请求画布数据
       axios.post("", {}).then(res => {
         let data = res.data.data;
@@ -305,6 +306,7 @@ export default {
     // 返回唯一标识
     getUUID() {
       let value = "";
+      this.localnodeID = this.data.nodeList.length
       value = this.taskID + "_" + (this.localnodeID + 1);
       this.localnodeID = this.localnodeID + 1;
       return value;
@@ -962,14 +964,16 @@ export default {
             //   .catch(err => {
             //     console.error(err);
             //   });
-            axios.post("/test-2/save", data).then(res => {
+            axios.post("/save", data).then(res => {
               console.log(this.data, "wwwwwwwwwwwwwwwwww");
-              if (res.data.status === 200) {
+              if (res.data.code === 200) {
                 this.$message.success("保存成功");
                 this.$router.push({
                   path: "/users",
                   query: { id: "待测试" }
                 });
+              }else {
+                 this.$message.warning(res.data.msg);
               }
             });
           }

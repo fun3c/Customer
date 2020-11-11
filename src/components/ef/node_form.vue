@@ -481,7 +481,7 @@
 
 
 
-          <el-form-item>
+          <el-form-item > 
             <el-button icon="el-icon-close" @click="Deselect">关闭</el-button>
             <el-button type="primary" icon="el-icon-check" @click="save"
               >保存</el-button
@@ -498,7 +498,7 @@
           <el-form-item label="条件">
             <el-input v-model="line.label"></el-input>
           </el-form-item>
-          <el-form-item>
+          <el-form-item >
             <el-button icon="el-icon-close" @click="Deselect">关闭</el-button>
             <el-button type="primary" icon="el-icon-check" @click="saveLine"
               >保存</el-button
@@ -841,5 +841,8 @@ export default {
   div {
     width: 100%;
   }
+}
+.el_from_btn{
+  position:fixed;
 }
 </style>
