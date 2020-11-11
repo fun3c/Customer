@@ -91,8 +91,36 @@ export default {
             { key: "查看", value: 0 },
             { key: "复制", value: 1 },
             { key: "编辑", value: 2 },
-            { key: "发布", value: 3 },
-          ],
+            { key: "发布", value: 3 }
+          ]
+        },
+        {
+          sta: "待审批",
+          options: [
+            { key: "查看", value: 0 },
+            { key: "复制", value: 1 }
+          ]
+        },
+        {
+          sta: "审批中",
+          options: [
+            { key: "查看", value: 0 },
+            { key: "复制", value: 1 }
+          ]
+        },
+        {
+          sta: "已驳回",
+          options: [
+            { key: "查看", value: 0 },
+            { key: "复制", value: 1 }
+          ]
+        },
+        {
+          sta: "待执行",
+          options: [
+            { key: "查看", value: 0 },
+            { key: "复制", value: 1 }
+          ]
         },
         {
           sta: "待审批",
@@ -128,8 +156,15 @@ export default {
             { key: "查看", value: 0 },
             { key: "复制", value: 1 },
             { key: "中止任务", value: 4 },
-            { key: "强制中止", value: 5 },
-          ],
+            { key: "强制中止", value: 5 }
+          ]
+        },
+        {
+          sta: "已中止",
+          options: [
+            { key: "查看", value: 0 },
+            { key: "复制", value: 1 }
+          ]
         },
         {
           sta: "已中止",
@@ -236,7 +271,7 @@ export default {
     },
     getUsers(page, pageSize) {
       this.loading = true;
-      this.$http({
+      axios({
         method: "POST",
         url: "http://49.233.45.33:8888/approval/selectByJobState",
         data: {
@@ -246,7 +281,7 @@ export default {
         .then((res) => {
           this.users = res.data;
         })
-        .catch((err) => {
+        .catch(err => {
           console.error(err);
         });
     },

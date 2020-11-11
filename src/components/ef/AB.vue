@@ -63,7 +63,7 @@
         <div class="baifen">%</div>
         <div class="circle" v-if="i > 1" @click="removeTest(i)">X</div>
       </div>
-      <el-button size="mini" @click="add">添加实验组</el-button>
+      <!-- <el-button size="mini" @click="add">添加实验组</el-button> -->
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="saveTest">保存</el-button>
