@@ -60,14 +60,16 @@
               type="text"
               icon="el-icon-plus"
               size="large"
-              @click="zoomAdd"
+              @mousedown.native="zoomAdd"
+              @mouseup.native="celZoom"
             ></el-button>
             <el-divider direction="vertical"></el-divider>
             <el-button
               type="text"
               icon="el-icon-minus"
               size="large"
-              @click="zoomSub"
+              @mousedown.native="zoomSub"
+              @mouseup.native="celZoom"
             ></el-button>
             <el-button
               type="info"
@@ -100,7 +102,13 @@
         <node-menu @addNode="addNode" ref="nodeMenu"></node-menu>
       </div>
       <div class="wiper">
-        <div id="efContainer" ref="efContainer" class="container" v-flowDrag>
+        <div
+          id="efContainer"
+          ref="efContainer"
+          class="container"
+          @mousewheel.prevent.ctrl="scrollFn"
+          v-flowDrag
+        >
           <template v-for="node in data.nodeList">
             <!-- 画布要展示的组件 -->
 
@@ -159,6 +167,7 @@ import FlowNodeForm from "./node_form";
 import lodash from "lodash";
 import axios from "axios";
 import { getDataC } from "./data_C";
+import { getCheckdata } from "./check_data";
 
 export default {
   data() {
@@ -189,7 +198,9 @@ export default {
         sourceId: undefined,
         targetId: undefined
       },
-      zoom: 0.5,
+      zoom: 1,
+      zoomStep: 0.035,
+      zoomEnabled: false,
       isShowForm: false
     };
   },
@@ -215,20 +226,22 @@ export default {
             return;
           }
           //  鼠标按下，计算当前原始距离可视区的高度
-          let disX = e.clientX;
-          let disY = e.clientY;
+          let disX = e.clientX - el.offsetLeft;
+          let disY = e.clientY - el.offsetTop;
           el.style.cursor = "move";
 
           document.onmousemove = function(e) {
             // 移动时禁止默认事件
             e.preventDefault();
             const left = e.clientX - disX;
-            disX = e.clientX;
-            el.scrollLeft += -left;
+            // disX = e.clientX;
+            // el.scrollLeft += -left;
 
             const top = e.clientY - disY;
-            disY = e.clientY;
-            el.scrollTop += -top;
+            // disY = e.clientY;
+            // el.scrollTop += -top;
+            el.style.left = `${left}px`;
+            el.style.top = `${top}px`;
           };
 
           document.onmouseup = function(e) {
@@ -244,53 +257,56 @@ export default {
     this.jsPlumb = jsPlumb.getInstance();
 
     // 进入画布，先判断是新增，编辑，查看
-    console.log(this.$route.params.value)
-    if (!this.$route.params.value) {
+    if (false) {
       //新增
       // 发起ID请求
-      axios.get("/test-4/v1/get/job/id").then(res => {
+      axios.get("http://49.233.45.33:8081/v1/get/job/id").then(res => {
         this.taskID = res.data.data.jobId;
         let data = (getDataC().nodeList[0].id =
           this.taskID + "_" + this.localnodeID);
         console.log(getDataC());
-        getDataC().jobId=this.taskID
+        getDataC().jobId = this.taskID;
         this.$nextTick(() => {
           // 默认加载流程A的数据
           this.dataReload(getDataC()); // 默认流程图的数据
         });
       });
-    } else if (this.$route.params.value===0) {      //查看
+    } else if (true) {
+      //查看
+      // 请求画布数据   getCheckdata
+      // axios.post("",{}).then(res=>{
+      //   let data=res.data.data
+      //   data.nodeList.forEach(item=>{
+      //     item.viewOnly=true
+      //        this.$nextTick(() => {
+      //     // 默认加载流程A的数据
+      //     this.dataReload(data); // 默认流程图的数据
+      //   });
+      //   })
+      // })
+      this.$nextTick(() => {
+        // 默认加载流程A的数据
+        this.dataReload(getCheckdata()); // 默认流程图的数据
+      });
+    } else if (false) {
       // 请求画布数据
-      axios.post("",{}).then(res=>{
-        let data=res.data.data
-        data.nodeList.forEach(item=>{
-          item.viewOnly=true
-             this.$nextTick(() => {
-          // 默认加载流程A的数据
-          this.dataReload(data); // 默认流程图的数据
+      axios.post("", {}).then(res => {
+        let data = res.data.data;
+        data.nodeList.forEach(item => {
+          this.$nextTick(() => {
+            // 默认加载流程A的数据
+            this.dataReload(data); // 默认流程图的数据
+          });
         });
-        })
-      })
-   
-    } else if (this.$route.params.value===2) {
-       // 请求画布数据
-      axios.post("",{}).then(res=>{
-        let data=res.data.data
-        data.nodeList.forEach(item=>{
-             this.$nextTick(() => {
-          // 默认加载流程A的数据
-          this.dataReload(data); // 默认流程图的数据
-        });
-        })
-      })
+      });
     }
   },
   methods: {
     // 返回唯一标识
     getUUID() {
-  let value = ""
-    value = this.taskID+"_"+(this.localnodeID+1)
-    this.localnodeID=this.localnodeID+1
+      let value = "";
+      value = this.taskID + "_" + (this.localnodeID + 1);
+      this.localnodeID = this.localnodeID + 1;
       return value;
     },
     jsPlumbInit() {
@@ -318,7 +334,6 @@ export default {
           let to = evt.target.id;
           // console.log(evt.sourceEndpoint.canvas.classList[1],);
           let pinName = evt.sourceEndpoint.canvas.classList[1];
-          this.nodeList;
 
           if (this.loadEasyFlowFinish) {
             this.data.lineList.push({
@@ -393,59 +408,119 @@ export default {
         this.jsPlumb.setContainer(this.$refs.efContainer);
       });
     },
+    getCurrSource(item) {
+      const currNode = this.data.nodeList.filter(node => {
+        if (node.id === item.from) return node;
+      });
+      const currOutput = currNode[0].output.fixedOutput;
+      const currEndpoint = currOutput.filter(op => op.pinName === item.pinName);
+
+      return currEndpoint[0];
+    },
     // 加载流程图
     loadEasyFlow() {
       // 初始化节点
-      for (var i = 0; i < this.data.nodeList.length; i++) {
-        let node = this.data.nodeList[i];
-        // 设置源点，可以拖出线连接其他节点
+      this.data.nodeList.forEach(node => {
+        const output =
+          node.nodeTypeID !== "NID_START" ? node.output.fixedOutput : [];
 
         if (node.nodeTypeID === "NID_START") {
           this.jsPlumb.makeSource(
             node.id,
-            lodash.merge(this.jsplumbStartSourceOptions, {})
+            lodash.merge(this.jsplumbStartSourceOptions)
           );
+          this.jsPlumb.makeTarget(node.id, this.jsplumbStartSourceOptions);
         } else {
           this.jsPlumb.makeSource(
             node.id,
-            lodash.merge(this.jsplumbSourceOptions, {})
+            lodash.merge(this.jsplumbSourceOptions)
+          );
+          this.jsPlumb.makeTarget(node.id, this.jsplumbTargetOptions);
+        }
+        output.forEach(item => {
+          this.jsPlumb.addEndpoint(node.id, {
+            anchors: item.anchor,
+            uuid: item.id,
+            paintStyle: { fill: "#a1a1a1", radius: 5 },
+            isSource: true,
+            cssClass: item.pinName
+          });
+        });
+        this.jsPlumb.draggable(node.id);
+      });
+
+      this.data.lineList.forEach(line => {
+        if (line.pinName === "jtk-endpoint-anchor") {
+          this.jsPlumb.connect(
+            {
+              source: line.from,
+              target: line.to
+            },
+            this.jsplumbConnectOptions
+          );
+        } else {
+          const currSource = this.getCurrSource(line);
+          // console.log('currSource', currSource)
+          this.jsPlumb.connect(
+            {
+              uuids: [currSource.id, line.to],
+              source: currSource.id,
+              target: line.to
+            },
+            this.jsplumbConnectOptions
           );
         }
-        // // 设置目标点，其他源点拖出的线可以连接该节点,开始节点不可链接
-        if (node.nodeTypeID !== "NID_START") {
-          this.jsPlumb.makeTarget(node.id, this.jsplumbTargetOptions);
-        } else {
-          this.jsPlumb.makeTarget(node.id, this.jsplumbStartSourceOptions);
-        }
-        if (!node.viewOnly) {
-          //是否是不可移动元素
-          this.jsPlumb.draggable(node.id, {
-            //可拖动元素
-            grid: [15, 15], //网格设置
-            //  Anchors: [ 'TopCenter', 'Bottom','BottomRight', 'BottomLeft'],
-            containment: "parent",
-            stop: function(el) {
-              // 拖拽节点结束后的对调
-              console.log("拖拽结束: ", el);
-            }
-          });
-        }
-      }
-      // 初始化连线
-      for (var i = 0; i < this.data.lineList.length; i++) {
-        //uuid连线
-        let line = this.data.lineList[i];
-        var connParam = {
-          source: line.from,
-          target: line.to,
-          uuids: line.uuids,
-          label: line.label ? line.label : "",
-          connector: line.connector ? line.connector : "Flowchart",
-          anchors: line.anchors ? line.anchors : undefined,
-          paintStyle: line.paintStyle ? line.paintStyle : undefined
-        };
-        this.jsPlumb.connect(connParam, this.jsplumbConnectOptions);
-      }
+      });
+      // for (var i = 0; i < this.data.nodeList.length; i++) {
+      //   let node = this.data.nodeList[i];
+      //   // 设置源点，可以拖出线连接其他节点
+
+      //   if (node.nodeTypeID === "NID_START") {
+      //     this.jsPlumb.makeSource(
+      //       node.id,
+      //       lodash.merge(this.jsplumbStartSourceOptions, {})
+      //     );
+      //   } else {
+      //     this.jsPlumb.makeSource(
+      //       node.id,
+      //       lodash.merge(this.jsplumbSourceOptions, {})
+      //     );
+      //   }
+      //   // // 设置目标点，其他源点拖出的线可以连接该节点,开始节点不可链接
+      //   if (node.nodeTypeID !== "NID_START") {
+      //     this.jsPlumb.makeTarget(node.id, this.jsplumbTargetOptions);
+      //   } else {
+      //     this.jsPlumb.makeTarget(node.id, this.jsplumbStartSourceOptions);
+      //   }
+      //   if (!node.viewOnly) {
+      //     //是否是不可移动元素
+      //     this.jsPlumb.draggable(node.id, {
+      //       //可拖动元素
+      //       grid: [15, 15], //网格设置
+      //       //  Anchors: [ 'TopCenter', 'Bottom','BottomRight', 'BottomLeft'],
+      //       containment: "parent",
+      //       stop: function(el) {
+      //         // 拖拽节点结束后的对调
+      //         console.log("拖拽结束: ", el);
+      //       }
+      //     });
+      //   }
+      // }
+      // // 初始化连线
+      // for (var i = 0; i < this.data.lineList.length; i++) {
+      //   //uuid连线
+      //   let line = this.data.lineList[i];
+      //   var connParam = {
+      //     source: line.from,
+      //     target: line.to,
+      //     uuids: line.uuids,
+      //     label: line.label ? line.label : "",
+      //     connector: line.connector ? line.connector : "Flowchart",
+      //     anchors: line.anchors ? line.anchors : undefined,
+      //     paintStyle: line.paintStyle ? line.paintStyle : undefined
+      //   };
+      //   this.jsPlumb.connect(connParam, this.jsplumbConnectOptions);
+      // }
       this.$nextTick(function() {
         this.loadEasyFlowFinish = true;
       });
@@ -565,6 +640,10 @@ export default {
         }
         break;
       }
+      nodeMenu.output.fixedOutput = nodeMenu.output.fixedOutput.map(item => {
+        item.id = `${this.getUUID()}-${new Date().getTime()}`;
+        return item;
+      });
       //传递给画布控件的属性
       var node = {
         id: nodeId,
@@ -782,20 +861,67 @@ export default {
       return time;
     },
     zoomAdd() {
-      if (this.zoom >= 1) {
-        return;
-      }
-      this.zoom = this.zoom + 0.1;
-      this.$refs.efContainer.style.transform = `scale(${this.zoom})`;
-      this.jsPlumb.setZoom(this.zoom);
+      // if (this.zoom >= 1) {
+      //   return;
+      // }
+      this.zoomEnabled = true;
+      this.doZoom(+this.zoomStep);
+      // this.zoom = this.zoom + 0.1;
+      // // this.$refs.efContainer.style.transform = `scale(${this.zoom})`;
+      // this.jsPlumb.setZoom(this.zoom);
     },
     zoomSub() {
-      if (this.zoom <= 0) {
-        return;
+      this.zoomEnabled = true;
+      this.doZoom(0 - this.zoomStep);
+      // if (this.zoom <= 0) {
+      //   return;
+      // }
+      // this.zoom = this.zoom - 0.1;
+      // // this.$refs.efContainer.style.transform = `scale(${this.zoom})`;
+      // this.jsPlumb.setZoom(this.zoom, true);
+    },
+    celZoom() {
+      this.zoomEnabled = false;
+      clearTimeout(this.timer);
+    },
+    doZoom(step) {
+      this.zoom += step;
+      if (this.zoom <= 0.2 || this.zoom >= 2) return;
+      this.setZoom(this.zoom, this.jsPlumb, null, this.$refs.efContainer);
+
+      if (this.zoomEnabled) {
+        this.zoom += step;
+        this.timer = setTimeout(() => this.doZoom(step), 200);
       }
-      this.zoom = this.zoom - 0.1;
-      this.$refs.efContainer.style.transform = `scale(${this.zoom})`;
-      this.jsPlumb.setZoom(this.zoom);
+    },
+
+    setZoom(zoom, instance, transformOrigin, el) {
+      transformOrigin = transformOrigin || [0.5, 0.5];
+      instance = instance || jsPlumb;
+      el = el || instance.getContainer();
+      var p = ["webkit", "moz", "ms", "o"],
+        s = "scale(" + zoom + ")",
+        oString =
+          transformOrigin[0] * 100 + "% " + transformOrigin[1] * 100 + "%";
+
+      for (var i = 0; i < p.length; i++) {
+        el.style[p[i] + "Transform"] = s;
+        el.style[p[i] + "TransformOrigin"] = oString;
+      }
+
+      el.style["transform"] = s;
+      el.style["transformOrigin"] = oString;
+
+      instance.setZoom(zoom);
+    },
+
+    scrollFn(event) {
+      if (event.wheelDelta > 0) {
+        this.doZoom(+this.zoomStep);
+      }
+      if (event.wheelDelta < 0) {
+        this.doZoom(0 - this.zoomStep);
+      }
     },
     // -------------------------------------------------------------------顶部按键
     //提交流程  保存流程
@@ -818,30 +944,14 @@ export default {
             this.$message.warning("任务信息不完整");
           } else {
             let data = this.data;
-            axios.post("/test-4/save",data)
-            // this.$http({
+            // this.axios({
             //   method: "POST",
-            //   url: "http://81.70.46.16:8888/save",
+            //   url: "/save",
             //   data: data
             // })
-              .then(res => {
-                console.log(res, "wwwwwwwwww");
-                if (res.status === 200) {
-                  this.$message.success("保存成功");
-                  this.$router.push({
-                    path: "/users",
-                    query: { id: "待测试" }
-                  });
-                }
-              })
-              .catch(err => {
-                console.error(err);
-              });
-            // axios
-            //   .post("/test-2/save",data)
             //   .then(res => {
-            //     console.log(this.data,'wwwwwwwwwwwwwwwwww');
-            //     if (res.data.status === 200) {
+            //     console.log(res, "wwwwwwwwww");
+            //     if (res.status === 200) {
             //       this.$message.success("保存成功");
             //       this.$router.push({
             //         path: "/users",
@@ -849,6 +959,19 @@ export default {
             //       });
             //     }
             //   })
+            //   .catch(err => {
+            //     console.error(err);
+            //   });
+            axios.post("/test-2/save", data).then(res => {
+              console.log(this.data, "wwwwwwwwwwwwwwwwww");
+              if (res.data.status === 200) {
+                this.$message.success("保存成功");
+                this.$router.push({
+                  path: "/users",
+                  query: { id: "待测试" }
+                });
+              }
+            });
           }
         })
         .catch(() => {});

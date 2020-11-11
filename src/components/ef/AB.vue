@@ -5,20 +5,24 @@
     style="width: 100%"
     label-position="top"
   >
-
     <el-form-item label="分流方式">
-      <el-select v-model="data.defaultValue" placeholder="请选择" >
-        <el-option :label="s.label" :value="s.value" v-for="(s,i) in data.shuntWay" :key="i"></el-option>
+      <el-select v-model="data.defaultValue" placeholder="请选择">
+        <el-option
+          :label="s.label"
+          :value="s.value"
+          v-for="(s, i) in data.shuntWay"
+          :key="i"
+        ></el-option>
       </el-select>
     </el-form-item>
     <el-form-item label="观察周期">
-  <div style="display: flex">
-        <el-input-number
+      <div style="display: flex">
+        <el-input
           v-model="data.period"
-          :min="1"
-          :max="99"
-          :controls="false"
-        ></el-input-number>
+          :maxlength="2"
+          placeholder="请输入1~99天"
+          onkeyup="this.value=this.value.replace(/[^1-99]/g,'')"
+        ></el-input>
         <div class="baifen">天</div>
       </div>
     </el-form-item>
@@ -41,7 +45,7 @@
           >{{ group.name }}</el-tag
         >
         <el-input
-          maxlength="10"
+          :maxlength="10"
           placeholder="汉字、字母、数字、_"
           onkeyup="value=value.replace(/[^\w\u4E00-\u9FA5]/g,'')"
           v-model="group.name"
@@ -53,15 +57,13 @@
         <el-input-number
           v-model="group.num"
           :min="0"
-          :max="100"
+          :max="100-sum"
           :controls="false"
         ></el-input-number>
         <div class="baifen">%</div>
-        <div class="circle" v-if="i >1" @click="removeTest(i)">
-          X
-        </div>
+        <div class="circle" v-if="i > 1" @click="removeTest(i)">X</div>
       </div>
-      <!-- <el-button size="mini" @click="add">添加实验组</el-button> -->
+      <el-button size="mini" @click="add">添加实验组</el-button>
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="saveTest">保存</el-button>
@@ -73,15 +75,15 @@
 export default {
   data() {
     return {
-      sum: 100,
+      sum: 0,
       form: [],
     };
   },
   computed: {},
-  props:["data","output"],
+  props: ["data", "output"],
   mounted() {
     //  this.form =this.props.data;
-  // console.log(this.props.data)
+    // console.log(this.props.data)
     // this.getData();
   },
   watch: {},
@@ -92,9 +94,8 @@ export default {
       else return true;
     },
     add() {
-
       if (this.examgleng()) {
-        this.data.groups.push({ name: "", num: 0});
+        this.data.groups.push({ name: "", num: 0 });
       } else {
         this.$message({
           message: "最多存在20组实验",
@@ -108,27 +109,38 @@ export default {
     },
     //判断实验组的名称是否存在''
     nameIsNull() {
-      var result = false;
       for (var item of this.data.groups) {
-        if (item.name === "") result = true;
+        if (item.name === "") return true;
+        this.sum += item.num;
       }
-      return result;
+      return false;
+    },
+    //判断总和是否超过100
+    numCount() {
+      if (this.sum !== 100) return true;
+      else return false;
     },
     saveTest() {
+      
+      if(this.data.period==''){
+        this.$message({
+          message: "观察周期为空",
+          type: "warning",
+        });
+        return
+      }
       if (this.nameIsNull()) {
         this.$message({
           message: "实验组名有为空",
           type: "warning",
         });
+      } else if (this.numCount()) {
+        this.$message({
+          message: "分流比例总和不等于100%",
+          type: "warning",
+        });
       } else {
-
-            // this.output.fixedOutput.push({
-            //                 "label": "实验3", //端点描述
-            //                 "pinName": "3",
-            //                 "anchor": "BottomCenter"
-            //             })
-            //             console.log( this.output)
-  
+ 
         this.$message({
           message: "保存成功",
           type: "success",
@@ -161,7 +173,7 @@ export default {
   border: 1px solid #dcdfe6;
   text-align: center;
 }
-.el-input input{
+.el-input input {
   text-align: center;
 }
 </style>

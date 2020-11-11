@@ -11,12 +11,16 @@
         <el-input
           v-model="idOrName"
           placeholder="请输入任务ID或名称"
+          onkeyup="value=value.replace(/[^\w\u4E00-\u9FA5]/g, '')"
+          maxlength="40"
+          clearable
         ></el-input>
       </el-form-item>
       <el-form-item label="创建人" size="mini">
         <el-input
           v-model="taskquerylist.createBy"
           placeholder="请输入创建人"
+          clearable
         ></el-input>
       </el-form-item>
       <el-form-item label="触发方式" size="mini">
@@ -30,7 +34,7 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="任务目标" size="mini">
+      <!-- <el-form-item label="任务目标" size="mini">
         <el-select
           v-model="taskquerylist.taskObject"
           placeholder="所有目标"
@@ -41,10 +45,10 @@
           <el-option label="目标1" value="0"></el-option>
           <el-option label="目标2" value="1"></el-option>
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="任务性质" size="mini">
         <el-select
-          v-model="taskquerylist.jobNature"
+          v-model="taskquerylist.delivery"
           placeholder="所有性质"
           clearable
         >
@@ -71,11 +75,11 @@
         <el-col :span="11">
           <el-date-picker
             v-model="time"
-            type="daterange"
+            type="datetimerange"
             range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            value-format="yyyy-MM-dd"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            value-format="yyyy-MM-dd HH:mm:dd"
           >
           </el-date-picker>
         </el-col>
@@ -139,7 +143,7 @@
       </el-table-column>
       <el-table-column label="任务性质" min-width="10%">
         <template slot-scope="scope">
-          <span>{{ jobNatures[scope.row.jobNature] }}</span>
+          <span>{{ deliverys[scope.row.delivery] }}</span>
         </template>
       </el-table-column>
       <el-table-column label="起止时间" min-width="10%">
@@ -209,12 +213,11 @@
 </template>
 
 <script>
-import axios from "axios"
 export default {
   data() {
     return {
       triggerWays: ["行为触发", "定时触发"],
-      jobNatures: ["正式任务", "测试任务"],
+      deliverys: ["正式任务", "测试任务"],
       idOrName: "",
       currentPage: 1, //初始页
       pageSize: 10, //    每页的数据
@@ -341,11 +344,11 @@ export default {
     // 初始页currentPage、初始每页数据数pageSize和数据data
     handleSizeChange: function (size) {
       this.pageSize = size;
-      this.queryList(this.currentPage, size);
+      this.queryList();
     },
     handleCurrentChange: function (currentPage) {
       this.currentPage = currentPage;
-      this.queryList(currentPage, this.pageSize);
+      this.queryList();
     },
     defaultList() {
       this.taskquerylist = {};
@@ -357,24 +360,33 @@ export default {
     //page当前页,pageSize每页数据
     getJobList(page, pageSize) {
       this.loading = true;
-      axios.post("/test-4/listPage",{
+      this.$http({
+        method: "POST",
+        url: "http://49.233.45.33:8888/selectPage",
+        data: {
           page: page,
           pageSize: pageSize,
-        })
+        },
+      })
         .then((res) => {
-          this.users = res.data.content;
-          this.lotalElements = res.data.lotalElements;
+          this.users = res.data.list;
+          this.lotalElements = res.data.total;
         })
         .catch((err) => {
           console.error(err);
         });
     },
     queryList() {
+      // if(this.taskquerylist.taskObject.length==0){
+      //   this.taskquerylist.taskObject=""
+      // }
       if (this.idOrName != "") {
         if (isNaN(this.idOrName)) {
           this.taskquerylist.jobName = this.idOrName;
-        } else {
+          this.taskquerylist.id=""
+        } else { 
           this.taskquerylist.id = this.idOrName;
+          this.taskquerylist.jobName=""
         }
       }
       if (this.time !== "") {
@@ -383,14 +395,14 @@ export default {
       }
       this.taskquerylist.page = this.currentPage;
       this.taskquerylist.pageSize = this.pageSize;
-      axios({
+      this.$http({
         method: "POST",
-        url: "/test-4/listPage",
+        url: "http://49.233.45.33:8888/selectPage",
         data: this.taskquerylist,
       })
         .then((res) => {
-          this.users = res.data.content;
-          this.lotalElements = res.data.lotalElements;
+          this.users = res.data.list;
+          this.lotalElements = res.data.total;
         })
         .catch((err) => {
           console.error(err);
@@ -416,26 +428,26 @@ export default {
       }
       //发布
       if (value === 3) {
-        console.log(jobId);
         this.$confirm("确定要发布吗?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         }).then(() => {
-          axios({
+          this.$http({
             method: "POST",
-            url: "/test-4/approval/issueTask",
+            url: "http://49.233.45.33:8888/approval/issueTask",
             data: {
               jobId: jobId,
             },
           })
             .then((res) => {
-              if (res.code == 400) {
-                this.$alert(res.msg, "发布失败", {
+              console.log(res)
+              if (res.data.code == 400) {
+                this.$alert(res.data.msg, "发布失败", {
                   confirmButtonText: "确定",
                 });
               }
-              if (res.code == 200) {
+              if (res.data.code == 200) {
                 this.getJobList(this.currentPage, this.pageSize);
                 this.$message({
                   message: "发布成功",
@@ -459,7 +471,13 @@ export default {
             type: "warning",
           }
         ).then(() => {
-          axios.post("/test-4/taskExecute/discontinueTask",{"jobId":jobId})
+          this.$http({
+            method: "POST",
+            url: "http://49.233.45.33:8888/taskExecute/discontinueTask",
+            data: {
+              jobId: jobId,
+            },
+          })
             .then((res) => {
               this.getJobList(this.currentPage, this.pageSize);
             })
@@ -479,7 +497,13 @@ export default {
             type: "warning",
           }
         ).then(() => {
-          axios.post("/test-4/taskExecute/discontinueTask",{"jobId":jobId})
+          this.$http({
+            method: "POST",
+            url: "http://49.233.45.33:8888/taskExecute/terminationTask",
+            data: {
+              jobId: jobId,
+            },
+          })
             .then((res) => {
               this.getJobList(this.currentPage, this.pageSize);
             })
@@ -550,7 +574,7 @@ export default {
       this.dialogTitle = "新增";
       this.user = Object.assign({}, this.userBackup);
       this.userFormVisible = true;
-      this.$router.push({ path: "/Panel" });
+      this.$router.push({ path: "/Panel"});
     },
   },
 };

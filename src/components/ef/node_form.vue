@@ -15,7 +15,7 @@
             <span>
               {{ node.info }}
             </span>
-            <div class="subline"></div>
+            <!-- <div class="subline"></div> -->
           </div>
           <div
             class="ef-node-form-item"
@@ -28,11 +28,11 @@
                 {{ item.title }}
               </b>
               <!-- 文本标签 -->
-              <span class="PTYPE_TEXT" v-if="item.type === 'PTYPE_TEXT'">
+              <!-- <span class="PTYPE_TEXT" v-if="item.type === 'PTYPE_TEXT'">
                 {{ item.defaultValue }}
                 <br />
                 <span> {{ item.tips }}</span>
-              </span>
+              </span> -->
               <!-- input -->
               <div class="PTYPE_INPUT" v-if="item.type === 'PTYPE_INPUT'">
                 <el-input
@@ -40,10 +40,10 @@
                   :placeholder="item.defaultValue"
                 >
                 </el-input>
-                <span class="el-from-describe">
+                <!-- <span class="el-from-describe">
                   {{ item.tips }}
-                </span>
-                <div class="subline"></div>
+                </span> -->
+                <!-- <div class="subline"></div> -->
               </div>
               <!-- label -->
               <div class="PTYPE_LABEL" v-if="item.type === 'PTYPE_LABEL'">
@@ -51,7 +51,7 @@
                 <span class="el-from-describe">
                   {{ item.tips }}
                 </span>
-                <div class="subline"></div>
+                <!-- <div class="subline"></div> -->
               </div>
               <!-- 下拉框 -->
               <div class="PTYPE_SELECT" v-if="item.type === 'PTYPE_SELECT'">
@@ -183,7 +183,7 @@
                 <span class="el-from-describe">
                   {{ item.tips }}
                 </span>
-                <div class="subline"></div>
+                <!-- <div class="subline"></div> -->
               </div>
 
               <!-- 时间选择器 -->
@@ -571,7 +571,7 @@ export default {
   },
   created() {
 
-    axios.post("/test-4/list/crowd",{}).then(res=>{//人群包信息
+    axios.post("http://49.233.45.33:8081/list/crowd",{}).then(res=>{//人群包信息
     this.crowdList = res.data.data
 
     })
@@ -809,7 +809,7 @@ export default {
       b {
         color: rgb(11, 145, 255);
         width: 180px;
-        overflow: hidden; /*超出的部分隐藏起来。*/
+        // overflow: hidden; /*超出的部分隐藏起来。*/
         white-space: nowrap; /*不显示的地方用省略号...代替*/
       }
       b:hover {

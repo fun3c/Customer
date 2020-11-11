@@ -1,0 +1,54 @@
+{
+    "id": "2",
+    "nodeTypeID": "NID_CONDITION",
+    "caption": "条件分支",
+    "image": "条件分支.png",
+    "info": "用来判断是否满足某个或者某一组条件",
+    "input": "",
+    "output": {
+        "pinDistance": 100,
+        "flexOutput": false,
+        "fixedOutput": [
+            {
+                "label": "是",
+                "pinName": "PIN_TRUE",
+                "anchor": "BottomLeft"
+            },
+            {
+                "label": "否",
+                "pinName": "PIN_FALSE",
+                "anchor": "BottomRight"
+            }
+        ]
+    },
+    "parameters": [
+        {
+            "title": "条件缩略图",
+            "type": "PTYPE_CONDITION_DETAILS",
+            "defaultValue": "条件",
+            "tips": "任务名称用于描述任务主要功能",
+            "data": {
+                "id": 0,
+                "label": "条件",
+                "relation": "AND",
+                "swtich": "myred",
+                "children": [
+                    {
+                        "id": 5,
+                        "label": "",
+                        "labelNo": "",
+                        "dataNo": "",
+                        "dataValue": "",
+                        "operatorNo": "",
+                        "operatorValue": "",
+                        "operatorInfo": "",
+                        "labelInfo": "",
+                        "expand": true
+                    }
+                ],
+                "expand": true
+
+            }
+        }
+    ]
+}

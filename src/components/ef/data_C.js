@@ -1,5 +1,4 @@
 var dataC ={
-    "id":"",
     "jobId": "", //任务ID
     "jobType": "", //任务类型
     "jobName": "",//任务名称
@@ -9,7 +8,7 @@ var dataC ={
     "startTime": "",//开始时间
     "endTime": "",//结束时间
     "jobState": "",//任务状态
-    "createBy": "",//创建人
+    "createBy": "ADMIN",//创建人
     "approvalTime": "",//审批时间
     "delivery":false, //是否测试任务
     "taskObject":[], //任务目标

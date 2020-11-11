@@ -18,7 +18,6 @@
 
     <!-- 弹出框 配置 -->
     <div class="pop_up" v-if="isShowOpenBox">
-               11111
       <div class="pop_up_min">
         <div class="pop_up_min_left">
           <h2>选择条件</h2>
@@ -199,7 +198,7 @@ export default {
   },
   props: ["data", "details"],
   created() {
-    axios.post("/test-4/list/label", { labelType: 1 }).then(res => {
+    axios.post("http://49.233.45.33:8081/list/label", { labelType: 1 }).then(res => {
       this.tabeldata = res.data.data;
       console.log(this.tabeldata, "请求的树");
       // this.tabeldata.forEach((item, index) => {
@@ -332,6 +331,7 @@ export default {
         this.targetData.label = this.labelName+  this.targetData.operatorInfo+ this.targetData.labelInfo;
 
 
+        console.log(this.localData.dataValue)
         this.$message.success("保存成功");
         this.isShowOpenBox = false;
       }

@@ -244,61 +244,64 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                         "tips": "任务名称用于描述任务主要功能",
                         "data": {
                             "id": 0,
-                            "label": "且",
+                            "label": "条件",
                             "relation": "AND",
                             "swtich": "myred",
-                            "children": [{
-                                "id": 2,
-                                "label": "或",
-                                "relation": "OR",
-                                "swtich": "myred",
-                                "children": [{
+                            "children": [
+                                // {
+                                // "id": 2,
+                                // "label": "或",
+                                // "relation": "OR",
+                                // "swtich": "myred",
+                                // "children": [
+                                    {
                                     "id": 5,
-                                    "label": "性别=男",
-                                    "labelNo": "10001",
-                                    "dataNo": "111111",
-                                    "dataValue": "1",
-                                    "operatorNo": "22222",
-                                    "operatorValue": "contained",
-                                    "operatorInfo": "被包含在",
-                                    "labelInfo": "男性",
+                                    "label": "",
+                                    "labelNo": "",
+                                    "dataNo": "",
+                                    "dataValue": "",
+                                    "operatorNo": "",
+                                    "operatorValue": "",
+                                    "operatorInfo": "",
+                                    "labelInfo": "",
                                     "expand": true
                                 },
-                                {
-                                    "id": 6,
-                                    "label": "银行卡余额>=",
-                                    "labelNo": "100021",
-                                    "dataNo": "111116",
-                                    "dataValue": "0,100000",
-                                    "operatorNo": "22224",
-                                    "operatorValue": "contained",
-                                    "operatorInfo": ">=",
-                                    "labelInfo": "用户银行卡余额",
-                                    "expand": true
-                                }
+                                // {
+                                //     "id": 6,
+                                //     "label": "",
+                                //     "labelNo": "",
+                                //     "dataNo": "",
+                                //     "dataValue": "",
+                                //     "operatorNo": "",
+                                //     "operatorValue": "",
+                                //     "operatorInfo": "",
+                                //     "labelInfo": "",
+                                //     "expand": true
+                                // }
                                 ],
                                 "expand": true
-                            },
-                            {
-                                "id": 3,
-                                "label": "且",
-                                "relation": "AND",
-                                "swtich": "myred",
-                                "children": [{
-                                    "id": 7,
-                                    "label": "判断用户是否是中国人=否",
-                                    "labelNo": "100014",
-                                    "dataNo": "111114",
-                                    "dataValue": "false",
-                                    "operatorNo": "22223",
-                                    "operatorValue": "=",
-                                    "operatorInfo": "=",
-                                    "labelInfo": "是否中国人",
-                                    "expand": true
-                                }],
-                                "expand": true
-                            }
-                            ],
+                            // },
+                            // {
+                            //     "id": 3,
+                            //     "label": "且",
+                            //     "relation": "AND",
+                            //     "swtich": "myred",
+                            //     "children": [{
+                            //         "id": 7,
+                            //         "label": "",
+                            //         "labelNo": "",
+                            //         "dataNo": "",
+                            //         "dataValue": "",
+                            //         "operatorNo": "",
+                            //         "operatorValue": "",
+                            //         "operatorInfo": "",
+                            //         "labelInfo": "",
+                            //         "expand": true
+                            //     }],
+                            //     "expand": true
+                            // }
+                            // ],
+                            ,
                             "expand": true
                         }
                     },
@@ -336,7 +339,7 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                         'defaultValue': 0,
                         'shuntWay': [{ 'value': 0, 'label': '按首次随机分流' }, { 'value': 1, 'label': '按天随机分流' }, { 'value': 2, 'label': '完全随机分流' }],
                         //观察周期
-                        'period': '4',
+                        'period': '',
                         //分流比例
                         // 'groups': [ ['对照',''],['实验一',''] ],
                         'groups': [{ 'id': '0', 'name': '对照组', 'num': 50 }, { 'id': '1', 'name': '实验组', 'num': 50 }],
