@@ -15,7 +15,7 @@
             <span>
               {{ node.info }}
             </span>
-            <div class="subline"></div>
+            <!-- <div class="subline"></div> -->
           </div>
           <div
             class="ef-node-form-item"
@@ -28,11 +28,11 @@
                 {{ item.title }}
               </b>
               <!-- 文本标签 -->
-              <span class="PTYPE_TEXT" v-if="item.type === 'PTYPE_TEXT'">
+              <!-- <span class="PTYPE_TEXT" v-if="item.type === 'PTYPE_TEXT'">
                 {{ item.defaultValue }}
                 <br />
                 <span> {{ item.tips }}</span>
-              </span>
+              </span> -->
               <!-- input -->
               <div class="PTYPE_INPUT" v-if="item.type === 'PTYPE_INPUT'">
                 <el-input
@@ -40,10 +40,10 @@
                   :placeholder="item.defaultValue"
                 >
                 </el-input>
-                <span class="el-from-describe">
+                <!-- <span class="el-from-describe">
                   {{ item.tips }}
-                </span>
-                <div class="subline"></div>
+                </span> -->
+                <!-- <div class="subline"></div> -->
               </div>
               <!-- label -->
               <div class="PTYPE_LABEL" v-if="item.type === 'PTYPE_LABEL'">
@@ -51,14 +51,14 @@
                 <span class="el-from-describe">
                   {{ item.tips }}
                 </span>
-                <div class="subline"></div>
+                <!-- <div class="subline"></div> -->
               </div>
               <!-- 下拉框 -->
               <div class="PTYPE_SELECT" v-if="item.type === 'PTYPE_SELECT'">
                 <el-select
                   v-model="node.parameters[index].defaultValue"
                   placeholder="请选择"
-                  @change="node.parameters[index].selectedList=[]"
+                  @change="node.parameters[index].selectedList = []"
                 >
                   <el-option
                     v-for="(option, inx) in item.values"
@@ -131,7 +131,17 @@
                   <div
                     class="block"
                     v-if="node.parameters[index].defaultValue === 0"
-                  ></div>
+                  >
+                    <el-time-picker
+                      v-model="node.parameters[index].stretch"
+                      :picker-options="{
+                        selectableRange: '00:00:00 - 23:59:59'
+                      }"
+                      format="HH:mm:ss"
+                      placeholder="任意时间点"
+                    >
+                    </el-time-picker>
+                  </div>
                   <!-- 等待一段具体的某一时间点 -->
                   <div
                     class="block"
@@ -144,12 +154,36 @@
                     >
                     </el-date-picker>
                   </div>
+                  <!-- 等待至 -->
+                  <div
+                    class="block"
+                    v-if="node.parameters[index].defaultValue === 2"
+                  >
+                    <div style="display: flex">
+                      <el-input-number
+                        v-model="node.parameters[index].dayTime"
+                        :min="1"
+                        :max="99"
+                        :controls="false"
+                      ></el-input-number>
+                      <div class="baifen">天</div>
+                    </div>
+                    <el-time-picker
+                      v-model="node.parameters[index].stretch"
+                      :picker-options="{
+                        selectableRange: '00:00:00 - 23:59:59'
+                      }"
+                      format="HH:mm:ss"
+                      placeholder="任意时间点"
+                    >
+                    </el-time-picker>
+                  </div>
                 </div>
 
                 <span class="el-from-describe">
                   {{ item.tips }}
                 </span>
-                <div class="subline"></div>
+                <!-- <div class="subline"></div> -->
               </div>
 
               <!-- 时间选择器 -->
@@ -259,7 +293,7 @@
                   >
                   </el-option>
                 </el-select>
-
+            <!-- //人群定时触发 -->
                 <el-select
                   v-show="
                     node.parameters[index].values[
@@ -271,15 +305,13 @@
                       node.parameters[index].defaultValue
                     ].children.defaultValue
                   "
-                  placeholder="请选择"
+                  placeholder="请选择人群包"
                 >
                   <el-option
-                    v-for="(option, inx) in node.parameters[index].values[
-                      node.parameters[index].defaultValue
-                    ].children.values"
-                    :key="option.value"
-                    :label="option.title"
-                    :value="inx"
+                    v-for="(option, inx) in crowdList"
+                    :key="inx"
+                    :label="option.crowdName"
+                    :value="option.crowdId"
                   >
                   </el-option>
                 </el-select>
@@ -333,7 +365,7 @@
                       <span @click="delhavior(index, inx)"> 删除 </span>
                     </li>
                   </ul>
-
+                  <!-- //人群包展示 -->
                   <ul
                     v-if="
                       node.parameters[index].values[
@@ -342,16 +374,15 @@
                     "
                   >
                     <li
-                      v-for="(value, key, inx) in node.parameters[index].values[
-                        node.parameters[index].defaultValue
-                      ].children.values[
-                        node.parameters[index].values[
-                          node.parameters[index].defaultValue
-                        ].children.defaultValue
-                      ]"
-                      :key="inx"
+                    v-for="(Crowitem,inx) in notelist"
+                   :key="inx"
                     >
-                      <b> {{ notelist[inx] + ": " + value }} </b><br />
+                
+                      <b    v-for="(value, key, inx) in crowdList.filter(item=>{return item.crowdId=== node.parameters[index].values[
+                      node.parameters[index].defaultValue
+                    ].children.defaultValue})"
+                      :key="inx"> {{   Crowitem.tit +" ："+ value[Crowitem.key]  }} </b><br />
+        
                     </li>
                   </ul>
                 </div>
@@ -427,10 +458,15 @@
             ></conditional>
             <!-- // A/B分流抽出类 -->
             <abshunt
-              v-if="item.type === 'PTYPE_ABSHUNT'"
+              v-if="node.nodeTypeID === 'NID_A/B'"
               :data="item"
+              :output="node.output"
+   
             ></abshunt>
           </div>
+          
+
+
 
           <el-form-item>
             <el-button icon="el-icon-close" @click="Deselect">关闭</el-button>
@@ -482,6 +518,7 @@ export default {
       visible: true,
       // node 或 line
       type: "node",
+      crowdList:"",
       node: {},
       line: {},
       data: {},
@@ -491,7 +528,11 @@ export default {
       activeNames: ["1"],
       isShowOpenBox: false, //弹框展示
       op: "", //node弹出框数据
-      notelist: ["人群名称", "人群ID", "有效期至", "创建人", "创建时间"],
+      notelist: [{tit:"人群名称",key:"crowdName"},
+      {tit:"人群ID",key:"crowdId"},
+      {tit:"有效期至",key:"validPeriodTime"},
+      {tit:"创建人",key:"createUserName"},
+      {tit:"创建时间",key:"createTime"}],
       stateList: [
         {
           state: "success",
@@ -512,10 +553,18 @@ export default {
       ]
     };
   },
-  created() {},
+  created() {
+
+    axios.post("http://49.233.45.33:8081/list/crowd",{}).then(res=>{//人群包信息
+    this.crowdList = res.data.data
+
+    })
+  },
   components: {
     conditional,
     abshunt,
+    note,
+    push
   },
   methods: {
     /**
@@ -553,6 +602,8 @@ export default {
           // node.name = this.node.name;
           node.left = this.node.left;
           node.top = this.node.top;
+          console.log(node.parameters);
+          node.output =this.node.output
           node.parameters = this.node.parameters;
           this.$emit("repaintEverything");
         }
@@ -748,7 +799,7 @@ export default {
       b {
         color: rgb(11, 145, 255);
         width: 180px;
-        overflow: hidden; /*超出的部分隐藏起来。*/
+        // overflow: hidden; /*超出的部分隐藏起来。*/
         white-space: nowrap; /*不显示的地方用省略号...代替*/
       }
       b:hover {

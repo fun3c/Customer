@@ -23,11 +23,11 @@
           <h2>选择条件</h2>
           <el-tabs v-model="activeName">
             <el-tab-pane
-              v-for="(item, index) in details"
+              v-for="(item, index) in tabeldata"
               :key="index"
               :label="item.title"
             >
-              <div v-if="item.children.length > 0">
+              <div v-if="item.childLabelList.length > 0">
                 <el-input placeholder="输入关键字进行过滤" v-model="filterText">
                 </el-input>
 
@@ -49,44 +49,87 @@
         <div class="pop_up_min_right">
           <h2>条件设置</h2>
 
-   
           <div v-if="rightData" class="pop_up_min_right_min">
+   
             <el-form
               label-position="right"
               label-width="80px"
               :model="rightData"
             >
+              <el-form-item label="标签名">
+                <div>
+                  <span> {{ rightData.labelInfo }} </span>
+                  <el-tag type="success">
+                    {{ rightData.labelTypeInfo }}
+                  </el-tag>
+                </div>
+              </el-form-item>
               <el-form-item label="运算符">
-                <el-select v-model="localOperator" placeholder="请选择">
+                <el-select v-model="localData.operator" placeholder="请选择">
                   <el-option
-                    v-for="(item, index) in filterOperator()[0].selectList"
+                    v-for="(item, index) in rightData.labelOperatorList"
                     :key="index"
-                    :label="item"
+                    :label="item.operatorInfo"
                     :value="item"
                   >
                   </el-option>
                 </el-select>
               </el-form-item>
-
-              <el-form-item label="值">
-                <el-input v-model="labelData.value"></el-input>
+              <!-- 动态展示输入框 -->
+              <el-form-item
+                v-if="rightData.labelValueType === 'INTGER'"
+                label="值"
+              >
+                <el-input v-model="localData.dataValue"></el-input>
+              </el-form-item>
+              <!-- 动态展示下拉单选框 -->
+              <el-form-item
+                v-if="rightData.labelValueType === 'BOOLEAN'"
+                label="值"
+              >
+                <el-select v-model="localData.dataValue" placeholder="请选择">
+                  <el-option
+                    v-for="item in rightData.labelDataList"
+                    :key="item.value"
+                    :label="item.labelInfo"
+                    :value="item"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <!-- 动态展示下拉多选 -->
+              <el-form-item
+                v-if="rightData.labelValueType === 'ENUM'"
+                label="值"
+              >
+                <el-select
+                  v-model="localData.selectlist"
+                  multiple
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="(items, index) in rightData.labelDataList"
+                    :key="index"
+                    :label="items.labelInfo"
+                    :value="index"
+                  >
+                  </el-option>
+                </el-select>
               </el-form-item>
             </el-form>
           </div>
-             <el-row class="pop_up_right_btn">
-        <el-button @click="popAffirm">取消</el-button>
-        <el-button @click="popCancel" type="primary">确定</el-button>
-      </el-row>
+          <el-row class="pop_up_right_btn">
+            <el-button @click="popAffirm">取消</el-button>
+            <el-button @click="popCancel" type="primary">确定</el-button>
+          </el-row>
         </div>
       </div>
-
-   
     </div>
   </div>
 </template>
 
 <script>
-import axios from "axios"
+import axios from "axios";
 export default {
   data() {
     return {
@@ -98,13 +141,22 @@ export default {
       horizontal: false,
       collapsable: true,
       expandAll: false,
+      labelName:"",
       activeName: 0,
       localOperator: "",
-      tabeldata:[],
+      tabeldata: [],
       localvalue: undefined,
-      rightData: undefined, //树结构数据信息
+      rightData: undefined, //选中的
       labelData: null, // 条件缩略图信息
       filterText: "", //搜索字段
+      localData: {
+        //本地数据
+        selectlist: [],
+        dataValue: "",
+        operator: "", //运算符信息
+        labelInfo: "",
+        expand: true
+      },
       defaultProps: {
         //树形控件的配置项
         children: "childLabelList",
@@ -121,53 +173,54 @@ export default {
 
   mounted() {
     //此处应该请求数据
-    this.valueTapyList = [
-      {
-        valueType: "string",
-        selectList: ["包含", "被包含在"]
-      },
-      {
-        valueType: "intger",
-        selectList: ["=", ">=", "<=", ">", "<"]
-      },
-      {
-        valueType: "enum",
-        selectList: ["被包含在"]
-      },
-      {
-        valueType: "double",
-        selectList: ["=", ">=", "<=", ">", "<"]
-      },
-      {
-        valueType: "boolean",
-        selectList: ["等于"]
-      }
-    ];
+    // this.valueTapyList = [
+    //   {
+    //     valueType: "string",
+    //     selectList: ["包含", "被包含在"]
+    //   },
+    //   {
+    //     valueType: "intger",
+    //     selectList: ["=", ">=", "<=", ">", "<"]
+    //   },
+    //   {
+    //     valueType: "enum",
+    //     selectList: ["被包含在"]
+    //   },
+    //   {
+    //     valueType: "double",
+    //     selectList: ["=", ">=", "<=", ">", "<"]
+    //   },
+    //   {
+    //     valueType: "boolean",
+    //     selectList: ["等于"]
+    //   }
+    // ];
   },
   props: ["data", "details"],
   created() {
-    axios.post("/test-1/list/label",{labelType:1}).then(res=>{
-     
-      this.tabeldata=res.data.data
-             console.log( this.tabeldata,"请求的树")
-      this.tabeldata.forEach((item,index)=>{
-        item.childLabelList.forEach((itm,index)=>{
-            console.log(itm)
-        })
-      })
-
-    })
+    axios.post("http://49.233.45.33:8081/list/label", { labelType: 1 }).then(res => {
+      this.tabeldata = res.data.data;
+      console.log(this.tabeldata, "请求的树");
+      // this.tabeldata.forEach((item, index) => {
+      //   item.childLabelList.forEach((itm, index) => {
+      //     itm.childLabelList = itm.labelDataList;
+      //     itm.childLabelList.forEach((it, index) => {
+      //       it.labelName= it.labelInfo
+      //     });
+      //   });
+      // });
+    });
     this.expandChange();
   },
   methods: {
-    filterOperator() {
-      console.log(this.valueTapyList);
-      let list = this.valueTapyList.filter(list => {
-        return this.rightData.valueType === list.valueType;
-      });
-      console.log(list, "wwfwfwfwfwfwfw");
-      return list;
-    },
+    // filterOperator() {
+    //   console.log(this.valueTapyList);
+    //   let list = this.valueTapyList.filter(list => {
+    //     return this.rightData.valueType === list.valueType;
+    //   });
+    //   console.log(list, "wwfwfwfwfwfwfw");
+    //   return list;
+    // },
 
     renderContent(h, data) {
       return data.label;
@@ -176,12 +229,6 @@ export default {
       this.BasicSwich = false;
     },
     onMouseover(e, data) {
-      //鼠标悬浮事件
-      // this.BasicInfo = data;
-      // this.BasicSwich = true;
-      // var floating = document.getElementsByClassName("floating")[0];
-      // floating.style.left = e.clientX+10 + "px";
-      // floating.style.top = e.clientY+10 + "px";
     },
     onExpand(e, data) {
       if ("expand" in data) {
@@ -195,6 +242,7 @@ export default {
     },
     NodeClick(e, data) {
       alert(data.label);
+      console.log(e, data);
       //   console.log(e, data);
     },
     collapse(list) {
@@ -226,21 +274,67 @@ export default {
       }
     },
     openBox2(a, item) {
-      //   this.$emit("openBox2");
+      this.localData = Object.assign(item, {});
 
-      //   此处进行数据修改
+      this.targetData = item;
 
-      this.labelData = item;
-      this.localOperator = item.operator;
-      this.localValue = item.value;
+      // this.labelData = item;
+      // this.localOperator = item.operator;
+      // this.localValue = item.value;
       this.isShowOpenBox = true;
+    },
+    //数据校验
+    checkData() {
+      if (this.localData.operator == "") {
+        this.$message.error("请选则运算符数据");
+        return false;
+      }
+      if (!this.localData.dataValue && this.localData.selectlist.length == 0) {
+        this.$message.error("请选则运算值数据");
+        return false;
+      }
+      return true;
     },
     popCancel() {
       // 此处修改缩略图数据
-      console.log( this.localOperator)
-       this.labelData.label = this.labelData.value.replace(",",this.localOperator)
+      console.log(this.checkData());
+      if (this.checkData()) {
+        if (this.localData.selectlist.length > 0) {
+          let labelNo = "";
+          let dataNo = "";
+          let dataValue = "";
+          let labelInfo = "";
+          this.localData.selectlist.forEach(item => {
+            labelNo =
+              labelNo + this.rightData.labelDataList[item].labelNo + ",";
+            dataNo = dataNo + this.rightData.labelDataList[item].dataNo + ",";
+            dataValue =
+              dataValue + this.rightData.labelDataList[item].dataValue + ",";
+            labelInfo =
+              labelInfo + this.rightData.labelDataList[item].labelInfo + ",";
+          });
+          this.targetData.labelNo = this.rightData.labelDataList[0].labelNo;
+          this.targetData.dataNo = dataNo;
+          this.targetData.dataValue = dataValue;
+          this.targetData.labelInfo = labelInfo;
+        } else {
+          this.targetData.labelNo = this.localData.dataValue.labelNo;
+          this.targetData.dataNo = this.localData.dataValue.dataNo;
+          this.targetData.dataValue = this.localData.dataValue.dataValue;
+          this.targetData.labelInfo = this.localData.dataValue.labelInfo;
+        }
 
-      this.isShowOpenBox = false;
+        //运算符信息
+        this.targetData.operatorValue = this.localData.operator.operatorValue;
+        this.targetData.operatorInfo = this.localData.operator.operatorInfo;
+        this.targetData.operatorNo = this.localData.operator.operatorNo;
+        this.targetData.label = this.labelName+  this.targetData.operatorInfo+ this.targetData.labelInfo;
+
+
+        console.log(this.localData.dataValue)
+        this.$message.success("保存成功");
+        this.isShowOpenBox = false;
+      }
     },
 
     popAffirm() {
@@ -251,7 +345,15 @@ export default {
       return data.label.indexOf(value) !== -1;
     },
     nodeClick(data) {
+      this.localData = {
+        selectlist: [],
+        operator: "",
+        labelInfo: "",
+        expand: true
+      };
       this.rightData = data;
+      this.labelName= this.rightData.labelName
+      console.log(data);
     }
   }
 };
@@ -268,7 +370,8 @@ export default {
   background: skyblue;
   color: #fff;
 }
-.myred { //禁用点击事件
+.myred {
+  //禁用点击事件
   background-color: rgb(30, 132, 228);
   color: #fff;
   border: solid 1px #ccc;
@@ -278,7 +381,6 @@ export default {
 .myger {
   background: green;
   color: #fff;
-
 }
 .org-bg-err {
   background-color: tomato;
@@ -341,6 +443,7 @@ export default {
   flex-direction: column;
   z-index: 100;
   .pop_up_min {
+    height: 100%;
     flex: 1;
     display: flex;
     .pop_up_min_left {
@@ -348,17 +451,30 @@ export default {
       height: 100%;
       width: 49%;
       border-right: solid 1px #ccc;
+      .el-tabs {
+        height: 100%;
+      }
     }
     .pop_up_min_right {
       padding: 15px;
       flex: 1;
     }
-    .pop_up_right_btn{
+    .pop_up_right_btn {
       position: absolute;
       bottom: 15px;
-      text-align:end;
+      text-align: end;
     }
   }
-  
+}
+.el-tabs__content {
+  height: 75%;
+}
+.el-tab-pane,
+.el-tab-pane > div {
+  height: 100%;
+}
+.el-tree {
+  height: 100%;
+  overflow: scroll;
 }
 </style>

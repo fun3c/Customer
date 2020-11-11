@@ -4,6 +4,7 @@
     :visible.sync="dialogVisible"
     width="30%"
     customClass="flowHelp"
+ 
   >
     <el-form
       :visible.sync="dialogVisible"
@@ -36,9 +37,10 @@
       </el-form-item>
 
       <el-form-item label="起止时间" required>
-        <el-col :span="11">
+        <el-col >
           <el-form-item>
             <el-date-picker
+              width="30%"
               v-model="ruleForm.date1"
               type="datetimerange"
               range-separator="至"
@@ -96,7 +98,7 @@ export default {
       ruleForm: {
         name: "", // 任务名称
         region: "", //任务分类
-        date1: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)], //起止时间
+        date1: [new Date(), new Date()], //起止时间
         date2: "",
         delivery: false, //是否测试
         type: [], //任务目标
@@ -107,7 +109,7 @@ export default {
       rules: {
         name: [
           { required: true, message: "请输入任务名称", trigger: "blur" },
-          { min: 3, max: 10, message: "长度在 3 到 10 个字符", trigger: "blur" }
+          { min: 0, max: 40, message: "长度在 0 到 40 个字符", trigger: "blur" }
         ],
         region: [
           { required: true, message: "请选择任务分类", trigger: "change" }
@@ -169,6 +171,8 @@ export default {
       return time
 },
     submitForm(formName) {
+
+
       console.log(this.ruleForm);
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -182,16 +186,21 @@ export default {
           this.data.delivery = this.ruleForm.delivery; //结束时间
 
           this.$message.success("保存成功");
-
+              this.dialogVisible = false
         } else {
           return false;
         }
       });
     },
     resetForm(formName) {
-      this.$refs[formName].resetFields();
+      // console.log(    this.$emit("setCurrentTask"))
+      // this.$refs[formName].resetFields();
+      this.dialogVisible = false
     }
-  }
+  },
+    closeDialog(){
+      
+    },
 };
 </script>
 
@@ -199,5 +208,9 @@ export default {
 .flowHelp {
   /* height: 80%; */
   width: 50%;
+}
+
+.el-input__inner{
+  width: 100%  !important;
 }
 </style>

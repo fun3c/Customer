@@ -63,7 +63,11 @@ export default {
     .el-main {
       height: 100%;
     }
+      .left-nav{
+    height: 100% !important;
   }
+  }
+
   .el-aside {
     background-color: #20222A;
     height: 100vh;

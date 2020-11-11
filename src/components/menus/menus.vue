@@ -7,10 +7,10 @@
     text-color="rgba(255,255,255,.8)"
     active-text-color="#ffd04b"
     :collapse="isCollapse">
-    <!-- <el-menu-item index="/console">
+    <el-menu-item index="/console">
       <i class="el-icon-location"></i>
-      <span slot="title">主页</span>
-    </el-menu-item> -->
+      <span slot="title">审批中心</span>
+    </el-menu-item>
 
         <el-submenu index="4">
       <template slot="title">
@@ -45,5 +45,6 @@ export default {
   .menu-nav:not(.el-menu--collapse) {
     width: 200px;
     min-height: 400px;
+  
   }
 </style>

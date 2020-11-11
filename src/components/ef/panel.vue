@@ -40,23 +40,6 @@
               @click="setCurrentTask"
               >任务设置</el-button
             >
-            <el-button
-              type="primary"
-              plain
-              round
-              icon="el-icon-refresh"
-              size="mini"
-              >自定义变量</el-button
-            >
-            <el-button
-              type="primary"
-              plain
-              round
-              icon="el-icon-refresh"
-              size="mini"
-              @click="Operation"
-              >执行流程</el-button
-            >
           </div>
 
           <div style="float: right; margin-right: 5px">
@@ -97,7 +80,7 @@
               >流程信息</el-button
             >
             <!-- <el-button type="primary" plain round @click="dataReloadA" icon="el-icon-refresh" size="mini">切换流程A</el-button> -->
-            <el-button
+            <!-- <el-button
               type="primary"
               plain
               round
@@ -105,7 +88,7 @@
               icon="el-icon-refresh"
               size="mini"
               >默认样式</el-button
-            >
+            > -->
             <!-- <el-button type="primary" plain round @click="dataReloadC" icon="el-icon-refresh" size="mini">切换流程C</el-button> -->
             <!-- <el-button type="primary" plain round @click="dataReloadD" icon="el-icon-refresh" size="mini">自定义样式</el-button> -->
             <!-- <el-button type="info" plain round icon="el-icon-document" @click="openHelp" size="mini">帮助</el-button> -->
@@ -164,7 +147,12 @@
 
     <!-- 流程数据详情 -->
     <flow-info v-if="flowInfoVisible" ref="flowInfo" :data="data"></flow-info>
-    <setTask v-if="setTaskVisible" ref="setTask" :data="data"></setTask>
+    <setTask
+      v-if="setTaskVisible"
+      @setCurrentTask="setCurrentTask"
+      ref="setTask"
+      :data="data"
+    ></setTask>
   </div>
 </template>
 
@@ -182,6 +170,7 @@ import FlowNodeForm from "./node_form";
 import lodash from "lodash";
 import axios from "axios";
 import { getDataC } from "./data_C";
+import { getCheckdata } from "./check_data";
 
 export default {
   data() {
@@ -197,7 +186,9 @@ export default {
       setTaskVisible: true,
       // 是否加载完毕标志位
       loadEasyFlowFinish: false,
-
+      //后端返回唯一ID
+      taskID: "",
+      localnodeID: 0,
       //  数据
       data: {},
       // 激活的元素、可能是节点、可能是连线
@@ -277,13 +268,9 @@ export default {
   methods: {
     // 返回唯一标识
     getUUID() {
-      let charactors = "1234567890";
-      let value = "",
-        i;
-      for (let j = 1; j <= 4; j++) {
-        i = parseInt(10 * Math.random());
-        value = value + charactors.charAt(i);
-      }
+      let value = "";
+      value = this.taskID + "_" + (this.localnodeID + 1);
+      this.localnodeID = this.localnodeID + 1;
       return value;
     },
     jsPlumbInit() {
@@ -315,7 +302,13 @@ export default {
          
 
           if (this.loadEasyFlowFinish) {
-            this.data.lineList.push({ from: from, to: to, pinName: pinName });
+            this.data.lineList.push({
+              from: from,
+              to: to,
+              pinName: pinName,
+              from_uuid: "",
+              to_uuid: ""
+            });
           }
         });
 
@@ -640,6 +633,7 @@ export default {
         if (!node.flexOutput) {
           let outputs = node.output;
           //根据控件端点信息，动态添加端点
+          console.log("动态添加端点");
           outputs.fixedOutput.forEach((item, index) => {
             let uuid = this.getUUID();
             this.jsPlumb.addEndpoint(nodeId, {
@@ -886,7 +880,7 @@ export default {
     // -------------------------------------------------------------------顶部按键
     //提交流程  保存流程
     conserve() {
-      this.$confirm("确定要保执行流程数据吗？", "提示", {
+      this.$confirm("确定要保存该流程数据吗？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -915,10 +909,7 @@ export default {
             });
           }
         })
-        .catch(() => {
-          console.log(this.data);
-          this.$message.warning("任务信息不完整");
-        });
+        .catch(() => {});
     },
     //执行流程
     Operation() {
