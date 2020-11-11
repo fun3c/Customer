@@ -233,6 +233,7 @@ export default {
           return;
         }
         el.onmousedown = (e) => {
+          console.log('e', e)
           if (e.button == 2) {
             // 右键不管
             return;
@@ -414,13 +415,10 @@ export default {
         });
         this.jsPlumb.draggable(node.id);
       });
-      
+
       this.data.lineList.forEach((line) => {
         if (line.pinName === "jtk-endpoint-anchor") {
-          this.jsPlumb.connect({
-              source: line.from,
-              target: line.to,
-            }, this.jsplumbConnectOptions);
+          this.jsPlumb.connect({ source: line.from, target: line.to, }, this.jsplumbConnectOptions);
         } else {
           const currSource = this.getCurrSource(line);
           // console.log('currSource', currSource)
