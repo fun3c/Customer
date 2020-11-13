@@ -78,6 +78,7 @@
                     <el-date-picker
                       v-model="node.parameters[index].selectedList"
                       type="date"
+                        :picker-options="pickerOptions"
                       placeholder="选择日期"
                     >
                     </el-date-picker>
@@ -150,6 +151,8 @@
                     <el-date-picker
                       v-model="node.parameters[index].stretch"
                       type="datetime"
+                        :default-time="getNowTime()"
+                        :picker-options="pickerOptions"
                       placeholder="选择日期时间"
                     >
                     </el-date-picker>
@@ -191,13 +194,15 @@
                 <el-time-select
                   v-model="node.parameters[index].defaultValue"
                   :picker-options="{
-                    start: '08:30',
-                    step: '00:15',
-                    end: '18:30'
+                    start: '00:00',
+                    step: '00:05',
+                    end: '23:59'
                   }"
                   placeholder="选择时间"
                 >
-                </el-time-select>
+  </el-time-select>
+
+              
 
                 <span class="el-from-describe">
                   {{ node.parameters[index].defaultValue }}
@@ -293,7 +298,7 @@
                   >
                   </el-option>
                 </el-select>
-            <!-- //人群定时触发 -->
+                <!-- //人群定时触发 -->
                 <el-select
                   v-show="
                     node.parameters[index].values[
@@ -373,16 +378,20 @@
                       ].type === 'PTYPE_OLNYSHOW'
                     "
                   >
-                    <li
-                    v-for="(Crowitem,inx) in notelist"
-                   :key="inx"
-                    >
-                
-                      <b    v-for="(value, key, inx) in crowdList.filter(item=>{return item.crowdId=== node.parameters[index].values[
-                      node.parameters[index].defaultValue
-                    ].children.defaultValue})"
-                      :key="inx"> {{   Crowitem.tit +" ："+ value[Crowitem.key]  }} </b><br />
-        
+                    <li v-for="(Crowitem, inx) in notelist" :key="inx">
+                      <b
+                        v-for="(value, key, inx) in crowdList.filter(item => {
+                          return (
+                            item.crowdId ===
+                            node.parameters[index].values[
+                              node.parameters[index].defaultValue
+                            ].children.defaultValue
+                          );
+                        })"
+                        :key="inx"
+                      >
+                        {{ Crowitem.tit + " ：" + value[Crowitem.key] }} </b
+                      ><br />
                     </li>
                   </ul>
                 </div>
@@ -453,6 +462,7 @@
             <conditional
               v-if="item.type === 'PTYPE_CONDITION_DETAILS'"
               :data="item.data"
+              ref="conditional"
               :details="item.details"
               @openBox2="openBox2"
             ></conditional>
@@ -461,27 +471,16 @@
               v-if="node.nodeTypeID === 'NID_A/B'"
               :data="item"
               :output="node.output"
-   
             ></abshunt>
 
+            <!-- // 短信控件抽出类 -->
+            <note v-if="item.type === 'NOTE_TEMPLATE'" :data="item"></note>
 
-                   <!-- // 短信控件抽出类 -->
-            <note
-              v-if="item.type === 'NOTE_TEMPLATE'"
-              :data="item"
-            ></note>
-
-                             <!-- // push控件抽出类 -->
-            <push
-              v-if="item.type === 'PUSH_TEMPLATE'"
-              :data="item"
-            ></push>
+            <!-- // push控件抽出类 -->
+            <push v-if="item.type === 'PUSH_TEMPLATE'" :data="item"></push>
           </div>
-          
 
-
-
-          <el-form-item > 
+          <el-form-item>
             <el-button icon="el-icon-close" @click="Deselect">关闭</el-button>
             <el-button type="primary" icon="el-icon-check" @click="save"
               >保存</el-button
@@ -498,7 +497,7 @@
           <el-form-item label="条件">
             <el-input v-model="line.label"></el-input>
           </el-form-item>
-          <el-form-item >
+          <el-form-item>
             <el-button icon="el-icon-close" @click="Deselect">关闭</el-button>
             <el-button type="primary" icon="el-icon-check" @click="saveLine"
               >保存</el-button
@@ -525,16 +524,16 @@
 import { cloneDeep } from "lodash";
 import abshunt from "../ef/AB";
 import conditional from "../ef/conditional";
-import note from "./note"
-import  push   from "./push"
-import axios from "axios"
+import note from "./note";
+import push from "./push";
+import axios from "axios";
 export default {
   data() {
     return {
       visible: true,
       // node 或 line
       type: "node",
-      crowdList:"",
+      crowdList: "",
       node: {},
       line: {},
       data: {},
@@ -544,11 +543,13 @@ export default {
       activeNames: ["1"],
       isShowOpenBox: false, //弹框展示
       op: "", //node弹出框数据
-      notelist: [{tit:"人群名称",key:"crowdName"},
-      {tit:"人群ID",key:"crowdId"},
-      {tit:"有效期至",key:"validPeriodTime"},
-      {tit:"创建人",key:"createUserName"},
-      {tit:"创建时间",key:"createTime"}],
+      notelist: [
+        { tit: "人群名称", key: "crowdName" },
+        { tit: "人群ID", key: "crowdId" },
+        { tit: "有效期至", key: "validPeriodTime" },
+        { tit: "创建人", key: "createUserName" },
+        { tit: "创建时间", key: "createTime" }
+      ],
       stateList: [
         {
           state: "success",
@@ -566,15 +567,28 @@ export default {
           state: "running",
           label: "运行中"
         }
-      ]
-    };
+      ],
+            pickerOptions: {
+        //禁用当前日期之前的日期
+        disabledDate(time) {
+          //   let currentTime = this.getNowMonthDay() 
+          // return time.getTime() > new Date(currentTime).getTime()
+          //Date.now()是javascript中的内置函数，它返回自1970年1月1日00:00:00 UTC以来经过的毫秒数。
+          return time.getTime() < Date.now()- 8.64e7 ;
+          
+          //  return time.getTime() > this.formSearch.end_time ;
+        }
+        
+      }
+    
+    }
+    
   },
   created() {
-
-    axios.post("http://49.233.45.33:8081/list/crowd",{}).then(res=>{//人群包信息
-    this.crowdList = res.data.data
-
-    })
+    axios.post("http://49.233.45.33:8081/list/crowd", {}).then(res => {
+      //人群包信息
+      this.crowdList = res.data.data;
+    });
   },
   components: {
     conditional,
@@ -618,12 +632,22 @@ export default {
           node.left = this.node.left;
           node.top = this.node.top;
           console.log(node.parameters);
-          node.output =this.node.output
+          node.output = this.node.output;
           node.parameters = this.node.parameters;
           this.$emit("repaintEverything");
         }
       });
-      this.$emit("isHideFrom", false);
+      if (this.node.nodeTypeID === "NID_CONDITION") {
+        //校验条件控件
+        // this.$refs.[conditional].submitForm()
+        if (!this.$refs.conditional[0].submitForm("dynamicValidateForm")) {
+          return;
+        } else {
+          this.$emit("isHideFrom", false);
+        }
+      } else {
+        this.$emit("isHideFrom", false);
+      }
     },
     handleChange(val) {
       console.log(val);
@@ -657,7 +681,21 @@ export default {
     },
     popAffirm() {
       this.isShowOpenBox = false;
-    }
+    },
+          getNowTime: function () {
+      let Time
+
+      let hh = new Date().getHours()
+      let mf = new Date().getMinutes() < 10 ? '0' + new Date().getMinutes()
+        :
+        new Date().getMinutes()
+      let ss = new Date().getSeconds() < 10 ? '0' + new Date().getSeconds()
+        :
+        new Date().getSeconds()
+      Time = hh + ':' + mf + ':' + ss
+
+      return Time
+    },
   }
 };
 </script>
@@ -842,7 +880,7 @@ export default {
     width: 100%;
   }
 }
-.el_from_btn{
-  position:fixed;
+.el_from_btn {
+  position: fixed;
 }
 </style>

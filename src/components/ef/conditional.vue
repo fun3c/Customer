@@ -1,6 +1,6 @@
 <template>
   <div>
-    <vue2-org-tree
+    <!-- <vue2-org-tree
       :data="data"
       :horizontal="true"
       name="test"
@@ -10,7 +10,31 @@
       @on-node-click="openBox2"
       @on-node-mouseover="onMouseover"
       @on-node-mouseout="onMouseout"
-    />
+    /> -->
+    
+    <!-- 一期表单 -->
+<el-form :model="dynamicValidateForm" ref="dynamicValidateForm"  class="demo-dynamic">
+  <el-form-item
+    v-for="(domain, index) in dynamicValidateForm.domains"
+    :label="'条件' + index"
+    :key="domain.key"
+    :prop="'domains.' + index + '.label'"
+  
+    :rules="{
+      required: true, message: '条件不能为空', trigger: 'change'
+    }"
+  >
+    <el-input   @focus="openBox2(index)"  v-model="domain.label"></el-input><el-button @click.prevent="removeDomain(domain)">删除</el-button>
+  </el-form-item>
+  <el-form-item>
+    <!-- <el-button type="primary" @click="submitForm('dynamicValidateForm')">提交</el-button> -->
+    <a @click="addDomain">添加条件</a>
+
+  </el-form-item>
+</el-form>
+
+
+    <!-- <a @click="pushConditional">添加条件</a> -->
     <!-- <div v-show="BasicSwich" class="floating">
             <p>ID:{{BasicInfo.id}}</p>
             <p>Name:{{BasicInfo.label}}</p>
@@ -50,7 +74,6 @@
           <h2>条件设置</h2>
 
           <div v-if="rightData" class="pop_up_min_right_min">
-   
             <el-form
               label-position="right"
               label-width="80px"
@@ -141,7 +164,7 @@ export default {
       horizontal: false,
       collapsable: true,
       expandAll: false,
-      labelName:"",
+      labelName: "",
       activeName: 0,
       localOperator: "",
       tabeldata: [],
@@ -157,6 +180,10 @@ export default {
         labelInfo: "",
         expand: true
       },
+           dynamicValidateForm: {
+          domains: [],
+        
+        },
       defaultProps: {
         //树形控件的配置项
         children: "childLabelList",
@@ -198,18 +225,20 @@ export default {
   },
   props: ["data", "details"],
   created() {
-    axios.post("http://49.233.45.33:8081/list/label", { labelType: 1 }).then(res => {
-      this.tabeldata = res.data.data;
-      console.log(this.tabeldata, "请求的树");
-      // this.tabeldata.forEach((item, index) => {
-      //   item.childLabelList.forEach((itm, index) => {
-      //     itm.childLabelList = itm.labelDataList;
-      //     itm.childLabelList.forEach((it, index) => {
-      //       it.labelName= it.labelInfo
-      //     });
-      //   });
-      // });
-    });
+    axios
+      .post("http://49.233.45.33:8081/list/label", { labelType: 1 })
+      .then(res => {
+        this.tabeldata = res.data.data;
+        console.log(this.tabeldata, "请求的树");
+        // this.tabeldata.forEach((item, index) => {
+        //   item.childLabelList.forEach((itm, index) => {
+        //     itm.childLabelList = itm.labelDataList;
+        //     itm.childLabelList.forEach((it, index) => {
+        //       it.labelName= it.labelInfo
+        //     });
+        //   });
+        // });
+      });
     this.expandChange();
   },
   methods: {
@@ -228,8 +257,7 @@ export default {
     onMouseout(e, data) {
       this.BasicSwich = false;
     },
-    onMouseover(e, data) {
-    },
+    onMouseover(e, data) {},
     onExpand(e, data) {
       if ("expand" in data) {
         data.expand = !data.expand;
@@ -273,11 +301,12 @@ export default {
         }
       }
     },
-    openBox2(a, item) {
-      this.localData = Object.assign(item, {});
+    openBox2(index) {
+      console.log(index)
+      // this.localData = Object.assign(item, {});
 
-      this.targetData = item;
-
+      this.targetData = this.dynamicValidateForm.domains[index];
+      console.log(this.targetData)
       // this.labelData = item;
       // this.localOperator = item.operator;
       // this.localValue = item.value;
@@ -295,11 +324,27 @@ export default {
       }
       return true;
     },
+    pushConditional() {
+      //添加条件
+      console.log(this.data.children);
+      this.data.children.push({
+        id: this.data.children.length,
+        label: "",
+        labelNo: "",
+        dataNo: "",
+        dataValue: "",
+        operatorNo: "",
+        operatorValue: "",
+        operatorInfo: "",
+        labelInfo: "",
+        expand: true
+      });
+    },
     popCancel() {
       // 此处修改缩略图数据
       console.log(this.checkData());
       if (this.checkData()) {
-        if (this.localData.selectlist.length > 0) {
+        if (this.localData.selectlist.length ) {
           let labelNo = "";
           let dataNo = "";
           let dataValue = "";
@@ -328,10 +373,12 @@ export default {
         this.targetData.operatorValue = this.localData.operator.operatorValue;
         this.targetData.operatorInfo = this.localData.operator.operatorInfo;
         this.targetData.operatorNo = this.localData.operator.operatorNo;
-        this.targetData.label = this.labelName+  this.targetData.operatorInfo+ this.targetData.labelInfo;
+        this.targetData.label =
+          this.labelName +
+          this.targetData.operatorInfo +
+          this.targetData.labelInfo;
 
-
-        console.log(this.localData.dataValue)
+        console.log(this.data.children =this.dynamicValidateForm.domains);
         this.$message.success("保存成功");
         this.isShowOpenBox = false;
       }
@@ -352,9 +399,42 @@ export default {
         expand: true
       };
       this.rightData = data;
-      this.labelName= this.rightData.labelName
+      this.labelName = this.rightData.labelName;
       console.log(data);
-    }
+    },  submitForm(formName) {
+      let  feedback =''
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+           feedback = true
+          } else {
+            // console.log('error submit!!');
+            feedback = false;
+          }
+        });
+        return feedback
+      },
+      removeDomain(item) {
+        var index = this.dynamicValidateForm.domains.indexOf(item)
+        if (index !== -1) {
+          this.dynamicValidateForm.domains.splice(index, 1)
+        }
+      },
+      addDomain() {
+        this.dynamicValidateForm.domains.push({
+        id:  this.dynamicValidateForm.domains.length,
+        label: "",
+        labelNo: "",
+        dataNo: "",
+        dataValue: "",
+        operatorNo: "",
+        operatorValue: "",
+        operatorInfo: "",
+        labelInfo: "",
+        expand: true
+      });
+      }
+    
+    
   }
 };
 </script>

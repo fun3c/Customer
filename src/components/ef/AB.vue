@@ -19,9 +19,9 @@
       <div style="display: flex">
         <el-input
           v-model="data.period"
-          :maxlength="2"
-          placeholder="请输入1~99天"
-          onkeyup="this.value=this.value.replace(/[^1-99]/g,'')"
+          :maxlength="1"
+          placeholder="请输入1~9"
+          onkeyup="this.value=this.value.replace(/[^1-9]/g,'')"
         ></el-input>
         <div class="baifen">天</div>
       </div>
@@ -57,13 +57,13 @@
         <el-input-number
           v-model="group.num"
           :min="0"
-          :max="100-sum"
+          :max="99"
           :controls="false"
         ></el-input-number>
         <div class="baifen">%</div>
         <div class="circle" v-if="i > 1" @click="removeTest(i)">X</div>
       </div>
-      <!-- <el-button size="mini" @click="add">添加实验组</el-button> -->
+      <el-button size="mini" @click="add">添加实验组</el-button>
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="saveTest">保存</el-button>
@@ -77,6 +77,7 @@ export default {
     return {
       sum: 0,
       form: [],
+      id:2,
     };
   },
   computed: {},
@@ -95,7 +96,7 @@ export default {
     },
     add() {
       if (this.examgleng()) {
-        this.data.groups.push({ name: "", num: 0 });
+        this.data.groups.push({id:this.id++, name: "", num: 0 });
       } else {
         this.$message({
           message: "最多存在20组实验",
@@ -106,6 +107,7 @@ export default {
 
     removeTest(i) {
       this.data.groups.splice(i, 1);
+      this.id--
     },
     //判断实验组的名称是否存在''
     nameIsNull() {
@@ -117,11 +119,11 @@ export default {
     },
     //判断总和是否超过100
     numCount() {
-      if (this.sum !== 100) return true;
+      if (this.sum != 100) return true;
       else return false;
     },
     saveTest() {
-      
+      this.sum=0
       if(this.data.period==''){
         this.$message({
           message: "观察周期为空",
@@ -136,11 +138,10 @@ export default {
         });
       } else if (this.numCount()) {
         this.$message({
-          message: "分流比例总和不等于100%",
+          message: "分流比例之和不是100%",
           type: "warning",
         });
       } else {
- 
         this.$message({
           message: "保存成功",
           type: "success",

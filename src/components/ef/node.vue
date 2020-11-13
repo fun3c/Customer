@@ -2,7 +2,8 @@
   <div
     ref="node"
     :style="nodeContainerStyle"
-    @dblclick="clickNode"
+    @click="clickNode"
+    contenteditable="true"
     @mouseup="changeNodeSite"
     :class="nodeContainerClass"
   >
@@ -56,10 +57,14 @@ export default {
     node: Object,
     activeElement: Object
   },
+
   data() {
     return {};
   },
   created() {
+  //  document.body.addEventListener("mousedown",(event)=>{
+  //       console.log(event,"当前点击元素")
+  //   })
   },
   computed: {
     nodeContainerClass() {
@@ -107,7 +112,7 @@ export default {
   methods: {
     // 点击节点
     clickNode() {
-      this.$emit("dblclick", this.node.id);
+      this.$emit("click", this.node.id);
     },
     // 鼠标移动后抬起
     changeNodeSite() {

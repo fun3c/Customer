@@ -255,17 +255,17 @@ var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节�
                                 // "swtich": "myred",
                                 // "children": [
                                     {
-                                    "id": 5,
-                                    "label": "",
-                                    "labelNo": "",
-                                    "dataNo": "",
-                                    "dataValue": "",
-                                    "operatorNo": "",
-                                    "operatorValue": "",
-                                    "operatorInfo": "",
-                                    "labelInfo": "",
-                                    "expand": true
-                                },
+                                        "id": 5,
+                                        "label": "",
+                                        "labelNo": "",
+                                        "dataNo": "",
+                                        "dataValue": "",
+                                        "operatorNo": "",
+                                        "operatorValue": "",
+                                        "operatorInfo": "",
+                                        "labelInfo": "",
+                                        "expand": true
+                                    },
                                 // {
                                 //     "id": 6,
                                 //     "label": "",

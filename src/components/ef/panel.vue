@@ -109,18 +109,19 @@
           @mousewheel.prevent.ctrl="scrollFn"
           v-flowDrag
         >
-          <template v-for="node in data.nodeList">
+          <template v-for="node in data.nodeList" @keyup.delete="keyDelete">
             <!-- 画布要展示的组件 -->
 
             <flow-node
               :id="node.id"
               :key="node.id"
               :node="node"
+              contenteditable="true"
               ref="flowNode"
               :activeElement="activeElement"
               @changeNodeSite="changeNodeSite"
               @nodeRightMenu="nodeRightMenu"
-              @dblclick="clickNode"
+              @click="clickNode"
             >
             </flow-node>
           </template>
@@ -168,6 +169,8 @@ import lodash from "lodash";
 import axios from "axios";
 import { getDataC } from "./data_C";
 import { getCheckdata } from "./check_data";
+import { v4 as uuidv4 } from 'uuid';
+
 
 export default {
   data() {
@@ -253,11 +256,36 @@ export default {
       }
     }
   },
+  created() {
+    // document.body.addEventListener("mousedown",(event)=>{
+    //     console.log(event,"当前点击元素")
+    // })
+
+    document.onkeyup = e => {
+      let nodeName = e.target.nodeName;
+
+      if (nodeName !== "INPUT" && nodeName !== "TEXTAREA") {
+        let key = window.event.keyCode;
+        if (key == 8 || key == 46) {
+          this.deleteElement();
+          return false;
+        }
+      }
+    };
+  },
+  keyDelete(e) {
+    console.log("删除dom");
+    //  let key = window.event.keyCode;
+    // if(key==8 ||key ==46){
+    //     this.deleteElement()
+    //     return false
+  },
+
   mounted() {
     this.jsPlumb = jsPlumb.getInstance();
 
     // 进入画布，先判断是新增，编辑，查看
-    if (false) {
+    if (true) {
       //新增
       // 发起ID请求
       axios.get("http://49.233.45.33:8081/v1/get/job/id").then(res => {
@@ -306,7 +334,7 @@ export default {
     // 返回唯一标识
     getUUID() {
       let value = "";
-      this.localnodeID = this.data.nodeList.length
+      this.localnodeID = this.data.nodeList.length;
       value = this.taskID + "_" + (this.localnodeID + 1);
       this.localnodeID = this.localnodeID + 1;
       return value;
@@ -331,11 +359,13 @@ export default {
           });
         });
         // 连线
-        this.jsPlumb.bind("connection", evt => {
+        this.jsPlumb.bind("connection", (evt, inx) => {
           let from = evt.source.id;
           let to = evt.target.id;
           // console.log(evt.sourceEndpoint.canvas.classList[1],);
           let pinName = evt.sourceEndpoint.canvas.classList[1];
+
+          console.log(evt);
 
           if (this.loadEasyFlowFinish) {
             this.data.lineList.push({
@@ -343,7 +373,8 @@ export default {
               to: to,
               pinName: pinName,
               from_uuid: "",
-              to_uuid: ""
+              to_uuid: "",
+              lineCount: ""
             });
           }
         });
@@ -368,33 +399,33 @@ export default {
           let from = evt.sourceId;
           let to = evt.targetId;
 
-          let node = this.data.nodeList.filter(function(node) {
-            return node.id === to;
-          });
-          let toArr = this.data.lineList.filter(function(line) {
-            return line.to === to;
-          });
-          console.log(node, "连线的回环信息");
-          if (toArr.length > 0) {
-            this.$message.error("链接不能出现循环");
-            return false;
-          }
-          if (node[0].nodeTypeID === "NID_START") {
-            this.$message.error("开始节点不许被链接");
-            return false;
-          }
-          if (from === to) {
-            this.$message.error("节点不支持连接自己");
-            return false;
-          }
-          if (this.hasLine(from, to)) {
-            this.$message.error("该关系已存在,不允许重复创建");
-            return false;
-          }
-          if (this.hashOppositeLine(from, to)) {
-            this.$message.error("不支持两个节点之间连线回环");
-            return false;
-          }
+          // let node = this.data.nodeList.filter(function(node) {
+          //   return node.id === to;
+          // });
+          // let toArr = this.data.lineList.filter(function(line) {
+          //   return line.to === to;
+          // });
+          // console.log(node, "连线的回环信息");
+          // if (toArr.length > 0) {
+          //   this.$message.error("链接不能出现循环");
+          //   return false;
+          // }
+          // if (node[0].nodeTypeID === "NID_START") {
+          //   this.$message.error("开始节点不许被链接");
+          //   return false;
+          // }
+          // if (from === to) {
+          //   this.$message.error("节点不支持连接自己");
+          //   return false;
+          // }
+          // if (this.hasLine(from, to)) {
+          //   this.$message.error("该关系已存在,不允许重复创建");
+          //   return false;
+          // }
+          // if (this.hashOppositeLine(from, to)) {
+          //   this.$message.error("不支持两个节点之间连线回环");
+          //   return false;
+          // }
 
           this.$message.success("连接成功");
           //连线成功后应该怎么做  删除连线节点
@@ -439,6 +470,7 @@ export default {
           );
           this.jsPlumb.makeTarget(node.id, this.jsplumbTargetOptions);
         }
+
         output.forEach(item => {
           this.jsPlumb.addEndpoint(node.id, {
             anchors: item.anchor,
@@ -551,6 +583,7 @@ export default {
     },
     // 删除激活的元素
     deleteElement() {
+      console.log(111);
       if (this.activeElement.type === "node") {
         this.deleteNode(this.activeElement.nodeId);
       } else if (this.activeElement.type === "line") {
@@ -642,10 +675,14 @@ export default {
         }
         break;
       }
-      nodeMenu.output.fixedOutput = nodeMenu.output.fixedOutput.map(item => {
-        item.id = `${this.getUUID()}-${new Date().getTime()}`;
-        return item;
-      });
+      nodeMenu.output.fixedOutput = nodeMenu.output.fixedOutput.map(
+        (item, index) => {
+          item.id = `${this.getUUID()}-${uuidv4()}-${index}`;
+          console.log(item.id);
+          return item;
+        }
+      );
+
       //传递给画布控件的属性
       var node = {
         id: nodeId,
@@ -683,7 +720,7 @@ export default {
           //根据控件端点信息，动态添加端点
           console.log("动态添加端点");
           outputs.fixedOutput.forEach((item, index) => {
-            let uuid = this.getUUID();
+            let uuid = this.getUUID() + "-uuid";
             this.jsPlumb.addEndpoint(nodeId, {
               uuid: uuid,
               anchors: item.anchor,
@@ -928,6 +965,17 @@ export default {
     // -------------------------------------------------------------------顶部按键
     //提交流程  保存流程
     conserve() {
+      // let newData = lodash.cloneDeep(this.data)
+      // this.data.nodeList.forEach((item,index)=>{
+      //   item.output.fixedOutput.forEach(itm=>{
+      //       itm.id =uuidv4()
+      //   })
+      // })
+
+
+
+
+    // console.log(  JSON.stringify(this.data))
       this.$confirm("确定要保存该流程数据吗？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -972,8 +1020,8 @@ export default {
                   path: "/users",
                   query: { id: "待测试" }
                 });
-              }else {
-                 this.$message.warning(res.data.msg);
+              } else {
+                this.$message.warning(res.data.msg);
               }
             });
           }

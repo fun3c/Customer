@@ -25,11 +25,13 @@
 
 /*画布容器*/
 #efContainer {
-    width: 100%;
-    min-height: 100%;
+    width: 500%;
+    min-height: 500%;
     position  : absolute;
     z-index   : 1;
     flex      : 1;
+    /* top: 50%;
+    left: 50%; */
     background-color: #eeeeee80;
 }
     /* 网格背景 */
@@ -61,6 +63,8 @@
 
 /*顶部工具栏*/
 .ef-tooltar {
+    /* position: fixed; */
+    margin-top: 40px;
     padding-left: 10px;
     box-sizing: border-box;
     height: 42px;
@@ -367,6 +371,9 @@
   .panel-header{
       background-color: rgb(49, 47, 47);height: 40px;
       line-height: 40px;
+      width: 100%;
+      position:fixed;
+      z-index: 100000;
   }
   .panel-header>div>span{
       margin-left: 10px;
