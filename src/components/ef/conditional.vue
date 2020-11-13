@@ -438,7 +438,7 @@ export default {
   }
 };
 </script>
-<style lang="less">
+<style lang="less" >
 .org-tree-container {
   width: 100%;
   background-color: #fff;

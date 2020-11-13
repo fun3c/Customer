@@ -96,6 +96,7 @@ export default {
     },
     add() {
       if (this.examgleng()) {
+      console.log(this.data)
         this.data.groups.push({id:this.id++, name: "", num: 0 });
       } else {
         this.$message({

@@ -1,15 +1,15 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Index from './views/Index.vue'
-import Console from './views/Console.vue'
-import Users from './views/Users.vue'
-import Articles from './views/Articles.vue'
-import Login from './views/Login.vue'
+// import Index from './views/Index.vue'
+// import Console from './views/Console.vue'
+// import Users from './views/Users.vue'
+// import Articles from './views/Articles.vue'
+// import Login from './views/Login.vue'
 
-import Panel from "./components/ef/panel.vue"
-import ab from "./components/ef/AB.vue"
-import note from "./components/ef/note.vue"
-import anniu from "./components/ef/anniu.vue"
+// import Panel from "./components/ef/panel.vue"
+// import ab from "./components/ef/AB.vue"
+// import note from "./components/ef/note.vue"
+// import anniu from "./components/ef/anniu.vue"
 Vue.use(Router);
 
 const router = new Router({
@@ -18,45 +18,46 @@ const router = new Router({
   routes: [
     {
       path: '/anniu',
-      component: anniu
+      component: ()=>import('@/components/ef/anniu.vue')
     },
     {
       path: '/login',
-      component: Login
+      component: ()=>import('@/views/Login.vue')
+     
     },
     {
       path: '/note',
-      component: note
+      component: ()=>import('@/components/ef/note.vue')
     },
     {
       path: '/ab',
-      component: ab
+      component: ()=>import('@/components/ef/AB.vue')
     },
     {
       path: '/',
-      component: Index,
+      component: ()=>import('@/views/Index.vue'),  
       children: [
         {
           path: '/console',
           name: 'console',
-          component: Console
+          component: ()=>import('@/views/Console.vue')
         },
         {
           path: '/users',
           name: 'users',
-          component: Users
+          component: ()=>import('@/views/Users.vue')
         },
         {
           path: '/articles',
           name: 'articles',
-          component: Articles
+          component: ()=>import('@/views/Articles.vue')
         },
        
       ]
     },   {
       path: '/Panel',
       name: 'Panel',
-      component: Panel
+      component: ()=>import('@/components/ef/panel.vue')
     },
     {
       path: '*',

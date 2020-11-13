@@ -251,9 +251,11 @@
                 class="PTYPE_SELECTGROUP"
                 v-if="item.type === 'PTYPE_SELECTGROUP'"
               >
+              
                 <el-select
                   v-model="node.parameters[index].defaultValue"
                   placeholder="请选择"
+                  @change="changeTriggerWay(node.parameters[index].defaultValue)"
                 >
                   <el-option
                     v-for="option in item.values"
@@ -696,6 +698,10 @@ export default {
 
       return Time
     },
+    changeTriggerWay(a){
+      this.data.triggerWay=a
+      console.log(this.data.triggerWay)
+    }
   }
 };
 </script>

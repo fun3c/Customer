@@ -131,6 +131,7 @@
       </div>
       <!-- 右侧表单 -->
       <div
+        class="rightForm"
         v-show="this.isShowForm"
         style="width: 360px;border-left: 1px solid #dce3e8;background-color: #FBFBFB"
       >
@@ -156,9 +157,9 @@
 
 <script>
 import draggable from "vuedraggable";
-// import { jsPlumb } from 'jsplumb'
+import { jsPlumb } from 'jsplumb'
 // 使用修改后的jsplumb
-import "./jsplumb";
+// import "./jsplumb";
 import { easyFlowMixin } from "@/components/ef/mixins";
 import flowNode from "@/components/ef/node";
 import nodeMenu from "@/components/ef/node_menu";
@@ -169,8 +170,7 @@ import lodash from "lodash";
 import axios from "axios";
 import { getDataC } from "./data_C";
 import { getCheckdata } from "./check_data";
-import { v4 as uuidv4 } from 'uuid';
-
+import { v4 as uuidv4 } from "uuid";
 
 export default {
   data() {
@@ -224,6 +224,7 @@ export default {
           return;
         }
         el.onmousedown = e => {
+          vnode.context.isHideFrom(false);
           if (e.button == 2) {
             // 右键不管
             return;
@@ -257,10 +258,6 @@ export default {
     }
   },
   created() {
-    // document.body.addEventListener("mousedown",(event)=>{
-    //     console.log(event,"当前点击元素")
-    // })
-
     document.onkeyup = e => {
       let nodeName = e.target.nodeName;
 
@@ -282,10 +279,12 @@ export default {
   },
 
   mounted() {
+   
     this.jsPlumb = jsPlumb.getInstance();
-
+     console.log(this.jsPlumb,"jsPlumb")
+    console.log(this.parmas)
     // 进入画布，先判断是新增，编辑，查看
-    if (true) {
+    if (false) {
       //新增
       // 发起ID请求
       axios.get("http://49.233.45.33:8081/v1/get/job/id").then(res => {
@@ -314,7 +313,15 @@ export default {
       // })
       this.$nextTick(() => {
         // 默认加载流程A的数据
-        this.dataReload(getCheckdata()); // 默认流程图的数据
+        let newData = getCheckdata();
+
+        newData.nodeList.forEach((item, index) => {
+          item.output.fixedOutput.forEach(itm => {
+            itm.id = uuidv4();
+          });
+        });
+
+        this.dataReload(newData); // 默认流程图的数据
       });
     } else if (false) {
       //编辑
@@ -329,6 +336,30 @@ export default {
         });
       });
     }
+    console.log(getDataC())
+//      this.data.lineList
+//     setTimeout(() => {
+//       this.data.nodeList.forEach(node=>{
+//  this.jsPlumb.removeAllEndpoints(node.id)
+//       })
+//     }, 4500)
+//     newLineList.forEach(lin=>{
+//       console.log(lin)
+//     })
+//        this.data.lineList=newLineList
+    // setTimeout(() => {
+    //   this.data.nodeList.forEach(node => {
+    //     if(node.id === '1158_3') {
+    //       node.output.fixedOutput.push({
+    //         "label": "NEW",
+    //         "pinName": "01",
+    //         "anchor": "BottomCenter",
+    //         "id": "0cf00018-164c-4366-b0ef-b9a267618ba41111"
+    //       })
+    //     }
+    //   })
+    //   this.loadEasyFlow(this.data.nodeList);
+    // }, 5000);
   },
   methods: {
     // 返回唯一标识
@@ -346,7 +377,7 @@ export default {
         // 会使整个jsPlumb立即重绘。
         this.jsPlumb.setSuspendDrawing(false, true);
         // 初始化节点
-        this.loadEasyFlow();
+        this.loadEasyFlow(this.data.nodeList);
         this.jsPlumb.bind("click", (conn, originalEvent) => {
           this.isHideFrom(true);
           this.activeElement.type = "line";
@@ -451,9 +482,9 @@ export default {
       return currEndpoint[0];
     },
     // 加载流程图
-    loadEasyFlow() {
+    loadEasyFlow(nodeList) {
       // 初始化节点
-      this.data.nodeList.forEach(node => {
+      nodeList.forEach(node => {
         const output =
           node.nodeTypeID !== "NID_START" ? node.output.fixedOutput : [];
 
@@ -480,7 +511,19 @@ export default {
             cssClass: item.pinName
           });
         });
-        this.jsPlumb.draggable(node.id);
+        if (!node.viewOnly) {
+          //是否是不可移动元素
+          this.jsPlumb.draggable(node.id, {
+            //可拖动元素
+            grid: [15, 15], //网格设置
+            //  Anchors: [ 'TopCenter', 'Bottom','BottomRight', 'BottomLeft'],
+            containment: "parent",
+            stop: function(el) {
+              // 拖拽节点结束后的对调
+              console.log("拖拽结束: ", el);
+            }
+          });
+        }
       });
 
       this.data.lineList.forEach(line => {
@@ -526,19 +569,7 @@ export default {
       //   } else {
       //     this.jsPlumb.makeTarget(node.id, this.jsplumbStartSourceOptions);
       //   }
-      //   if (!node.viewOnly) {
-      //     //是否是不可移动元素
-      //     this.jsPlumb.draggable(node.id, {
-      //       //可拖动元素
-      //       grid: [15, 15], //网格设置
-      //       //  Anchors: [ 'TopCenter', 'Bottom','BottomRight', 'BottomLeft'],
-      //       containment: "parent",
-      //       stop: function(el) {
-      //         // 拖拽节点结束后的对调
-      //         console.log("拖拽结束: ", el);
-      //       }
-      //     });
-      //   }
+
       // }
       // // 初始化连线
       // for (var i = 0; i < this.data.lineList.length; i++) {
@@ -637,6 +668,7 @@ export default {
         screenY = evt.originalEvent.clientY;
       let efContainer = this.$refs.efContainer;
       var containerRect = efContainer.getBoundingClientRect();
+      console.log(containerRect, "aatttt");
       var left = screenX,
         top = screenY;
       // 计算是否拖入到容器中
@@ -651,9 +683,14 @@ export default {
       }
       left = left - containerRect.x + efContainer.scrollLeft;
       top = top - containerRect.y + efContainer.scrollTop;
+
       // 居中
       left -= 85;
       top -= 16;
+
+      left = left / this.zoom;
+      top = top / this.zoom;
+
       var nodeId = this.getUUID();
       // 动态生成名字
 
@@ -965,17 +1002,14 @@ export default {
     // -------------------------------------------------------------------顶部按键
     //提交流程  保存流程
     conserve() {
-      // let newData = lodash.cloneDeep(this.data)
-      // this.data.nodeList.forEach((item,index)=>{
-      //   item.output.fixedOutput.forEach(itm=>{
-      //       itm.id =uuidv4()
-      //   })
-      // })
+      let newData = lodash.cloneDeep(this.data);
+      this.data.nodeList.forEach((item, index) => {
+        item.output.fixedOutput.forEach(itm => {
+          itm.id = uuidv4();
+        });
+      });
 
-
-
-
-    // console.log(  JSON.stringify(this.data))
+      // console.log(  JSON.stringify(this.data))
       this.$confirm("确定要保存该流程数据吗？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
