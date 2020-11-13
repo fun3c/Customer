@@ -16,6 +16,7 @@
 </template>
 
 <script>
+    import { v4 as uuidv4 } from 'uuid';
     import 'codemirror/lib/codemirror.css'
     import { codemirror } from 'vue-codemirror' //生成数据展示演示器
     require("codemirror/mode/javascript/javascript.js")
@@ -39,6 +40,12 @@
         },
         methods: {
             init() {
+                this.data.nodeList.forEach(node => {
+                    const fixedOutput = node.output.fixedOutput;
+                    fixedOutput.forEach(opt => {
+                        console.log('opt.pid', opt.pid)
+                    })
+                });
                 this.dialogVisible = true
                 this.flowJsonData = JSON.stringify(this.data, null, 4).toString()
             }

@@ -2,7 +2,7 @@
   <div v-if="easyFlowVisible" style="height: calc(100vh);">
     <el-row class="panel-header">
       <div v-if="data.jobName">
-        <span>{{ data.jobID }}</span> <span>{{ data.jobName }}</span>
+        <span>{{ data.jobId }}</span> <span>{{ data.jobName }}</span>
         <span
           >{{ dateFormat(data.startTime) }}-{{ dateFormat(data.endTime) }}</span
         >
@@ -155,7 +155,7 @@
 
 <script>
 import draggable from "vuedraggable";
-// import { jsPlumb } from 'jsplumb'
+// import { v4 as uuidv4 } from 'uuid';
 // 使用修改后的jsplumb
 import "./jsplumb";
 import { easyFlowMixin } from "@/components/ef/mixins";
@@ -201,7 +201,8 @@ export default {
       zoom: 1,
       zoomStep: 0.035,
       zoomEnabled: false,
-      isShowForm: false
+      isShowForm: false,
+      pIndex: 0,
     };
   },
   // 一些基础配置移动该文件中
@@ -289,6 +290,7 @@ export default {
         this.dataReload(getCheckdata()); // 默认流程图的数据
       });
     } else if (false) {
+      //编辑
       // 请求画布数据
       axios.post("", {}).then(res => {
         let data = res.data.data;
@@ -305,6 +307,7 @@ export default {
     // 返回唯一标识
     getUUID() {
       let value = "";
+      this.localnodeID = this.data.nodeList.length
       value = this.taskID + "_" + (this.localnodeID + 1);
       this.localnodeID = this.localnodeID + 1;
       return value;
@@ -332,8 +335,8 @@ export default {
         this.jsPlumb.bind("connection", evt => {
           let from = evt.source.id;
           let to = evt.target.id;
-          // console.log(evt.sourceEndpoint.canvas.classList[1],);
-          let pinName = evt.sourceEndpoint.canvas.classList[1];
+          console.log('evt.sourceEndpoint', evt.sourceEndpoint)
+          const pinName = evt.sourceEndpoint.canvas.classList[1];
 
           if (this.loadEasyFlowFinish) {
             this.data.lineList.push({
@@ -341,7 +344,7 @@ export default {
               to: to,
               pinName: pinName,
               from_uuid: "",
-              to_uuid: ""
+              to_uuid: "",
             });
           }
         });
@@ -413,7 +416,9 @@ export default {
         if (node.id === item.from) return node;
       });
       const currOutput = currNode[0].output.fixedOutput;
-      const currEndpoint = currOutput.filter(op => op.pinName === item.pinName);
+      const currEndpoint = currOutput.filter(op => {
+        return op.pinName === item.pinName;
+      });
 
       return currEndpoint[0];
     },
@@ -460,11 +465,11 @@ export default {
           );
         } else {
           const currSource = this.getCurrSource(line);
-          // console.log('currSource', currSource)
+          console.log('currSource.id, line.to======', currSource.id, line.to)
           this.jsPlumb.connect(
             {
-              uuids: [currSource.id, line.to],
-              source: currSource.id,
+              uuids: [currSource.pid, line.to],
+              source: currSource.pid,
               target: line.to
             },
             this.jsplumbConnectOptions
@@ -597,7 +602,8 @@ export default {
      * @param mousePosition 鼠标拖拽结束的坐标
      */
     addNode(evt, nodeMenu, mousePosition) {
-      console.log(nodeMenu, "nodeMenu数据");
+      // console.log(nodeMenu, "nodeMenu数据");
+      // const pid = this.pIndex++;
       var screenX = evt.originalEvent.clientX,
         screenY = evt.originalEvent.clientY;
       let efContainer = this.$refs.efContainer;
@@ -640,10 +646,7 @@ export default {
         }
         break;
       }
-      nodeMenu.output.fixedOutput = nodeMenu.output.fixedOutput.map(item => {
-        item.id = `${this.getUUID()}-${new Date().getTime()}`;
-        return item;
-      });
+      
       //传递给画布控件的属性
       var node = {
         id: nodeId,
@@ -657,6 +660,8 @@ export default {
         output: nodeMenu.output,
         parameters: nodeMenu.parameters
       };
+
+     
       // 判断节点类型，如果是开始的话，就有且只能有一个
       if (node.nodeTypeID === "NID_START") {
         let startArr = this.data.nodeList.filter((item, index) => {
@@ -682,6 +687,8 @@ export default {
           console.log("动态添加端点");
           outputs.fixedOutput.forEach((item, index) => {
             let uuid = this.getUUID();
+            // item.id = `${nodeId}-${uuidv4()}`;
+            // console.log('item.id', item.id)
             this.jsPlumb.addEndpoint(nodeId, {
               uuid: uuid,
               anchors: item.anchor,
@@ -691,7 +698,13 @@ export default {
             });
           });
         }
-
+        this.data.nodeList.forEach(el => {
+          const fixedOutput = el.output.fixedOutput;
+          fixedOutput.forEach(opt => {
+            console.log('opt.pid', opt.pid)
+          })
+        });
+        
         // this.jsPlumb.makeSource(nodeId, this.jsplumbSourceOptions); //元节点配置
         this.jsPlumb.makeTarget(nodeId, this.jsplumbTargetOptions);
         this.jsPlumb.draggable(nodeId, {
@@ -962,14 +975,16 @@ export default {
             //   .catch(err => {
             //     console.error(err);
             //   });
-            axios.post("/test-2/save", data).then(res => {
+            axios.post("/save", data).then(res => {
               console.log(this.data, "wwwwwwwwwwwwwwwwww");
-              if (res.data.status === 200) {
+              if (res.data.code === 200) {
                 this.$message.success("保存成功");
                 this.$router.push({
                   path: "/users",
                   query: { id: "待测试" }
                 });
+              }else {
+                 this.$message.warning(res.data.msg);
               }
             });
           }

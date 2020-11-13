@@ -17,8 +17,9 @@
     </div>
 </template>
 <script>
+    import { v4 as uuidv4 } from 'uuid';
     import draggable from 'vuedraggable'
-    import menuList from "./group"
+    import menuList, {Point} from "./group"
     var mousePosition = {
         left: -1,
         top: -1
@@ -48,7 +49,6 @@
             draggable
         },
         created() {
-        
             if (this.isFirefox()) {
                 document.body.ondrop = function (event) {
                     mousePosition.left = event.layerX
@@ -59,12 +59,32 @@
             }
         },
         methods: {
+            initPoint(node) {
+                const {nodeTypeID, output} = node;
+                output.fixedOutput = [];
+                if(nodeTypeID === 'NID_A/B') {
+                    const p1 = new Point('对照', '0', "BottomLeft", uuidv4()).getPoint();
+                    const p2 = new Point('实验', '1', "BottomRight", uuidv4()).getPoint();
+                    output.fixedOutput.push(p1, p2);
+                }
+                if(nodeTypeID === 'NID_CONDITION') {
+                    const p1 = new Point('是', "PIN_TRUE", "BottomLeft", uuidv4()).getPoint();
+                    const p2 = new Point('否', "PIN_FALSE", "BottomRight", uuidv4()).getPoint();
+                    output.fixedOutput.push(p1, p2);
+                }
+                if(nodeTypeID === 'NID_NOTE' || nodeTypeID === 'NID_PUSH' || nodeTypeID === 'NID_WAIT') {
+                    const p1 = new Point('成功', "PIN_TRUE", "BottomLeft", uuidv4()).getPoint();
+                    const p2 = new Point('失败', "PIN_FALSE", "BottomRight", uuidv4()).getPoint();
+                    output.fixedOutput.push(p1, p2);
+                }
+            },
             // 根据类型获取左侧菜单对象
             getMenuByType(type) {
                 for (let i = 0; i < this.menuList.length; i++) {
                     let children = this.menuList[i].children;
                     for (let j = 0; j < children.length; j++) {
                         if (children[j].nodeTypeID === type) {
+                            this.initPoint( children[j]);
                             return children[j]
                         }
                     }
@@ -77,7 +97,6 @@
             },
             // 拖拽结束时触发
             end(evt, e) {
-           
                 this.$emit('addNode', evt, this.nodeMenu, mousePosition)
             },
             // 是否是火狐浏览器
