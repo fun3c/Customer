@@ -36,13 +36,13 @@ export const easyFlowMixin = {
                  * 空白端点
                  */
                 // Endpoint: ['Blank', { Overlays: '' }],
-                Endpoints: [['Dot', {radius: 5, cssClass: 'ef-dot', hoverClass: 'ef-dot-hover'}], ['Rectangle', {height: 8, width: 8, cssClass: 'ef-rectangle', hoverClass: 'ef-rectangle-hover'}]],
+                Endpoints: [['Dot', {radius: 1, cssClass: 'ef-dot', hoverClass: 'ef-dot-hover'}], ['Rectangle', {height: 8, width: 8, cssClass: 'ef-rectangle', hoverClass: 'ef-rectangle-hover'}]],
                 /**
                  * 连线的两端端点样式
                  * fill: 颜色值，如：#12aabb，为空不显示
                  * outlineWidth: 外边线宽度
                  */
-                EndpointStyle: { fill: '#a1a1a1', outlineWidth: 1,height: 8, width: 8, },
+                EndpointStyle: { fill: '#a1a1a1', outlineWidth: 1,height: 3, width: 3, },
                 // 是否打开jsPlumb的内部日志记录
                 LogEnabled: true,
                 /**
@@ -125,7 +125,7 @@ export const easyFlowMixin = {
                 // ],
                 anchor: ["BottomLeft", "BottomRight"],
                 allowLoopback: true, //形成回环
-                maxConnections: 4,
+                maxConnections: 1,
                 onMaxConnections: function (info, e) {
                     console.log(`超过了最大值连线: ${info.maxConnections}`)
                 }

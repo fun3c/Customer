@@ -28,11 +28,11 @@
                 {{ item.title }}
               </b>
               <!-- 文本标签 -->
-              <!-- <span class="PTYPE_TEXT" v-if="item.type === 'PTYPE_TEXT'">
+              <span class="PTYPE_TEXT" v-if="item.type === 'PTYPE_TEXT'">
                 {{ item.defaultValue }}
                 <br />
                 <span> {{ item.tips }}</span>
-              </span> -->
+              </span>
               <!-- input -->
               <div class="PTYPE_INPUT" v-if="item.type === 'PTYPE_INPUT'">
                 <el-input
@@ -78,7 +78,6 @@
                     <el-date-picker
                       v-model="node.parameters[index].selectedList"
                       type="date"
-                        :picker-options="pickerOptions"
                       placeholder="选择日期"
                     >
                     </el-date-picker>
@@ -151,8 +150,6 @@
                     <el-date-picker
                       v-model="node.parameters[index].stretch"
                       type="datetime"
-                        :default-time="getNowTime()"
-                        :picker-options="pickerOptions"
                       placeholder="选择日期时间"
                     >
                     </el-date-picker>
@@ -194,15 +191,13 @@
                 <el-time-select
                   v-model="node.parameters[index].defaultValue"
                   :picker-options="{
-                    start: '00:00',
-                    step: '00:05',
-                    end: '23:59'
+                    start: '08:30',
+                    step: '00:15',
+                    end: '18:30'
                   }"
                   placeholder="选择时间"
                 >
-  </el-time-select>
-
-              
+                </el-time-select>
 
                 <span class="el-from-describe">
                   {{ node.parameters[index].defaultValue }}
@@ -220,10 +215,10 @@
                   filterable
                 >
                   <el-option
-                 v-for="(option, inx) in waitList"
-                    :key="inx"
+                    v-for="(option, inx) in waitList"
+                    :key="option.id"
                     :label="option.name"
-                    :value="option.id"
+                    :value="inx"
                   >
                   </el-option>
                 </el-select>
@@ -251,11 +246,9 @@
                 class="PTYPE_SELECTGROUP"
                 v-if="item.type === 'PTYPE_SELECTGROUP'"
               >
-              
                 <el-select
                   v-model="node.parameters[index].defaultValue"
                   placeholder="请选择"
-                  @change="changeTriggerWay(node.parameters[index].defaultValue)"
                 >
                   <el-option
                     v-for="option in item.values"
@@ -300,7 +293,7 @@
                   >
                   </el-option>
                 </el-select>
-                <!-- //人群定时触发 -->
+            <!-- //人群定时触发 -->
                 <el-select
                   v-show="
                     node.parameters[index].values[
@@ -380,20 +373,16 @@
                       ].type === 'PTYPE_OLNYSHOW'
                     "
                   >
-                    <li v-for="(Crowitem, inx) in notelist" :key="inx">
-                      <b
-                        v-for="(value, key, inx) in crowdList.filter(item => {
-                          return (
-                            item.crowdId ===
-                            node.parameters[index].values[
-                              node.parameters[index].defaultValue
-                            ].children.defaultValue
-                          );
-                        })"
-                        :key="inx"
-                      >
-                        {{ Crowitem.tit + " ：" + value[Crowitem.key] }} </b
-                      ><br />
+                    <li
+                    v-for="(Crowitem,inx) in notelist"
+                   :key="inx"
+                    >
+                
+                      <b    v-for="(value, key, inx) in crowdList.filter(item=>{return item.crowdId=== node.parameters[index].values[
+                      node.parameters[index].defaultValue
+                    ].children.defaultValue})"
+                      :key="inx"> {{   Crowitem.tit +" ："+ value[Crowitem.key]  }} </b><br />
+        
                     </li>
                   </ul>
                 </div>
@@ -464,7 +453,6 @@
             <conditional
               v-if="item.type === 'PTYPE_CONDITION_DETAILS'"
               :data="item.data"
-              ref="conditional"
               :details="item.details"
               @openBox2="openBox2"
             ></conditional>
@@ -473,16 +461,27 @@
               v-if="node.nodeTypeID === 'NID_A/B'"
               :data="item"
               :output="node.output"
+   
             ></abshunt>
 
-            <!-- // 短信控件抽出类 -->
-            <note v-if="item.type === 'NOTE_TEMPLATE'" :data="item"></note>
 
-            <!-- // push控件抽出类 -->
-            <push v-if="item.type === 'PUSH_TEMPLATE'" :data="item"></push>
+                   <!-- // 短信控件抽出类 -->
+            <note
+              v-if="item.type === 'NOTE_TEMPLATE'"
+              :data="item"
+            ></note>
+
+                             <!-- // push控件抽出类 -->
+            <push
+              v-if="item.type === 'PUSH_TEMPLATE'"
+              :data="item"
+            ></push>
           </div>
+          
 
-          <el-form-item class = "from_btn">
+
+
+          <el-form-item>
             <el-button icon="el-icon-close" @click="Deselect">关闭</el-button>
             <el-button type="primary" icon="el-icon-check" @click="save"
               >保存</el-button
@@ -499,7 +498,7 @@
           <el-form-item label="条件">
             <el-input v-model="line.label"></el-input>
           </el-form-item>
-          <el-form-item class = "from_btn">
+          <el-form-item>
             <el-button icon="el-icon-close" @click="Deselect">关闭</el-button>
             <el-button type="primary" icon="el-icon-check" @click="saveLine"
               >保存</el-button
@@ -526,17 +525,17 @@
 import { cloneDeep } from "lodash";
 import abshunt from "../ef/AB";
 import conditional from "../ef/conditional";
-import note from "./note";
-import push from "./push";
-import axios from "axios";
+import note from "./note"
+import  push   from "./push"
+import axios from "axios"
 export default {
   data() {
     return {
-waitList:{},    
-  visible: true,
+      waitList:{},
+      visible: true,
       // node 或 line
       type: "node",
-      crowdList: "",
+      crowdList:"",
       node: {},
       line: {},
       data: {},
@@ -546,13 +545,11 @@ waitList:{},
       activeNames: ["1"],
       isShowOpenBox: false, //弹框展示
       op: "", //node弹出框数据
-      notelist: [
-        { tit: "人群名称", key: "crowdName" },
-        { tit: "人群ID", key: "crowdId" },
-        { tit: "有效期至", key: "validPeriodTime" },
-        { tit: "创建人", key: "createUserName" },
-        { tit: "创建时间", key: "createTime" }
-      ],
+      notelist: [{tit:"人群名称",key:"crowdName"},
+      {tit:"人群ID",key:"crowdId"},
+      {tit:"有效期至",key:"validPeriodTime"},
+      {tit:"创建人",key:"createUserName"},
+      {tit:"创建时间",key:"createTime"}],
       stateList: [
         {
           state: "success",
@@ -570,29 +567,14 @@ waitList:{},
           state: "running",
           label: "运行中"
         }
-      ],
-            pickerOptions: {
-        //禁用当前日期之前的日期
-        disabledDate(time) {
-          //   let currentTime = this.getNowMonthDay() 
-          // return time.getTime() > new Date(currentTime).getTime()
-          //Date.now()是javascript中的内置函数，它返回自1970年1月1日00:00:00 UTC以来经过的毫秒数。
-          return time.getTime() < Date.now()- 8.64e7 ;
-          
-          //  return time.getTime() > this.formSearch.end_time ;
-        }
-        
-      }
-    
-    }
-    
+      ]
+    };
   },
   created() {
-    axios.post("http://49.233.45.33:8081/list/crowd",{}).then(res => {
-      //人群包信息
-      this.crowdList = res.data.data;
-      this.waitListme()
-    });
+    axios.post("http://49.233.45.33:8081/list/crowd",{}).then(res=>{//人群包信息
+    this.crowdList = res.data.data
+    this.waitListme()
+    })
   },
   components: {
     conditional,
@@ -603,8 +585,8 @@ waitList:{},
   methods: {
     waitListme(){
       this.$http({
-        method: "post",
-        url: "http://49.233.45.33:8888/dictionary/findDictionary",
+        method: "GET",
+        url: "http://192.168.1.54:8080/dictionary/findDictionary",
       })
         .then((res) => {
           this.waitList=res.data
@@ -648,22 +630,12 @@ waitList:{},
           node.left = this.node.left;
           node.top = this.node.top;
           console.log(node.parameters);
-          node.output = this.node.output;
+          node.output =this.node.output
           node.parameters = this.node.parameters;
           this.$emit("repaintEverything");
         }
       });
-      if (this.node.nodeTypeID === "NID_CONDITION") {
-        //校验条件控件
-        // this.$refs.[conditional].submitForm()
-        if (!this.$refs.conditional[0].submitForm("dynamicValidateForm")) {
-          return;
-        } else {
-          this.$emit("isHideFrom", false);
-        }
-      } else {
-        this.$emit("isHideFrom", false);
-      }
+      this.$emit("isHideFrom", false);
     },
     handleChange(val) {
       console.log(val);
@@ -697,24 +669,6 @@ waitList:{},
     },
     popAffirm() {
       this.isShowOpenBox = false;
-    },
-          getNowTime: function () {
-      let Time
-
-      let hh = new Date().getHours()
-      let mf = new Date().getMinutes() < 10 ? '0' + new Date().getMinutes()
-        :
-        new Date().getMinutes()
-      let ss = new Date().getSeconds() < 10 ? '0' + new Date().getSeconds()
-        :
-        new Date().getSeconds()
-      Time = hh + ':' + mf + ':' + ss
-
-      return Time
-    },
-    changeTriggerWay(a){
-      this.data.triggerWay=a
-      console.log(this.data.triggerWay)
     }
   }
 };
@@ -724,12 +678,10 @@ waitList:{},
 ::-webkit-scrollbar {
   display: none;
 }
-
 .form-left,
 .ef-node-form {
   height: 100%;
 }
-
 .ef-form-title {
   padding: 20px 20px 0px 20px;
 
@@ -760,16 +712,12 @@ waitList:{},
   // align-items: center;
   // padding-left: 20px;
   height: 100%;
-  padding-bottom: 70px;
   // overflow-x: hidden;
   overflow-y: scroll;
 }
 .el-form {
   width: 100%;
-  height: 100%;
-  padding-bottom: 70px;
 }
-
 .el-button {
   margin-left: 5px;
   width: 45% !important;
@@ -873,7 +821,7 @@ waitList:{},
       b {
         color: rgb(11, 145, 255);
         width: 180px;
-        // overflow: hidden; /*超出的部分隐藏起来。*/
+        overflow: hidden; /*超出的部分隐藏起来。*/
         white-space: nowrap; /*不显示的地方用省略号...代替*/
       }
       b:hover {
@@ -906,23 +854,4 @@ waitList:{},
     width: 100%;
   }
 }
-// .el_from_btn {
-//   position: fixed;
-// }
- .from_btn{
-    // width: 100%;
-    width: 380px;
-    height: 50px;
-    // margin-left: 15px;
-    padding-top: 10px;
-    background-color:rgb(255, 255, 255);
-    line-height: 50px;
-      position: fixed;
-      // background-color: violet;
-      bottom: -20px;
-      // button:{
-      //   width: 49%;
-      // }
-  }
-
 </style>

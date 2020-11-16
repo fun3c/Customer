@@ -2,13 +2,10 @@
   <div class="header-box">
     <el-row type="flex" justify="space-between">
       <el-col :span="6" style="font-size:34px">
-        D-Customer
       </el-col>
       <el-col :span="6" :offset="14" >
-        <button class="btn-tool" title="折叠" @click="collapse" >
-            <i class="el-icon-d-arrow-left"></i>
-        </button>
-        <button class="btn-tool" title="刷新" @click="refresh">
+      
+        <!-- <button class="btn-tool" title="刷新" @click="refresh">
             <i class="el-icon-refresh"></i>
         </button>
         <button class="btn-tool" title="全屏" @click="Utils.fullScreen">
@@ -16,9 +13,10 @@
         </button>
         <button class="btn-tool" title="便签" @click="dialogVisible = true" >
           <i class="el-icon-edit"></i>
-        </button>
+        </button> -->
       </el-col>
-      <el-col :span="4" align="right">
+      <el-col :span="4" align="right" >
+        <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
         <!-- <span>{{ Utils.todayDate() }}</span> -->
         <el-dropdown trigger="click" class="user-name" @command="handleCommand">
           <span class="el-dropdown-link">
@@ -103,8 +101,17 @@ export default {
     border-bottom: 1px solid black;
   }
   .index-box .el-aside {
-    background-color: #20222A;
     height: 100% !important;
     min-height: 100%;
+    background-color: white !important;
+}
+.header-box{
+  background-color: #5F72E2;
+  z-index: 500;
+}
+.el-dropdown{
+  color:#ffffff !important;
+  margin-right: 20px;
+  
 }
 </style>

@@ -75,7 +75,7 @@ export default {
       if(''!==this.data.id){
         axios
           .post(
-            "/messageTemplate/getSmsMessageTemplateInfo",
+            "/api/messageTemplate/getSmsMessageTemplateInfo",
              {"id": this.data.id }
           )
           .then(res => {

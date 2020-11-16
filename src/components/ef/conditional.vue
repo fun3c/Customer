@@ -15,8 +15,8 @@
     <!-- 一期表单 -->
 <el-form :model="dynamicValidateForm" ref="dynamicValidateForm"  class="demo-dynamic">
   <el-form-item
+  class="conditional_show"
     v-for="(domain, index) in dynamicValidateForm.domains"
-    :label="'条件' + index"
     :key="domain.key"
     :prop="'domains.' + index + '.label'"
   
@@ -24,11 +24,11 @@
       required: true, message: '条件不能为空', trigger: 'change'
     }"
   >
-    <el-input   @focus="openBox2(index)"  v-model="domain.label"></el-input><el-button @click.prevent="removeDomain(domain)">删除</el-button>
+    <el-input   @focus="openBox2(index)"  v-model="domain.label"></el-input><span style="cursor:pointer;" @click.prevent="removeDomain(domain)">删除</span>
   </el-form-item>
   <el-form-item>
     <!-- <el-button type="primary" @click="submitForm('dynamicValidateForm')">提交</el-button> -->
-    <a @click="addDomain">添加条件</a>
+    <a style="cursor:pointer;" @click="addDomain">添加条件</a>
 
   </el-form-item>
 </el-form>
@@ -51,9 +51,10 @@
               :key="index"
               :label="item.title"
             >
-              <div v-if="item.childLabelList.length > 0">
-                <el-input placeholder="输入关键字进行过滤" v-model="filterText">
+                   <el-input placeholder="输入关键字进行过滤" v-model="filterText">
                 </el-input>
+              <div class="wettree" v-if="item.childLabelList.length > 0">
+         
 
                 <el-tree
                   class="filter-tree"
@@ -82,7 +83,7 @@
               <el-form-item label="标签名">
                 <div>
                   <span> {{ rightData.labelInfo }} </span>
-                  <el-tag type="success">
+                  <el-tag type="success" v-if="rightData.labelTypeInfo">
                     {{ rightData.labelTypeInfo }}
                   </el-tag>
                 </div>
@@ -139,6 +140,14 @@
                   </el-option>
                 </el-select>
               </el-form-item>
+              <!-- 输入框 -->
+    <el-form-item
+                v-if="rightData.labelValueType !== 'ENUM'&& rightData.labelValueType !== 'BOOLEAN'"  
+                label="值"
+              >
+         <el-input v-model="localData.value" placeholder="请输入内容"></el-input>
+              </el-form-item>
+              
             </el-form>
           </div>
           <el-row class="pop_up_right_btn">
@@ -178,10 +187,22 @@ export default {
         dataValue: "",
         operator: "", //运算符信息
         labelInfo: "",
+        value:"",
         expand: true
       },
            dynamicValidateForm: {
-          domains: [],
+          domains: [
+            {     id: 0,
+        label: "",
+        labelNo: "",
+        dataNo: "",
+        dataValue: "",
+        operatorNo: "",
+        operatorValue: "",
+        operatorInfo: "",
+        labelInfo: "",
+        expand: true}
+          ],
         
         },
       defaultProps: {
@@ -238,6 +259,11 @@ export default {
         //     });
         //   });
         // });
+      })  .catch(() => {
+                this.$message({
+            type: "error",
+            message: "任务标签ID请求失败"
+          });
       });
     this.expandChange();
   },
@@ -318,7 +344,7 @@ export default {
         this.$message.error("请选则运算符数据");
         return false;
       }
-      if (!this.localData.dataValue && this.localData.selectlist.length == 0) {
+      if (!this.localData.dataValue && this.localData.selectlist.length == 0 &&this.localData.value==="") {
         this.$message.error("请选则运算值数据");
         return false;
       }
@@ -344,7 +370,8 @@ export default {
       // 此处修改缩略图数据
       console.log(this.checkData());
       if (this.checkData()) {
-        if (this.localData.selectlist.length ) {
+        console.log(this.localData,'本地数据')
+        if (this.rightData.labelValueType ==="ENUM" ) {
           let labelNo = "";
           let dataNo = "";
           let dataValue = "";
@@ -362,13 +389,16 @@ export default {
           this.targetData.dataNo = dataNo;
           this.targetData.dataValue = dataValue;
           this.targetData.labelInfo = labelInfo;
-        } else {
+        } else if(this.rightData.labelValueType ==="BOOLEAN"){
           this.targetData.labelNo = this.localData.dataValue.labelNo;
           this.targetData.dataNo = this.localData.dataValue.dataNo;
           this.targetData.dataValue = this.localData.dataValue.dataValue;
           this.targetData.labelInfo = this.localData.dataValue.labelInfo;
         }
-
+        else {
+             this.targetData.dataValue = this.localData.value;
+             this.targetData.labelInfo = this.localData.value;
+        }
         //运算符信息
         this.targetData.operatorValue = this.localData.operator.operatorValue;
         this.targetData.operatorInfo = this.localData.operator.operatorInfo;
@@ -438,7 +468,7 @@ export default {
   }
 };
 </script>
-<style lang="less" >
+<style lang="less" scoped>
 .org-tree-container {
   width: 100%;
   background-color: #fff;
@@ -532,7 +562,7 @@ export default {
       width: 49%;
       border-right: solid 1px #ccc;
       .el-tabs {
-        height: 100%;
+        height: 90%;
       }
     }
     .pop_up_min_right {
@@ -546,15 +576,46 @@ export default {
     }
   }
 }
-.el-tabs__content {
-  height: 75%;
-}
+
 .el-tab-pane,
 .el-tab-pane > div {
   height: 100%;
 }
 .el-tree {
   height: 100%;
+  overflow: scroll;
+}
+.conditional_show{
+
+  width: 100%;
+
+}
+.el-form-item__content{
+   display: flex;
+   
+      .el-input{
+    width: 80% !important;
+  }
+  span{
+  width: 20%;
+  color: rgb(133, 130, 130);
+  text-align: center;
+  margin-left: 15px;
+  }
+  span:hover{
+    font-weight: 800;
+      color: rgb(110, 154, 212);
+    }
+}
+.filter-tree{
+  height: 100%;
+  overflow: scroll;
+}
+.el-tabs__content{
+  height: 100%;
+}
+.wettree{
+  height: 370px !important;
   overflow: scroll;
 }
 </style>

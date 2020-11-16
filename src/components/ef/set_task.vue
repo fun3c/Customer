@@ -179,7 +179,7 @@ export default {
   mounted() {
     axios.get("http://49.233.45.33:8081/v1/get/job/classify").then(res => {
       this.taskClassifyList = res.data.data;
-      console.log(this.taskClassifyList, "请求的任务分类");
+      // console.log(this.taskClassifyList, "请求的任务分类");
     });
   },
   methods: {
@@ -259,7 +259,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .flowHelp {
   /* height: 80%; */
   width: 50%;

@@ -1,12 +1,19 @@
 <template>
   <div v-if="easyFlowVisible" style="height: calc(100vh);">
     <el-row class="panel-header">
+
+    <div v-if="!data.jobName"> 
+         <el-button class ="exit" type="text" icon="el-icon-back" circle @click="giveUp"></el-button>
+       <span>ID- -</span> <span>未命名任务</span>
+    </div>
       <div v-if="data.jobName">
-        <span>{{ data.jobId }}</span> <span>{{ data.jobName }}</span>
+         <el-button class ="exit"   type="text" icon="el-icon-back" circle></el-button>
+        <span>{{ data.jobId }}</span> <span style="font-weight: 800">{{ data.jobName }}</span>
         <span
           >{{ dateFormat(data.startTime) }}-{{ dateFormat(data.endTime) }}</span
         >
       </div>
+           <el-button style="float:right;margin-right:5px"  class ="exit fullscrenn" type="text" icon="el-icon-full-screen" @click="toggleFullScreen" circle>全屏</el-button>
     </el-row>
 
     <el-row>
@@ -16,17 +23,14 @@
           <div style="float: left;margin-left: 5px">
             <el-button
               type="primary"
-              plain
-              round
+             style="color: #fff;background: #5f72e2;border-radius:5px;font-size:14px; "
               icon="el-icon-refresh"
               size="mini"
               @click="giveUp"
-              >退出编辑</el-button
-            >
+              >退出编辑</el-button >
             <el-button
               type="primary"
-              plain
-              round
+        style="color: #fff;background: #5f72e2;border-radius:5px;font-size:14px; "
               icon="el-icon-refresh"
               size="mini"
               @click="conserve"
@@ -34,8 +38,7 @@
             >
             <el-button
               type="primary"
-              plain
-              round
+        style="color: #fff;background: #5f72e2;border-radius:5px;font-size:14px; "
               icon="el-icon-refresh"
               size="mini"
               @click="setCurrentTask"
@@ -43,7 +46,7 @@
             >
           </div>
 
-          <div style="float: right;margin-right: 5px">
+          <div style="float: left;margin-left: 30px">
             <el-link type="primary" :underline="false">{{ data.name }}</el-link>
             <el-divider direction="vertical"></el-divider>
             <el-button
@@ -71,6 +74,8 @@
               @mousedown.native="zoomSub"
               @mouseup.native="celZoom"
             ></el-button>
+      
+              <el-button   @click="rebound" type="text" icon="el-icon-aim" circle>复位</el-button>
             <el-button
               type="info"
               plain
@@ -98,8 +103,11 @@
       </el-col>
     </el-row>
     <div style="display: flex;height: calc(100% - 47px);">
-      <div style="width: 230px;border-right: 1px solid #dce3e8;">
-        <node-menu @addNode="addNode" ref="nodeMenu"></node-menu>
+      <div style="width: 100px;border-right: 1px solid #dce3e8;"
+      v-if="this.$route.params.value!==0"
+      class ="left_Nav">
+        
+        <node-menu  @addNode="addNode" ref="nodeMenu"></node-menu>
       </div>
       <div class="wiper">
         <div
@@ -188,6 +196,7 @@ export default {
       loadEasyFlowFinish: false,
       //后端返回唯一ID
       taskID: "",
+      isFullscreen:true,
       localnodeID: 0,
       //  数据
       data: {},
@@ -233,8 +242,9 @@ export default {
           let disX = e.clientX - el.offsetLeft;
           let disY = e.clientY - el.offsetTop;
           el.style.cursor = "move";
-
+        
           document.onmousemove = function(e) {
+          
             // 移动时禁止默认事件
             e.preventDefault();
             const left = e.clientX - disX;
@@ -278,43 +288,56 @@ export default {
     //     return false
   },
 
+
   mounted() {
    
     this.jsPlumb = jsPlumb.getInstance();
-     console.log(this.jsPlumb,"jsPlumb")
-    console.log(this.parmas)
+    
+  
+    let routerType = this.$route.params.value
+    let routerJpbId = this.$route.params.id
+    console.log(routerJpbId)
     // 进入画布，先判断是新增，编辑，查看
-    if (false) {
+    if (!routerJpbId) {
+      console.log("新增")
       //新增
       // 发起ID请求
       axios.get("http://49.233.45.33:8081/v1/get/job/id").then(res => {
         this.taskID = res.data.data.jobId;
         let data = (getDataC().nodeList[0].id =
           this.taskID + "_" + this.localnodeID);
-        console.log(getDataC());
+  
         getDataC().jobId = this.taskID;
         this.$nextTick(() => {
           // 默认加载流程A的数据
           this.dataReload(getDataC()); // 默认流程图的数据
         });
+      })  .catch(() => {
+                this.$message({
+            type: "error",
+            message: "任务ID请求失败"
+          });
       });
-    } else if (true) {
+    } else if (routerType===0) {
       //查看
       // 请求画布数据   getCheckdata
-      // axios.post("",{}).then(res=>{
-      //   let data=res.data.data
-      //   data.nodeList.forEach(item=>{
-      //     item.viewOnly=true
-      //        this.$nextTick(() => {
-      //     // 默认加载流程A的数据
-      //     this.dataReload(data); // 默认流程图的数据
-      //   });
-      //   })
-      // })
-      this.$nextTick(() => {
-        // 默认加载流程A的数据
-        let newData = getCheckdata();
 
+    this.$http({
+        method: "POST",
+        url: "http://49.233.45.33:8888/findByTaskJson",
+        data: {
+   jobId:this.$route.params.id
+        },
+      }).then(res=>{
+        console.log(res)
+        let data =res.data.data
+        data.nodeList.forEach(item=>{
+          item.viewOnly=true
+ 
+        })
+               this.$nextTick(() => {
+        // 默认加载流程A的数据
+        let newData = data;
         newData.nodeList.forEach((item, index) => {
           item.output.fixedOutput.forEach(itm => {
             itm.id = uuidv4();
@@ -323,20 +346,36 @@ export default {
 
         this.dataReload(newData); // 默认流程图的数据
       });
-    } else if (false) {
+      })
+ 
+    } else if (this.$route.params.value===2) {
+      console.log("编辑")
       //编辑
       // 请求画布数据
-      axios.post("", {}).then(res => {
-        let data = res.data.data;
-        data.nodeList.forEach(item => {
-          this.$nextTick(() => {
-            // 默认加载流程A的数据
-            this.dataReload(data); // 默认流程图的数据
+       this.$http({
+        method: "POST",
+        url: "http://49.233.45.33:8888/findByTaskJson",
+        data: {
+   jobId:this.$route.params.id
+        },
+      }).then(res=>{
+        console.log(res)
+        let data =res.data.data
+
+               this.$nextTick(() => {
+        // 默认加载流程A的数据
+        let newData = data;
+        newData.nodeList.forEach((item, index) => {
+          item.output.fixedOutput.forEach(itm => {
+            itm.id = uuidv4();
           });
         });
+
+        this.dataReload(newData); // 默认流程图的数据
       });
+      })
     }
-    console.log(getDataC())
+    // console.log(getDataC())
 //      this.data.lineList
 //     setTimeout(() => {
 //       this.data.nodeList.forEach(node=>{
@@ -430,33 +469,33 @@ export default {
           let from = evt.sourceId;
           let to = evt.targetId;
 
-          // let node = this.data.nodeList.filter(function(node) {
-          //   return node.id === to;
-          // });
-          // let toArr = this.data.lineList.filter(function(line) {
-          //   return line.to === to;
-          // });
-          // console.log(node, "连线的回环信息");
-          // if (toArr.length > 0) {
-          //   this.$message.error("链接不能出现循环");
-          //   return false;
-          // }
-          // if (node[0].nodeTypeID === "NID_START") {
-          //   this.$message.error("开始节点不许被链接");
-          //   return false;
-          // }
-          // if (from === to) {
-          //   this.$message.error("节点不支持连接自己");
-          //   return false;
-          // }
-          // if (this.hasLine(from, to)) {
-          //   this.$message.error("该关系已存在,不允许重复创建");
-          //   return false;
-          // }
-          // if (this.hashOppositeLine(from, to)) {
-          //   this.$message.error("不支持两个节点之间连线回环");
-          //   return false;
-          // }
+          let node = this.data.nodeList.filter(function(node) {
+            return node.id === to;
+          });
+          let toArr = this.data.lineList.filter(function(line) {
+            return line.to === to;
+          });
+          console.log(node, "连线的回环信息");
+          if (toArr.length > 0) {
+            this.$message.error("链接不能出现循环");
+            return false;
+          }
+          if (node[0].nodeTypeID === "NID_START") {
+            this.$message.error("开始节点不许被链接");
+            return false;
+          }
+          if (from === to) {
+            this.$message.error("节点不支持连接自己");
+            return false;
+          }
+          if (this.hasLine(from, to)) {
+            this.$message.error("该关系已存在,不允许重复创建");
+            return false;
+          }
+          if (this.hashOppositeLine(from, to)) {
+            this.$message.error("不支持两个节点之间连线回环");
+            return false;
+          }
 
           this.$message.success("连接成功");
           //连线成功后应该怎么做  删除连线节点
@@ -681,9 +720,11 @@ export default {
         this.$message.error("请把节点拖入到画布中");
         return;
       }
+    
       left = left - containerRect.x + efContainer.scrollLeft;
       top = top - containerRect.y + efContainer.scrollTop;
 
+  
       // 居中
       left -= 85;
       top -= 16;
@@ -866,6 +907,13 @@ export default {
         this.$refs.setTask.init();
       });
     },
+    //画布复原
+    rebound(){
+      this.$refs.efContainer.style.left="0%"
+
+     this.$refs.efContainer.style.top="0%"
+
+    },
     // 加载流程图
     dataReload(data) {
       this.easyFlowVisible = false;
@@ -1002,12 +1050,12 @@ export default {
     // -------------------------------------------------------------------顶部按键
     //提交流程  保存流程
     conserve() {
-      let newData = lodash.cloneDeep(this.data);
-      this.data.nodeList.forEach((item, index) => {
-        item.output.fixedOutput.forEach(itm => {
-          itm.id = uuidv4();
-        });
-      });
+      // let newData = lodash.cloneDeep(this.data);
+      // this.data.nodeList.forEach((item, index) => {
+      //   item.output.fixedOutput.forEach(itm => {
+      //     itm.id = uuidv4();
+      //   });
+      // });
 
       // console.log(  JSON.stringify(this.data))
       this.$confirm("确定要保存该流程数据吗？", "提示", {
@@ -1046,13 +1094,13 @@ export default {
             //   .catch(err => {
             //     console.error(err);
             //   });
-            axios.post("/save", data).then(res => {
+            axios.post("http://49.233.45.33:8888/save", data).then(res => {
               console.log(this.data, "wwwwwwwwwwwwwwwwww");
               if (res.data.code === 200) {
                 this.$message.success("保存成功");
                 this.$router.push({
                   path: "/users",
-                  query: { id: "待测试" }
+        
                 });
               } else {
                 this.$message.warning(res.data.msg);
@@ -1091,7 +1139,6 @@ export default {
         .then(() => {
           this.$router.push({
             path: "/users",
-            query: { id: "待测试" }
           });
           //   console.log(this.data.id);
           //   this.$message.success("正在执行中,请稍后...");
@@ -1119,7 +1166,38 @@ export default {
             message: "取消输入"
           });
         });
-    }
+    },
+ 
+      toggleFullScreen(e){
+   let element = document.documentElement;
+      if (this.fullscreen) {
+        this.$message.success("退出全屏模式");
+        this.fullscreenTitle = "进入全屏模式";
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitCancelFullScreen) {
+            document.webkitCancelFullScreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+      } else {
+        this.$message.success("进入全屏模式");
+        this.fullscreenTitle = "退出全屏模式";
+        if(element.requestFullscreen) {
+            element.requestFullscreen();
+        } else if (element.webkitRequestFullScreen) {
+            element.webkitRequestFullScreen();
+        } else if (element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+        } else if (element.msRequestFullscreen) {
+            // IE11
+            element.msRequestFullscreen();
+        }
+      }
+      this.fullscreen = !this.fullscreen;
+      },
   }
 };
 </script>

@@ -4,7 +4,7 @@ var dataC ={
     "jobName": "",//任务名称
     "jobDescription": "", //任务描述
     "jobVersion": "", //任务版本信息
-    "triggerWay": "",//触发方式
+    "triggerWay": 0,//触发方式
     "startTime": "",//开始时间
     "endTime": "",//结束时间
     "jobState": "",//任务状态
@@ -18,11 +18,11 @@ var dataC ={
             "caption": "开始",
             "nodeTypeID": "NID_START",
             "info": "条件控件根据所配置条件的计算结果，决定下一个执行的节点",
-            "left": "675px",
-            "top": "60px",
+            "left": "915px",
+            "top": "135px",
             "controlState": "success",
             "image": "start.png",
-            "viewOnly":true,
+            // "viewOnly":true,
             "output": {
                 "pinDistance": 0,
                 "flexOutput": false,

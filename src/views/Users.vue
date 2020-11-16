@@ -1,26 +1,41 @@
 <template>
   <div class="user-box">
     <el-form
+      class="idorname"
+      ref="taskquerylist"
+      :model="taskquerylist"
+      :inline="true"
+      label-width="auto"
+    >
+    <el-form-item label="" size="mini">
+        <el-input
+          v-model="taskquerylist.idOrName"
+          placeholder="请输入任务ID或名称"
+          onkeyup="value=value.replace(/[^\w\u4E00-\u9FA5]/g, '')"
+          maxlength="40"
+          clearable
+          @clear="chuan('idOrName')"
+        ></el-input>
+      </el-form-item>
+      <el-button type="primary" size="mini" @click="selectIdOrName"
+            >搜索</el-button
+          >
+    </el-form>
+    
+    <div style="width:99%;height:120px;background-color: white;padding:10px 10px">
+      <el-form
       class="el-find-from"
       ref="taskquerylist"
       :model="taskquerylist"
       :inline="true"
       label-width="auto"
     >
-      <el-form-item label="ID或名称" size="mini">
-        <el-input
-          v-model="idOrName"
-          placeholder="请输入任务ID或名称"
-          onkeyup="value=value.replace(/[^\w\u4E00-\u9FA5]/g, '')"
-          maxlength="40"
-          clearable
-        ></el-input>
-      </el-form-item>
       <el-form-item label="创建人" size="mini">
         <el-input
           v-model="taskquerylist.createBy"
           placeholder="请输入创建人"
           clearable
+          @clear="chuan('createBy')"
         ></el-input>
       </el-form-item>
       <el-form-item label="触发方式" size="mini">
@@ -28,29 +43,31 @@
           v-model="taskquerylist.triggerWay"
           placeholder="所有方式"
           clearable
+          @clear="chuan('triggerWay')"
         >
           <el-option label="行为触发" value="0"></el-option>
           <el-option label="定时触发" value="1"></el-option>
         </el-select>
       </el-form-item>
-
-      <!-- <el-form-item label="任务目标" size="mini">
+      <el-form-item label="任务目标" size="mini">
         <el-select
           v-model="taskquerylist.taskObject"
           placeholder="所有目标"
           clearable
-          multiple
-          collapse-tags
+          @clear="chuan('taskObject')"
         >
-          <el-option label="目标1" value="0"></el-option>
-          <el-option label="目标2" value="1"></el-option>
+          <el-option label="无任务目标" value="c00"></el-option>
+          <el-option label="代售固收交易人数" value="c01"></el-option>
+          <el-option label="自营固收交易人数" value="c02"></el-option>
+          <el-option label="基金购买份额" value="c03"></el-option>
         </el-select>
-      </el-form-item> -->
+      </el-form-item>
       <el-form-item label="任务性质" size="mini">
         <el-select
           v-model="taskquerylist.delivery"
           placeholder="所有性质"
           clearable
+          @clear="chuan('delivery')"
         >
           <el-option label="正式任务" value="0"></el-option>
           <el-option label="测试任务" value="1"></el-option>
@@ -61,30 +78,54 @@
           v-model="taskquerylist.jobState"
           placeholder="所有状态"
           clearable
+          @clear="chuan('jobState')"
         >
-          <el-option
+          <el-option label="编辑中" value="0"></el-option>
+          <el-option label="待审批" value="1"></el-option>
+          <el-option label="审批中" value="2"></el-option>
+          <el-option label="已驳回" value="3"></el-option>
+          <el-option label="待执行" value="4"></el-option>
+          <el-option label="执行中" value="5"></el-option>
+          <el-option label="已中止" value="6"></el-option>
+          <el-option label="已停止" value="7"></el-option>
+          <el-option label="已到期" value="8"></el-option>
+          <el-option label="已完成" value="9"></el-option>
+          <!-- <el-option
             :label="option"
             :value="i"
             v-for="(option, i) in options"
             :key="option"
-          ></el-option>
+          ></el-option> -->
         </el-select>
       </el-form-item>
 
       <el-form-item label="起止时间" size="mini">
         <el-col :span="11">
           <el-date-picker
-            v-model="time"
+            v-model="taskquerylist.time"
             type="datetimerange"
             range-separator="至"
             start-placeholder="开始时间"
             end-placeholder="结束时间"
             value-format="yyyy-MM-dd HH:mm:dd"
+            clearable
           >
           </el-date-picker>
         </el-col>
       </el-form-item>
     </el-form>
+    <el-col :span="24">
+        <div class="tool-box" style="float:right">
+          <el-button type="primary" size="mini" @click="defaultList" style="background-color: white;color:#949393"
+            >重置</el-button
+          >
+          <el-button type="primary" size="mini" @click="queryList"
+            >查询</el-button
+          >
+        </div>
+      </el-col>
+    </div>
+    
     <el-row>
       <el-col :span="20">
         <div class="tool-box">
@@ -92,21 +133,12 @@
             type="primary"
             icon="el-icon-circle-plus-outline"
             @click="handleAdd"
-            size="small"
+            size="mini"
             >新增</el-button
           >
         </div>
       </el-col>
-      <el-col :span="4">
-        <div class="tool-box">
-          <el-button type="primary" size="small" @click="defaultList"
-            >重置</el-button
-          >
-          <el-button type="primary" size="small" @click="queryList"
-            >查询</el-button
-          >
-        </div>
-      </el-col>
+      
     </el-row>
     <!-- :data="users.slice((currentPage-1)*pageSize,currentPage*pageSize)" -->
     <el-table
@@ -116,7 +148,7 @@
     >
       <el-table-column label="ID" min-width="5%">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <span>{{ scope.row.jobId }}</span>
         </template>
       </el-table-column>
       <el-table-column label="任务名称" min-width="10%">
@@ -148,7 +180,7 @@
       </el-table-column>
       <el-table-column label="起止时间" min-width="10%">
         <template slot-scope="scope">
-          <span>{{ scope.row.startTime }}-{{ scope.row.endTime }}</span>
+          <span>{{ scope.row.startTime }}<br />{{ scope.row.endTime }}</span>
         </template>
       </el-table-column>
       <el-table-column label="任务状态" min-width="10%">
@@ -213,12 +245,12 @@
 </template>
 
 <script>
+const qs = require('qs');
 export default {
   data() {
     return {
       triggerWays: ["行为触发", "定时触发"],
       deliverys: ["正式任务", "测试任务"],
-      idOrName: "",
       currentPage: 1, //初始页
       pageSize: 10, //    每页的数据
       options: [
@@ -238,7 +270,7 @@ export default {
           sta: "编辑中",
           options: [
             { key: "查看", value: 0 },
-            { key: "复制", value: 1 },
+            // { key: "复制", value: 1 },
             { key: "编辑", value: 2 },
             { key: "发布", value: 3 },
           ],
@@ -247,35 +279,35 @@ export default {
           sta: "待审批",
           options: [
             { key: "查看", value: 0 },
-            { key: "复制", value: 1 },
+            // { key: "复制", value: 1 },
           ],
         },
         {
           sta: "审批中",
           options: [
             { key: "查看", value: 0 },
-            { key: "复制", value: 1 },
+            // { key: "复制", value: 1 },
           ],
         },
         {
           sta: "已驳回",
           options: [
             { key: "查看", value: 0 },
-            { key: "复制", value: 1 },
+            // { key: "复制", value: 1 },
           ],
         },
         {
           sta: "待执行",
           options: [
             { key: "查看", value: 0 },
-            { key: "复制", value: 1 },
+            // { key: "复制", value: 1 },
           ],
         },
         {
           sta: "执行中",
           options: [
             { key: "查看", value: 0 },
-            { key: "复制", value: 1 },
+            // { key: "复制", value: 1 },
             { key: "中止任务", value: 4 },
             { key: "强制中止", value: 5 },
           ],
@@ -284,33 +316,32 @@ export default {
           sta: "已中止",
           options: [
             { key: "查看", value: 0 },
-            { key: "复制", value: 1 },
+            // { key: "复制", value: 1 },
           ],
         },
         {
           sta: "已停止",
           options: [
             { key: "查看", value: 0 },
-            { key: "复制", value: 1 },
+            // { key: "复制", value: 1 },
           ],
         },
         {
           sta: "已到期",
           options: [
             { key: "查看", value: 0 },
-            { key: "复制", value: 1 },
+            // { key: "复制", value: 1 },
           ],
         },
         {
           sta: "已完成",
           options: [
             { key: "查看", value: 0 },
-            { key: "复制", value: 1 },
+            // { key: "复制", value: 1 },
           ],
         },
       ],
       lotalElements: 0,
-      time: "",
       users: [],
       user: {
         id: "",
@@ -320,10 +351,7 @@ export default {
         address: "",
         status: 0,
       },
-      taskquerylist: {
-        page: 1,
-        pageSize: 10,
-      },
+      taskquerylist: {},
       userBackup: Object.assign({}, this.user),
       multipleSelection: [],
       userFormVisible: false,
@@ -338,9 +366,29 @@ export default {
     };
   },
   mounted() {
-    this.getJobList(this.currentPage, this.pageSize);
+    //拿到地址参数
+    this.geturlcanshu();
+    this.getJobList();
   },
   methods: {
+    selectIdOrName(){
+      this.setcanshu();
+      this.$http({
+        method: "GET",
+        url: "http://49.233.45.33:8888/selectPage",
+        params: this.taskquerylist,
+      })
+        .then((res) => {
+          this.users = res.data.data.list;
+          this.lotalElements = res.data.data.total;
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+    chuan(param) {
+      delete this.taskquerylist[param];
+    },
     // 初始页currentPage、初始每页数据数pageSize和数据data
     handleSizeChange: function (size) {
       this.pageSize = size;
@@ -351,58 +399,71 @@ export default {
       this.queryList();
     },
     defaultList() {
-      this.taskquerylist = {};
-      this.idOrName = "";
-      this.time = "";
-      this.currentPage = 1;
-      this.getJobList(this.currentPage, this.pageSize);
+      this.taskquerylist = {
+        page: 1,
+        pageSize: 10,
+      };
+      this.$router.push("users");
+      this.getJobList();
     },
-    //page当前页,pageSize每页数据
-    getJobList(page, pageSize) {
+    //解析url参数
+    geturlcanshu() {
+      if (Object.keys(this.$route.query).length != 0) {
+        this.taskquerylist = this.$route.query;
+        //判断对象中是否有time属性
+        if('time' in this.taskquerylist){
+          this.taskquerylist.time=this.taskquerylist.time.split(',')
+        }
+      } else {
+        this.taskquerylist.page = this.currentPage;
+        this.taskquerylist.pageSize = this.pageSize;
+      }
+    },
+    //筛选条件时url后边接上参数
+    setcanshu() {
+      this.taskquerylist.page = this.currentPage;
+      this.taskquerylist.pageSize = this.pageSize;
+      let canshu = this.$route.path + "?";
+      for (let key in this.taskquerylist) {
+        canshu +=
+          key.toString() + "=" + this.taskquerylist[key].toString() + "&";
+      }
+      window.history.pushState("", "", canshu.slice(0, canshu.length - 1));
+    },
+    getJobList() {
       this.loading = true;
       this.$http({
-        method: "POST",
+        method: "GET",
         url: "http://49.233.45.33:8888/selectPage",
-        data: {
-          page: page,
-          pageSize: pageSize,
-        },
+        params: this.taskquerylist,
+        paramsSerializer: function(params) {
+        return qs.stringify(params, {arrayFormat: 'repeat'})
+    }
       })
         .then((res) => {
-          this.users = res.data.list;
-          this.lotalElements = res.data.total;
+          this.users = res.data.data.list;
+          this.lotalElements = res.data.data.total;
         })
         .catch((err) => {
           console.error(err);
         });
     },
     queryList() {
-      // if(this.taskquerylist.taskObject.length==0){
-      //   this.taskquerylist.taskObject=""
-      // }
-      if (this.idOrName != "") {
-        if (isNaN(this.idOrName)) {
-          this.taskquerylist.jobName = this.idOrName;
-          this.taskquerylist.id=""
-        } else { 
-          this.taskquerylist.id = this.idOrName;
-          this.taskquerylist.jobName=""
-        }
+      if('time' in this.taskquerylist&&(this.taskquerylist.time==null||this.taskquerylist.time=='')){
+        delete this.taskquerylist.time
       }
-      if (this.time !== "") {
-        this.taskquerylist.startTime = this.time[0];
-        this.taskquerylist.endTime = this.time[1];
-      }
-      this.taskquerylist.page = this.currentPage;
-      this.taskquerylist.pageSize = this.pageSize;
+      this.setcanshu();
       this.$http({
-        method: "POST",
+        method: "GET",
         url: "http://49.233.45.33:8888/selectPage",
-        data: this.taskquerylist,
+        params: this.taskquerylist,
+        paramsSerializer: function(params) {
+        return qs.stringify(params, {arrayFormat: 'repeat'})
+    }
       })
         .then((res) => {
-          this.users = res.data.list;
-          this.lotalElements = res.data.total;
+          this.users = res.data.data.list;
+          this.lotalElements = res.data.data.total;
         })
         .catch((err) => {
           console.error(err);
@@ -416,9 +477,9 @@ export default {
           params: { id: jobId, value: value },
         });
       }
-      if (value === 1) {
-        this.$message("复制");
-      }
+      // if (value === 1) {
+      //   this.$message("复制");
+      // }
       if (value === 2) {
         //编辑
         this.$router.push({
@@ -441,14 +502,13 @@ export default {
             },
           })
             .then((res) => {
-              console.log(res)
               if (res.data.code == 400) {
                 this.$alert(res.data.msg, "发布失败", {
                   confirmButtonText: "确定",
                 });
               }
               if (res.data.code == 200) {
-                this.getJobList(this.currentPage, this.pageSize);
+                this.getJobList();
                 this.$message({
                   message: "发布成功",
                   type: "success",
@@ -479,7 +539,7 @@ export default {
             },
           })
             .then((res) => {
-              this.getJobList(this.currentPage, this.pageSize);
+              this.getJobList();
             })
             .catch((err) => {
               this.$message.error("中止任务失败");
@@ -505,7 +565,7 @@ export default {
             },
           })
             .then((res) => {
-              this.getJobList(this.currentPage, this.pageSize);
+              this.getJobList();
             })
             .catch((err) => {
               this.$message.error("强制中止任务失败");
@@ -574,7 +634,7 @@ export default {
       this.dialogTitle = "新增";
       this.user = Object.assign({}, this.userBackup);
       this.userFormVisible = true;
-      this.$router.push({ path: "/Panel"});
+      this.$router.push({ path: "/Panel" });
     },
   },
 };
@@ -583,7 +643,6 @@ export default {
 <style lang="scss" scoped>
 .user-box {
   width: 100%;
-
   .tool-box {
     padding: 10px 10px;
     border-bottom: 1px solid #eee;
@@ -598,7 +657,8 @@ export default {
     justify-content: space-between;
     flex: wrap;
     flex-wrap: wrap;
-    height: 160px;
+    height: 80px;
+    background-color: white;
     /* // .one {
     //   width: 29%;
     //   display: flex;
@@ -631,5 +691,19 @@ export default {
 
 .cell {
   text-align: center;
+}
+.idorname{
+  width: 100%;
+  height: 50px;
+  
+}
+.el-form--inline .el-form-item{
+  margin-right: 0px ! important;
+}
+.el-header{
+  padding: 0 0 ! important
+}
+.el-button--primary{
+  border-color: white ! important;
 }
 </style>

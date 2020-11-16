@@ -91,3 +91,9 @@
         }
     }
 </script>
+<style>
+.ef-node-pmenu{
+    width: 100%;
+    padding-left: 0;
+}
+</style>
