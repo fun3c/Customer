@@ -1,35 +1,66 @@
 <template>
-  <div v-if="easyFlowVisible" style="height: calc(100vh);">
+  <div v-if="easyFlowVisible" style="height: calc(100vh)">
     <el-row class="panel-header">
-    <div v-if="!data.jobName"> 
-         <el-button class ="exit" type="text" icon="el-icon-back" circle @click="giveUp"></el-button>
-       <span>ID- -</span> <span>未命名任务</span>
-    </div>
+      <div v-if="!data.jobName">
+        <el-button
+          class="exit"
+          type="text"
+          icon="el-icon-back"
+          circle
+          @click="giveUp"
+        ></el-button>
+        <span>ID- -</span> <span>未命名任务</span>
+      </div>
       <div v-if="data.jobName">
-         <el-button class ="exit"   type="text" icon="el-icon-back" circle></el-button>
-        <span>{{ data.jobId }}</span> <span style="font-weight: 800">{{ data.jobName }}</span>
+        <el-button
+          class="exit"
+          type="text"
+          icon="el-icon-back"
+          circle
+        ></el-button>
+        <span>{{ data.jobId }}</span>
+        <span style="font-weight: 800">{{ data.jobName }}</span>
         <span
           >{{ dateFormat(data.startTime) }}-{{ dateFormat(data.endTime) }}</span
         >
       </div>
-           <el-button style="float:right;margin-right:5px"  class ="exit fullscrenn" type="text" icon="el-icon-full-screen" @click="toggleFullScreen" circle>全屏</el-button>
+      <el-button
+        style="float: right; margin-right: 5px"
+        class="exit fullscrenn"
+        type="text"
+        icon="el-icon-full-screen"
+        @click="toggleFullScreen"
+        circle
+        >全屏</el-button
+      >
     </el-row>
 
     <el-row>
       <!--顶部工具菜单-->
       <el-col :span="24">
         <div class="ef-tooltar">
-          <div style="float: left;margin-left: 5px">
+          <div style="float: left; margin-left: 5px">
             <el-button
               type="primary"
-             style="color: #fff;background: #5f72e2;border-radius:5px;font-size:14px; "
+              style="
+                color: #fff;
+                background: #5f72e2;
+                border-radius: 5px;
+                font-size: 14px;
+              "
               icon="el-icon-refresh"
               size="mini"
               @click="giveUp"
-              >退出编辑</el-button >
+              >退出编辑</el-button
+            >
             <el-button
               type="primary"
-        style="color: #fff;background: #5f72e2;border-radius:5px;font-size:14px; "
+              style="
+                color: #fff;
+                background: #5f72e2;
+                border-radius: 5px;
+                font-size: 14px;
+              "
               icon="el-icon-refresh"
               size="mini"
               @click="conserve"
@@ -37,7 +68,12 @@
             >
             <el-button
               type="primary"
-        style="color: #fff;background: #5f72e2;border-radius:5px;font-size:14px; "
+              style="
+                color: #fff;
+                background: #5f72e2;
+                border-radius: 5px;
+                font-size: 14px;
+              "
               icon="el-icon-refresh"
               size="mini"
               @click="setCurrentTask"
@@ -45,7 +81,7 @@
             >
           </div>
 
-          <div style="float: left;margin-left: 30px">
+          <div style="float: left; margin-left: 30px">
             <el-link type="primary" :underline="false">{{ data.name }}</el-link>
             <el-divider direction="vertical"></el-divider>
             <el-button
@@ -73,8 +109,10 @@
               @mousedown.native="zoomSub"
               @mouseup.native="celZoom"
             ></el-button>
-      
-              <el-button   @click="resetZoom" type="text" icon="el-icon-aim" circle>复位</el-button>
+
+            <el-button @click="resetZoom" type="text" icon="el-icon-aim" circle
+              >复位</el-button
+            >
             <el-button
               type="info"
               plain
@@ -101,12 +139,13 @@
         </div>
       </el-col>
     </el-row>
-    <div style="display: flex;height: calc(100% - 47px);">
-      <div style="width: 100px;border-right: 1px solid #dce3e8;"
-      v-if="!onlyView"
-      class ="left_Nav">
-        
-        <node-menu  @addNode="addNode" ref="nodeMenu"></node-menu>
+    <div style="display: flex; height: calc(100% - 47px)">
+      <div
+        style="width: 100px; border-right: 1px solid #dce3e8"
+        v-if="!onlyView"
+        class="left_Nav"
+      >
+        <node-menu @addNode="addNode" ref="nodeMenu"></node-menu>
       </div>
       <div class="wiper">
         <div
@@ -140,7 +179,11 @@
       <div
         class="rightForm"
         v-show="this.isShowForm"
-        style="width: 360px;border-left: 1px solid #dce3e8;background-color: #FBFBFB"
+        style="
+          width: 360px;
+          border-left: 1px solid #dce3e8;
+          background-color: #fbfbfb;
+        "
       >
         <flow-node-form
           ref="nodeForm"
@@ -166,7 +209,7 @@
 
 <script>
 import draggable from "vuedraggable";
-import { jsPlumb } from 'jsplumb'
+import { jsPlumb } from "jsplumb";
 // 使用修改后的jsplumb
 // import "./jsplumb";
 import { easyFlowMixin } from "@/components/ef/mixins";
@@ -197,7 +240,7 @@ export default {
       loadEasyFlowFinish: false,
       //后端返回唯一ID
       taskID: "",
-      isFullscreen:true,
+      isFullscreen: true,
       localnodeID: 0,
       //  数据
       data: {},
@@ -209,13 +252,13 @@ export default {
         nodeId: undefined,
         // 连线ID
         sourceId: undefined,
-        targetId: undefined
+        targetId: undefined,
       },
       zoom: 1,
       zoomStep: 0.035,
       zoomEnabled: false,
       isShowForm: false,
-      onlyView:false //是否是仅查看
+      onlyView: false, //是否是仅查看
     };
   },
   // 一些基础配置移动该文件中
@@ -226,7 +269,7 @@ export default {
     nodeMenu,
     FlowInfo,
     FlowNodeForm,
-    setTask
+    setTask,
   },
   directives: {
     flowDrag: {
@@ -234,7 +277,7 @@ export default {
         if (!binding) {
           return;
         }
-        el.onmousedown = e => {
+        el.onmousedown = (e) => {
           vnode.context.isHideFrom(false);
           if (e.button == 2) {
             // 右键不管
@@ -244,9 +287,8 @@ export default {
           let disX = e.clientX - el.offsetLeft;
           let disY = e.clientY - el.offsetTop;
           el.style.cursor = "move";
-        
-          document.onmousemove = function(e) {
-          
+
+          document.onmousemove = function (e) {
             // 移动时禁止默认事件
             e.preventDefault();
             const left = e.clientX - disX;
@@ -260,17 +302,17 @@ export default {
             el.style.top = `${top}px`;
           };
 
-          document.onmouseup = function(e) {
+          document.onmouseup = function (e) {
             el.style.cursor = "auto";
             document.onmousemove = null;
             document.onmouseup = null;
           };
         };
-      }
-    }
+      },
+    },
   },
   created() {
-    document.onkeyup = e => {
+    document.onkeyup = (e) => {
       let nodeName = e.target.nodeName;
 
       if (nodeName !== "INPUT" && nodeName !== "TEXTAREA") {
@@ -281,123 +323,121 @@ export default {
         }
       }
     };
-    if(this.$route.params.value===0){
-        this.onlyView = true
-      console.log(this.onlyView)
+    if (this.$route.params.value === 0) {
+      this.onlyView = true;
+      console.log(this.onlyView);
     }
-
   },
-
-
 
   mounted() {
     this.jsPlumb = jsPlumb.getInstance();
-    let routerType = this.$route.params.value
-    let routerJpbId = this.$route.params.id
-    console.log(routerJpbId)
+    let routerType = this.$route.params.value;
+    let routerJpbId = this.$route.params.id;
+    console.log(routerJpbId);
+
     // 进入画布，先判断是新增，编辑，查看
     if (!routerJpbId) {
-      console.log("新增")
+      console.log("新增");
       this.createTask();
-    } else if (routerType===0) {
+    } else if (routerType === 0) {
       //查看
 
       // 修改查看状态
-  
 
       // 请求画布数据   getCheckdata
 
-    this.$http({
+      this.$http({
         method: "POST",
         url: "http://49.233.45.33:8888/findByTaskJson",
         data: {
-   jobId:this.$route.params.id
+          jobId: this.$route.params.id,
         },
-      }).then(res=>{
-        console.log(res)
-        let data =res.data.data
-        data.nodeList.forEach(item=>{
-          item.viewOnly=true
- 
-        })
-               this.$nextTick(() => {
-        // 默认加载流程A的数据
-        let newData = data;
-        newData.nodeList.forEach((item, index) => {
-          item.output.fixedOutput.forEach(itm => {
-            itm.id = uuidv4();
-          });
+      }).then((res) => {
+        console.log(res);
+        let data = res.data.data;
+        data.nodeList.forEach((item) => {
+          item.viewOnly = true;
         });
+        this.$nextTick(() => {
+          // 默认加载流程A的数据
+          let newData = data;
+          newData.nodeList.forEach((item, index) => {
+            item.output.fixedOutput.forEach((itm) => {
+              itm.id = uuidv4();
+            });
+          });
 
-        this.dataReload(newData); // 默认流程图的数据
+          this.dataReload(newData); // 默认流程图的数据
+        });
       });
-      })
- 
-    } else if (this.$route.params.value===2) {
-      console.log("编辑")
+    } else if (this.$route.params.value === 2) {
+      console.log("编辑");
       //编辑
       // 请求画布数据
-       this.$http({
+      this.$http({
         method: "POST",
         url: "http://49.233.45.33:8888/findByTaskJson",
         data: {
-   jobId:this.$route.params.id
+          jobId: this.$route.params.id,
         },
-      }).then(res=>{
-        console.log(res)
-        let data =res.data.data
+      }).then((res) => {
+        console.log(res);
+        let data = res.data.data;
 
-               this.$nextTick(() => {
-        // 默认加载流程A的数据
-        let newData = data;
-        newData.nodeList.forEach((item, index) => {
-          item.output.fixedOutput.forEach(itm => {
-            itm.id = uuidv4();
+        this.$nextTick(() => {
+          // 默认加载流程A的数据
+          let newData = data;
+          newData.nodeList.forEach((item, index) => {
+            item.output.fixedOutput.forEach((itm) => {
+              itm.id = uuidv4();
+            });
           });
-        });
 
-        this.dataReload(newData); // 默认流程图的数据
+          this.dataReload(newData); // 默认流程图的数据
+        });
       });
-      })
     }
   },
   methods: {
     //新增
     createTask() {
       const defaultData = getDataC();
-      const startW = 50;
+      const startW = 90;
       const left = (this.$refs.efContainer.offsetWidth - startW) / 2;
-      defaultData.nodeList[0].left = left  + 'px';
-      
-      this.dataReload(defaultData);
+      defaultData.nodeList[0].left = left + "px";
+
+      // this.dataReload(defaultData);
       // 发起ID请求
-      // axios.get("http://49.233.45.33:8081/v1/get/job/id").then(res => {
-      //   this.taskID = res.data.data.jobId;
-      //   let data = (defaultData.nodeList[0].id =
-      //     this.taskID + "_" + this.localnodeID);
-  
-      //   defaultData.jobId = this.taskID;
-      //   this.$nextTick(() => {
-      //     // 默认加载流程A的数据
-      //     this.dataReload(defaultData); // 默认流程图的数据
-      //   });
-      // })  .catch(() => {
-      //           this.$message({
-      //       type: "error",
-      //       message: "任务ID请求失败"
-      //     });
-      // });
+      axios
+        .get("http://49.233.45.33:8081/v1/get/job/id")
+        .then((res) => {
+          this.taskID = res.data.data.jobId;
+          let data = (defaultData.nodeList[0].id =
+            this.taskID + "_" + this.localnodeID);
+
+          defaultData.jobId = this.taskID;
+          this.$nextTick(() => {
+            // 默认加载流程A的数据
+            this.dataReload(defaultData); // 默认流程图的数据
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "error",
+            message: "任务ID请求失败",
+          });
+        });
     },
     // 返回唯一标识
     getUUID() {
       let value = "";
-      
-      let localnodeID = this.data.nodeList.length-1;
-      let inx =this.data.nodeList[localnodeID].id.lastIndexOf("_");
-      let str=this.data.nodeList[localnodeID].id.substring(inx+1);
-  
-      this.localnodeID =parseInt(str)+2
-      value = this.taskID + "_" + (this.localnodeID);
+
+      let localnodeID = this.data.nodeList.length - 1;
+      let inx = this.data.nodeList[localnodeID].id.lastIndexOf("_");
+      let str = this.data.nodeList[localnodeID].id.substring(inx + 1);
+
+      this.localnodeID = parseInt(str) + 2;
+      value = this.taskID + "_" + this.localnodeID;
       this.localnodeID = this.localnodeID + 1;
       return value;
     },
@@ -417,7 +457,7 @@ export default {
           this.$refs.nodeForm.lineInit({
             from: conn.sourceId,
             to: conn.targetId,
-            label: conn.getLabel()
+            label: conn.getLabel(),
           });
         });
         // 连线
@@ -436,35 +476,35 @@ export default {
               pinName: pinName,
               from_uuid: "",
               to_uuid: "",
-              lineCount: ""
+              lineCount: "",
             });
           }
         });
 
         // 删除连线回调
-        this.jsPlumb.bind("connectionDetached", evt => {
+        this.jsPlumb.bind("connectionDetached", (evt) => {
           this.deleteLine(evt.sourceId, evt.targetId);
         });
 
         // 改变线的连接节点
-        this.jsPlumb.bind("connectionMoved", evt => {
+        this.jsPlumb.bind("connectionMoved", (evt) => {
           this.changeLine(evt.originalSourceId, evt.originalTargetId);
         });
 
         // 连线右击
-        this.jsPlumb.bind("contextmenu", evt => {
+        this.jsPlumb.bind("contextmenu", (evt) => {
           console.log("contextmenu", evt);
         });
 
         // 连线
-        this.jsPlumb.bind("beforeDrop", evt => {
+        this.jsPlumb.bind("beforeDrop", (evt) => {
           let from = evt.sourceId;
           let to = evt.targetId;
 
-          let node = this.data.nodeList.filter(function(node) {
+          let node = this.data.nodeList.filter(function (node) {
             return node.id === to;
           });
-          let toArr = this.data.lineList.filter(function(line) {
+          let toArr = this.data.lineList.filter(function (line) {
             return line.to === to;
           });
           console.log(node, "连线的回环信息");
@@ -497,25 +537,27 @@ export default {
         });
 
         // beforeDetach
-        this.jsPlumb.bind("beforeDetach", evt => {
+        this.jsPlumb.bind("beforeDetach", (evt) => {
           console.log("beforeDetach", evt);
         });
         this.jsPlumb.setContainer(this.$refs.efContainer);
       });
     },
     getCurrSource(item) {
-      const currNode = this.data.nodeList.filter(node => {
+      const currNode = this.data.nodeList.filter((node) => {
         if (node.id === item.from) return node;
       });
       const currOutput = currNode[0].output.fixedOutput;
-      const currEndpoint = currOutput.filter(op => op.pinName === item.pinName);
+      const currEndpoint = currOutput.filter(
+        (op) => op.pinName === item.pinName
+      );
 
       return currEndpoint[0];
     },
     // 加载流程图
     loadEasyFlow(nodeList) {
       // 初始化节点
-      nodeList.forEach(node => {
+      nodeList.forEach((node) => {
         const output =
           node.nodeTypeID !== "NID_START" ? node.output.fixedOutput : [];
 
@@ -533,13 +575,13 @@ export default {
           this.jsPlumb.makeTarget(node.id, this.jsplumbTargetOptions);
         }
 
-        output.forEach(item => {
+        output.forEach((item) => {
           this.jsPlumb.addEndpoint(node.id, {
             anchors: item.anchor,
             uuid: item.id,
             paintStyle: { fill: "#a1a1a1", radius: 5 },
             isSource: true,
-            cssClass: item.pinName
+            cssClass: item.pinName,
           });
         });
         if (!node.viewOnly) {
@@ -549,20 +591,20 @@ export default {
             grid: [15, 15], //网格设置
             //  Anchors: [ 'TopCenter', 'Bottom','BottomRight', 'BottomLeft'],
             containment: "parent",
-            stop: function(el) {
+            stop: function (el) {
               // 拖拽节点结束后的对调
               console.log("拖拽结束: ", el);
-            }
+            },
           });
         }
       });
 
-      this.data.lineList.forEach(line => {
+      this.data.lineList.forEach((line) => {
         if (line.pinName === "jtk-endpoint-anchor") {
           this.jsPlumb.connect(
             {
               source: line.from,
-              target: line.to
+              target: line.to,
             },
             this.jsplumbConnectOptions
           );
@@ -573,13 +615,13 @@ export default {
             {
               uuids: [currSource.id, line.to],
               source: currSource.id,
-              target: line.to
+              target: line.to,
             },
             this.jsplumbConnectOptions
           );
         }
       });
-      this.$nextTick(function() {
+      this.$nextTick(function () {
         this.loadEasyFlowFinish = true;
       });
     },
@@ -587,7 +629,7 @@ export default {
     setLineLabel(from, to, label) {
       var conn = this.jsPlumb.getConnections({
         source: from,
-        target: to
+        target: to,
       })[0];
       if (!label || label === "") {
         conn.removeClass("flowLabel");
@@ -597,9 +639,9 @@ export default {
       }
       conn.setLabel({
         grid: [15, 15],
-        label: label
+        label: label,
       });
-      this.data.lineList.forEach(function(line) {
+      this.data.lineList.forEach(function (line) {
         if (line.from == from && line.to == to) {
           line.label = label;
         }
@@ -614,12 +656,12 @@ export default {
         this.$confirm("确定删除所点击的线吗?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         })
           .then(() => {
             var conn = this.jsPlumb.getConnections({
               source: this.activeElement.sourceId,
-              target: this.activeElement.targetId
+              target: this.activeElement.targetId,
             })[0];
             this.jsPlumb.deleteConnection(conn);
           })
@@ -628,7 +670,7 @@ export default {
     },
     // 删除线
     deleteLine(from, to) {
-      this.data.lineList = this.data.lineList.filter(function(line) {
+      this.data.lineList = this.data.lineList.filter(function (line) {
         if (line.from == from && line.to == to) {
           return false;
         }
@@ -674,11 +716,10 @@ export default {
         this.$message.error("请把节点拖入到画布中");
         return;
       }
-    
+
       left = left - containerRect.x + efContainer.scrollLeft;
       top = top - containerRect.y + efContainer.scrollTop;
 
-  
       // 居中
       left -= 85;
       top -= 16;
@@ -726,7 +767,7 @@ export default {
         controlState: "success",
         image: nodeMenu.image,
         output: nodeMenu.output,
-        parameters: nodeMenu.parameters
+        parameters: nodeMenu.parameters,
       };
       // 判断节点类型，如果是开始的话，就有且只能有一个
       if (node.nodeTypeID === "NID_START") {
@@ -740,7 +781,7 @@ export default {
       }
 
       this.data.nodeList.push(node);
-      this.$nextTick(function() {
+      this.$nextTick(function () {
         // // 设置目标点，其他源点拖出的线可以连接该节点,开始节点不可链接
         if (node.nodeTypeID !== "NID_START") {
           this.jsPlumb.makeSource(nodeId, this.jsplumbSourceOptions);
@@ -758,7 +799,7 @@ export default {
               anchors: item.anchor,
               paintStyle: { fill: "#a1a1a1", radius: 5 },
               isSource: true,
-              cssClass: item.pinName
+              cssClass: item.pinName,
             });
           });
         }
@@ -769,10 +810,10 @@ export default {
           //可拖动元素
           containment: "parent",
           grid: [15, 15],
-          stop: function(el) {
+          stop: function (el) {
             // 拖拽节点结束后的对调
             console.log("拖拽结束: ", el);
-          }
+          },
         });
       });
     },
@@ -785,7 +826,7 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-        closeOnClickModal: false
+        closeOnClickModal: false,
       })
         .then(() => {
           //判断节点是否可以删除
@@ -793,7 +834,7 @@ export default {
             this.$message.warning("开始节点不可删除");
             return;
           }
-          this.data.nodeList = this.data.nodeList.filter(function(node) {
+          this.data.nodeList = this.data.nodeList.filter(function (node) {
             if (node.id === nodeId) {
               // 伪删除，将节点隐藏，否则会导致位置错位
               // node.show = false
@@ -801,7 +842,7 @@ export default {
             }
             return true;
           });
-          this.$nextTick(function() {
+          this.$nextTick(function () {
             this.jsPlumb.removeAllEndpoints(nodeId);
           });
         })
@@ -850,14 +891,14 @@ export default {
     // 流程数据信息
     dataInfo() {
       this.flowInfoVisible = true;
-      this.$nextTick(function() {
+      this.$nextTick(function () {
         this.$refs.flowInfo.init();
       });
     },
     // 任务设置
     setCurrentTask() {
       this.setTaskVisible = true;
-      this.$nextTick(function() {
+      this.$nextTick(function () {
         this.$refs.setTask.init();
       });
     },
@@ -1001,7 +1042,7 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-        closeOnClickModal: false
+        closeOnClickModal: false,
       })
         .then(() => {
           var datastr = JSON.stringify(this.data, null, "\t");
@@ -1033,13 +1074,12 @@ export default {
             //   .catch(err => {
             //     console.error(err);
             //   });
-            axios.post("http://49.233.45.33:8888/save", data).then(res => {
+            axios.post("http://49.233.45.33:8888/save", data).then((res) => {
               console.log(this.data, "wwwwwwwwwwwwwwwwww");
               if (res.data.code === 200) {
                 this.$message.success("保存成功");
                 this.$router.push({
                   path: "/users",
-        
                 });
               } else {
                 this.$message.warning(res.data.msg);
@@ -1055,7 +1095,7 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-        closeOnClickModal: false
+        closeOnClickModal: false,
       })
         .then(() => {
           this.$message.success("正在执行中,请稍后...");
@@ -1072,7 +1112,7 @@ export default {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
-          closeOnClickModal: false
+          closeOnClickModal: false,
         }
       )
         .then(() => {
@@ -1091,52 +1131,52 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-        inputErrorMessage: "邮箱格式不正确"
+        inputErrorMessage: "邮箱格式不正确",
       })
         .then(({ value }) => {
           this.$message({
             type: "success",
-            message: "你的邮箱是: " + value
+            message: "你的邮箱是: " + value,
           });
         })
         .catch(() => {
           this.$message({
             type: "info",
-            message: "取消输入"
+            message: "取消输入",
           });
         });
     },
- 
-      toggleFullScreen(e){
-   let element = document.documentElement;
+
+    toggleFullScreen(e) {
+      let element = document.documentElement;
       if (this.fullscreen) {
         this.$message.success("退出全屏模式");
         this.fullscreenTitle = "进入全屏模式";
         if (document.exitFullscreen) {
-            document.exitFullscreen();
+          document.exitFullscreen();
         } else if (document.webkitCancelFullScreen) {
-            document.webkitCancelFullScreen();
+          document.webkitCancelFullScreen();
         } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
+          document.mozCancelFullScreen();
         } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
+          document.msExitFullscreen();
         }
       } else {
         this.$message.success("进入全屏模式");
         this.fullscreenTitle = "退出全屏模式";
-        if(element.requestFullscreen) {
-            element.requestFullscreen();
+        if (element.requestFullscreen) {
+          element.requestFullscreen();
         } else if (element.webkitRequestFullScreen) {
-            element.webkitRequestFullScreen();
+          element.webkitRequestFullScreen();
         } else if (element.mozRequestFullScreen) {
-            element.mozRequestFullScreen();
+          element.mozRequestFullScreen();
         } else if (element.msRequestFullscreen) {
-            // IE11
-            element.msRequestFullscreen();
+          // IE11
+          element.msRequestFullscreen();
         }
       }
       this.fullscreen = !this.fullscreen;
-      },
-  }
+    },
+  },
 };
 </script>
