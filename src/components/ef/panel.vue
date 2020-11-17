@@ -254,7 +254,7 @@ export default {
         sourceId: undefined,
         targetId: undefined,
       },
-      zoom: 1,
+      zoom: 0.8,
       zoomStep: 0.035,
       zoomEnabled: false,
       isShowForm: false,
@@ -706,10 +706,11 @@ export default {
       console.log(containerRect, "aatttt");
       var left = screenX,
         top = screenY;
+      const cx = 150;
       // 计算是否拖入到容器中
       if (
-        left < containerRect.x ||
-        left > containerRect.width + containerRect.x ||
+        left < containerRect.x + cx ||
+        left > containerRect.width + containerRect.x + cx ||
         top < containerRect.y ||
         containerRect.y > containerRect.y + containerRect.height
       ) {
@@ -718,11 +719,11 @@ export default {
       }
 
       left = left - containerRect.x + efContainer.scrollLeft;
-      top = top - containerRect.y + efContainer.scrollTop;
+      top = top - containerRect.y + efContainer.scrollTop ;
 
       // 居中
       left -= 85;
-      top -= 16;
+      top -= 26;
 
       left = left / this.zoom;
       top = top / this.zoom;
@@ -902,7 +903,7 @@ export default {
         this.$refs.setTask.init();
       });
     },
-    // 加载流程图
+    // 加载流程图 
     dataReload(data) {
       this.easyFlowVisible = false;
       this.data.nodeList = [];
@@ -915,6 +916,7 @@ export default {
           this.jsPlumb = jsPlumb.getInstance();
           this.$nextTick(() => {
             this.jsPlumbInit();
+            // this.setZoom(this.zoom, this.jsPlumb, null, this.$refs.efContainer);
           });
         });
       });
@@ -1001,14 +1003,14 @@ export default {
 
     setZoom(zoom, instance, transformOrigin, el) {
       transformOrigin = transformOrigin || [0.5, 0.5];
-      instance = instance || jsPlumb;
+      instance = instance || this.jsPlumb;
       el = el || instance.getContainer();
-      var p = ["webkit", "moz", "ms", "o"],
+      let p = ["webkit", "moz", "ms", "o"],
         s = "scale(" + zoom + ")",
         oString =
           transformOrigin[0] * 100 + "% " + transformOrigin[1] * 100 + "%";
 
-      for (var i = 0; i < p.length; i++) {
+      for (let i = 0; i < p.length; i++) {
         el.style[p[i] + "Transform"] = s;
         el.style[p[i] + "TransformOrigin"] = oString;
       }

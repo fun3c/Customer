@@ -30,7 +30,7 @@
     z-index   : 1;
     flex      : 1;
     background-color: #eeeeee80;
-    /* left: -500%; */
+    /* border: 1px solid #eeeeee80; */
 }
 .exit{
     color: whitesmoke;
@@ -39,20 +39,20 @@
     /* background-color: whitesmoke; */
 }
     /* 网格背景 */
-    #efContainer:before {
+    .wiper:before {
   content: "";
   height: 10px;
   width: 100%;
   display: block;
   background-repeat-y:no-repeat;
   position: absolute;
-  
+  top: 48px;
   background-image: linear-gradient(90deg, #ccc 1px, transparent 0), linear-gradient(90deg, #ddd 1px, transparent 0);
   background-size: 75px 10px, 5px 5px;
   
 }
 
-#efContainer:after {
+.wiper:after {
   content: "";
   height: 100%;
   width: 10px;
