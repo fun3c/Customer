@@ -12,7 +12,6 @@
         <span>ID- -</span> <span>未命名任务</span>
       </div>
       <div v-if="data.jobName">
-<<<<<<< HEAD
         <el-button
           class="exit"
           type="text"
@@ -21,9 +20,6 @@
         ></el-button>
         <span>{{ data.jobId }}</span>
         <span style="font-weight: 800">{{ data.jobName }}</span>
-=======
-        <span>{{ data.jobId }}</span> <span>{{ data.jobName }}</span>
->>>>>>> 8a0ef525ab96d4bf9dbbd379a9cde0e1e11dd260
         <span
           >{{ dateFormat(data.startTime) }}-{{ dateFormat(data.endTime) }}</span
         >
@@ -213,11 +209,7 @@
 
 <script>
 import draggable from "vuedraggable";
-<<<<<<< HEAD
 import { jsPlumb } from "jsplumb";
-=======
-// import { v4 as uuidv4 } from 'uuid';
->>>>>>> 8a0ef525ab96d4bf9dbbd379a9cde0e1e11dd260
 // 使用修改后的jsplumb
 // import "./jsplumb";
 import { easyFlowMixin } from "@/components/ef/mixins";
@@ -266,11 +258,7 @@ export default {
       zoomStep: 0.035,
       zoomEnabled: false,
       isShowForm: false,
-<<<<<<< HEAD
       onlyView: false, //是否是仅查看
-=======
-      pIndex: 0,
->>>>>>> 8a0ef525ab96d4bf9dbbd379a9cde0e1e11dd260
     };
   },
   // 一些基础配置移动该文件中
@@ -382,29 +370,8 @@ export default {
           this.dataReload(newData); // 默认流程图的数据
         });
       });
-<<<<<<< HEAD
     } else if (this.$route.params.value === 2) {
       console.log("编辑");
-=======
-    } else if (true) {
-      //查看
-      // 请求画布数据   getCheckdata
-      // axios.post("",{}).then(res=>{
-      //   let data=res.data.data
-      //   data.nodeList.forEach(item=>{
-      //     item.viewOnly=true
-      //        this.$nextTick(() => {
-      //     // 默认加载流程A的数据
-      //     this.dataReload(data); // 默认流程图的数据
-      //   });
-      //   })
-      // })
-      this.$nextTick(() => {
-        // 默认加载流程A的数据
-        this.dataReload(getCheckdata()); // 默认流程图的数据
-      });
-    } else if (false) {
->>>>>>> 8a0ef525ab96d4bf9dbbd379a9cde0e1e11dd260
       //编辑
       // 请求画布数据
       this.$http({
@@ -464,7 +431,6 @@ export default {
     // 返回唯一标识
     getUUID() {
       let value = "";
-<<<<<<< HEAD
 
       let localnodeID = this.data.nodeList.length - 1;
       let inx = this.data.nodeList[localnodeID].id.lastIndexOf("_");
@@ -472,10 +438,6 @@ export default {
 
       this.localnodeID = parseInt(str) + 2;
       value = this.taskID + "_" + this.localnodeID;
-=======
-      this.localnodeID = this.data.nodeList.length
-      value = this.taskID + "_" + (this.localnodeID + 1);
->>>>>>> 8a0ef525ab96d4bf9dbbd379a9cde0e1e11dd260
       this.localnodeID = this.localnodeID + 1;
       return value;
     },
@@ -502,8 +464,8 @@ export default {
         this.jsPlumb.bind("connection", (evt, inx) => {
           let from = evt.source.id;
           let to = evt.target.id;
-          console.log('evt.sourceEndpoint', evt.sourceEndpoint)
-          const pinName = evt.sourceEndpoint.canvas.classList[1];
+          // console.log(evt.sourceEndpoint.canvas.classList[1],);
+          let pinName = evt.sourceEndpoint.canvas.classList[1];
 
           console.log(evt);
 
@@ -514,10 +476,7 @@ export default {
               pinName: pinName,
               from_uuid: "",
               to_uuid: "",
-<<<<<<< HEAD
               lineCount: "",
-=======
->>>>>>> 8a0ef525ab96d4bf9dbbd379a9cde0e1e11dd260
             });
           }
         });
@@ -589,15 +548,9 @@ export default {
         if (node.id === item.from) return node;
       });
       const currOutput = currNode[0].output.fixedOutput;
-<<<<<<< HEAD
       const currEndpoint = currOutput.filter(
         (op) => op.pinName === item.pinName
       );
-=======
-      const currEndpoint = currOutput.filter(op => {
-        return op.pinName === item.pinName;
-      });
->>>>>>> 8a0ef525ab96d4bf9dbbd379a9cde0e1e11dd260
 
       return currEndpoint[0];
     },
@@ -657,18 +610,12 @@ export default {
           );
         } else {
           const currSource = this.getCurrSource(line);
-          console.log('currSource.id, line.to======', currSource.id, line.to)
+          // console.log('currSource', currSource)
           this.jsPlumb.connect(
             {
-<<<<<<< HEAD
               uuids: [currSource.id, line.to],
               source: currSource.id,
               target: line.to,
-=======
-              uuids: [currSource.pid, line.to],
-              source: currSource.pid,
-              target: line.to
->>>>>>> 8a0ef525ab96d4bf9dbbd379a9cde0e1e11dd260
             },
             this.jsplumbConnectOptions
           );
@@ -751,8 +698,7 @@ export default {
      * @param mousePosition 鼠标拖拽结束的坐标
      */
     addNode(evt, nodeMenu, mousePosition) {
-      // console.log(nodeMenu, "nodeMenu数据");
-      // const pid = this.pIndex++;
+      console.log(nodeMenu, "nodeMenu数据");
       var screenX = evt.originalEvent.clientX,
         screenY = evt.originalEvent.clientY;
       let efContainer = this.$refs.efContainer;
@@ -803,7 +749,6 @@ export default {
         }
         break;
       }
-<<<<<<< HEAD
       nodeMenu.output.fixedOutput = nodeMenu.output.fixedOutput.map(
         (item, index) => {
           item.id = `${this.getUUID()}-${uuidv4()}-${index}`;
@@ -812,9 +757,6 @@ export default {
         }
       );
 
-=======
-      
->>>>>>> 8a0ef525ab96d4bf9dbbd379a9cde0e1e11dd260
       //传递给画布控件的属性
       var node = {
         id: nodeId,
@@ -828,8 +770,6 @@ export default {
         output: nodeMenu.output,
         parameters: nodeMenu.parameters,
       };
-
-     
       // 判断节点类型，如果是开始的话，就有且只能有一个
       if (node.nodeTypeID === "NID_START") {
         let startArr = this.data.nodeList.filter((item, index) => {
@@ -854,13 +794,7 @@ export default {
           //根据控件端点信息，动态添加端点
           console.log("动态添加端点");
           outputs.fixedOutput.forEach((item, index) => {
-<<<<<<< HEAD
             let uuid = this.getUUID() + "-uuid";
-=======
-            let uuid = this.getUUID();
-            // item.id = `${nodeId}-${uuidv4()}`;
-            // console.log('item.id', item.id)
->>>>>>> 8a0ef525ab96d4bf9dbbd379a9cde0e1e11dd260
             this.jsPlumb.addEndpoint(nodeId, {
               uuid: uuid,
               anchors: item.anchor,
@@ -870,13 +804,7 @@ export default {
             });
           });
         }
-        this.data.nodeList.forEach(el => {
-          const fixedOutput = el.output.fixedOutput;
-          fixedOutput.forEach(opt => {
-            console.log('opt.pid', opt.pid)
-          })
-        });
-        
+
         // this.jsPlumb.makeSource(nodeId, this.jsplumbSourceOptions); //元节点配置
         this.jsPlumb.makeTarget(nodeId, this.jsplumbTargetOptions);
         this.jsPlumb.draggable(nodeId, {
@@ -1148,24 +1076,15 @@ export default {
             //   .catch(err => {
             //     console.error(err);
             //   });
-<<<<<<< HEAD
             axios.post("http://49.233.45.33:8888/save", data).then((res) => {
-=======
-            axios.post("/save", data).then(res => {
->>>>>>> 8a0ef525ab96d4bf9dbbd379a9cde0e1e11dd260
               console.log(this.data, "wwwwwwwwwwwwwwwwww");
               if (res.data.code === 200) {
                 this.$message.success("保存成功");
                 this.$router.push({
                   path: "/users",
                 });
-<<<<<<< HEAD
               } else {
                 this.$message.warning(res.data.msg);
-=======
-              }else {
-                 this.$message.warning(res.data.msg);
->>>>>>> 8a0ef525ab96d4bf9dbbd379a9cde0e1e11dd260
               }
             });
           }
