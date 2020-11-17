@@ -1,3 +1,15 @@
+export class Point {
+    constructor(label = "", pinName = "", anchor = "", pid = 0) {
+    this.label = label;
+    this.pinName = pinName;
+    this.anchor = anchor;
+    this.pid =  pid;
+    }
+    getPoint() {
+        return {label: this.label, pinName: this.pinName, anchor: this.anchor, pid: this.pid};
+    }
+}
+
 var menuList = [  //数据覆盖,定义的数据类型  包含操作修改 节点出口分支
     {
         'id': '1',
