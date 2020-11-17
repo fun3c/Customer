@@ -78,7 +78,7 @@
                     <el-date-picker
                       v-model="node.parameters[index].selectedList"
                       type="date"
-                        :picker-options="pickerOptions"
+                      :picker-options="pickerOptions"
                       placeholder="选择日期"
                     >
                     </el-date-picker>
@@ -151,8 +151,8 @@
                     <el-date-picker
                       v-model="node.parameters[index].stretch"
                       type="datetime"
-                        :default-time="getNowTime()"
-                        :picker-options="pickerOptions"
+                      :default-time="getNowTime()"
+                      :picker-options="pickerOptions"
                       placeholder="选择日期时间"
                     >
                     </el-date-picker>
@@ -191,18 +191,13 @@
 
               <!-- 时间选择器 -->
               <div class="PTYPE_TIMELIST" v-if="item.type === 'PTYPE_TIMELIST'">
-                <el-time-select
-                  v-model="node.parameters[index].defaultValue"
-                  :picker-options="{
-                    start: '00:00',
-                    step: '00:05',
-                    end: '23:59'
-                  }"
-                  placeholder="选择时间"
-                >
-  </el-time-select>
+                  <el-time-picker
+                  v-model="node.parameters[index].defaultValue"
 
-              
+                  value-format="HH:mm:ss"
+                  placeholder="任意时间点"
+                >
+                </el-time-picker>
 
                 <span class="el-from-describe">
                   {{ node.parameters[index].defaultValue }}
@@ -220,7 +215,7 @@
                   filterable
                 >
                   <el-option
-                 v-for="(option, inx) in waitList"
+                    v-for="(option, inx) in waitList"
                     :key="inx"
                     :label="option.name"
                     :value="option.id"
@@ -228,7 +223,7 @@
                   </el-option>
                 </el-select>
                 <!-- 是否展示选中内容 -->
-                <div v-if="item.showInEditor">
+                <div v-if="item.showInEditor" >
                   <b class="form-item-title">
                     {{ item.title }}
                   </b>
@@ -251,11 +246,12 @@
                 class="PTYPE_SELECTGROUP"
                 v-if="item.type === 'PTYPE_SELECTGROUP'"
               >
-              
                 <el-select
                   v-model="node.parameters[index].defaultValue"
                   placeholder="请选择"
-                  @change="changeTriggerWay(node.parameters[index].defaultValue)"
+                  @change="
+                    changeTriggerWay(node.parameters[index].defaultValue)
+                  "
                 >
                   <el-option
                     v-for="option in item.values"
@@ -350,8 +346,9 @@
                       ].children.selectedList"
                       :key="inx"
                     >
-                      <b
-                        @click="
+
+                    <!-- 点击出现弹框事件 b标签 -->
+                              <!-- @click="
                           openBox(
                             //传入node目标属性  所选择的下标
                             node.parameters[index].values[
@@ -360,8 +357,8 @@
                             index,
                             til
                           )
-                        "
-                      >
+                        " -->
+                      <b >
                         {{
                           node.parameters[index].values[
                             node.parameters[index].defaultValue
@@ -472,6 +469,7 @@
             <abshunt
               v-if="node.nodeTypeID === 'NID_A/B'"
               :data="item"
+              ref="nodeab"
               :output="node.output"
             ></abshunt>
 
@@ -482,7 +480,7 @@
             <push v-if="item.type === 'PUSH_TEMPLATE'" :data="item"></push>
           </div>
 
-          <el-form-item class = "from_btn">
+          <el-form-item class="from_btn">
             <el-button icon="el-icon-close" @click="Deselect">关闭</el-button>
             <el-button type="primary" icon="el-icon-check" @click="save"
               >保存</el-button
@@ -499,7 +497,7 @@
           <el-form-item label="条件">
             <el-input v-model="line.label"></el-input>
           </el-form-item>
-          <el-form-item class = "from_btn">
+          <el-form-item class="from_btn">
             <el-button icon="el-icon-close" @click="Deselect">关闭</el-button>
             <el-button type="primary" icon="el-icon-check" @click="saveLine"
               >保存</el-button
@@ -532,8 +530,8 @@ import axios from "axios";
 export default {
   data() {
     return {
-waitList:{},    
-  visible: true,
+      waitList: {},
+      visible: true,
       // node 或 line
       type: "node",
       crowdList: "",
@@ -571,27 +569,24 @@ waitList:{},
           label: "运行中"
         }
       ],
-            pickerOptions: {
+      pickerOptions: {
         //禁用当前日期之前的日期
         disabledDate(time) {
-          //   let currentTime = this.getNowMonthDay() 
+          //   let currentTime = this.getNowMonthDay()
           // return time.getTime() > new Date(currentTime).getTime()
           //Date.now()是javascript中的内置函数，它返回自1970年1月1日00:00:00 UTC以来经过的毫秒数。
-          return time.getTime() < Date.now()- 8.64e7 ;
-          
+          return time.getTime() < Date.now() - 8.64e7;
+
           //  return time.getTime() > this.formSearch.end_time ;
         }
-        
       }
-    
-    }
-    
+    };
   },
   created() {
-    axios.post("http://49.233.45.33:8081/list/crowd",{}).then(res => {
+    axios.post("http://49.233.45.33:8081/list/crowd", {}).then(res => {
       //人群包信息
       this.crowdList = res.data.data;
-      this.waitListme()
+      this.waitListme();
     });
   },
   components: {
@@ -601,17 +596,19 @@ waitList:{},
     push
   },
   methods: {
-    waitListme(){
+    waitListme() {
       this.$http({
         method: "post",
-        url: "http://49.233.45.33:8888/dictionary/findDictionary",
+        url: "http://49.233.45.33:8888/dictionary/findDictionary"
       })
-        .then((res) => {
-          this.waitList=res.data
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+        .then(res => {
+          this.waitList = res.data;
+        }) .catch(() => {
+                this.$message({
+            type: "error",
+            message: "行为事件列表请求失败"
+          });
+      });
     },
     /**
      * 表单修改，这里可以根据传入的ID进行业务信息获取
@@ -661,6 +658,13 @@ waitList:{},
         } else {
           this.$emit("isHideFrom", false);
         }
+      } else if (this.node.nodeTypeID === "NID_A/B") {
+        // AB控件校验
+        if (!this.$refs.nodeab[0].saveTest()) {
+          return;
+        } else {
+          this.$emit("isHideFrom", false);
+        }
       } else {
         this.$emit("isHideFrom", false);
       }
@@ -698,23 +702,25 @@ waitList:{},
     popAffirm() {
       this.isShowOpenBox = false;
     },
-          getNowTime: function () {
-      let Time
+    getNowTime: function() {
+      let Time;
 
-      let hh = new Date().getHours()
-      let mf = new Date().getMinutes() < 10 ? '0' + new Date().getMinutes()
-        :
-        new Date().getMinutes()
-      let ss = new Date().getSeconds() < 10 ? '0' + new Date().getSeconds()
-        :
-        new Date().getSeconds()
-      Time = hh + ':' + mf + ':' + ss
+      let hh = new Date().getHours();
+      let mf =
+        new Date().getMinutes() < 10
+          ? "0" + new Date().getMinutes()
+          : new Date().getMinutes();
+      let ss =
+        new Date().getSeconds() < 10
+          ? "0" + new Date().getSeconds()
+          : new Date().getSeconds();
+      Time = hh + ":" + mf + ":" + ss;
 
-      return Time
+      return Time;
     },
-    changeTriggerWay(a){
-      this.data.triggerWay=a
-      console.log(this.data.triggerWay)
+    changeTriggerWay(a) {
+      this.data.triggerWay = a;
+      console.log(this.data.triggerWay);
     }
   }
 };
@@ -760,14 +766,14 @@ waitList:{},
   // align-items: center;
   // padding-left: 20px;
   height: 100%;
-  padding-bottom: 70px;
+  padding-bottom: 80px;
   // overflow-x: hidden;
   overflow-y: scroll;
 }
 .el-form {
   width: 100%;
   height: 100%;
-  padding-bottom: 70px;
+  padding-bottom: 80px;
 }
 
 .el-button {
@@ -789,7 +795,7 @@ waitList:{},
 }
 
 .ef-node-form-item {
-  padding: 20px;
+  padding: 2px 20px  20px 20px ;
   padding-bottom: 15px;
   box-sizing: border-box;
 
@@ -841,12 +847,13 @@ waitList:{},
   width: 100%;
   // height: 300px;
   padding: 15px 0px;
-  background-color: #ccc;
+  background-color: #f1f1f1;
+  border-radius: 5px;
   ul {
     margin-top: 10px;
     width: 100%;
     // height: 300px;
-    background-color: #ccc;
+    // background-color: #f1f1f1;
     padding: 0;
     .select_show_add {
       display: flex;
@@ -909,20 +916,20 @@ waitList:{},
 // .el_from_btn {
 //   position: fixed;
 // }
- .from_btn{
-    // width: 100%;
-    width: 380px;
-    height: 50px;
-    // margin-left: 15px;
-    padding-top: 10px;
-    background-color:rgb(255, 255, 255);
-    line-height: 50px;
-      position: fixed;
-      // background-color: violet;
-      bottom: -20px;
-      // button:{
-      //   width: 49%;
-      // }
-  }
-
+.from_btn {
+  // width: 100%;
+  width: 380px;
+  height: 50px;
+  // margin-left: 15px;
+  padding-top: 10px;
+  background-color: rgb(255, 255, 255);
+  line-height: 50px;
+  position: fixed;
+  // background-color: violet;
+  bottom: -20px;
+  z-index: 50;
+  // button:{
+  //   width: 49%;
+  // }
+}
 </style>

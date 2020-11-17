@@ -1,7 +1,6 @@
 <template>
   <div v-if="easyFlowVisible" style="height: calc(100vh);">
     <el-row class="panel-header">
-
     <div v-if="!data.jobName"> 
          <el-button class ="exit" type="text" icon="el-icon-back" circle @click="giveUp"></el-button>
        <span>ID- -</span> <span>未命名任务</span>
@@ -104,7 +103,7 @@
     </el-row>
     <div style="display: flex;height: calc(100% - 47px);">
       <div style="width: 100px;border-right: 1px solid #dce3e8;"
-      v-if="this.$route.params.value!==0"
+      v-if="!onlyView"
       class ="left_Nav">
         
         <node-menu  @addNode="addNode" ref="nodeMenu"></node-menu>
@@ -148,6 +147,7 @@
           @setLineLabel="setLineLabel"
           @repaintEverything="repaintEverything"
           @isHideFrom="isHideFrom"
+          isdisabled:onlyView
         ></flow-node-form>
       </div>
     </div>
@@ -159,6 +159,7 @@
       @setCurrentTask="setCurrentTask"
       ref="setTask"
       :data="data"
+      isdisabled:onlyView
     ></setTask>
   </div>
 </template>
@@ -213,7 +214,8 @@ export default {
       zoom: 1,
       zoomStep: 0.035,
       zoomEnabled: false,
-      isShowForm: false
+      isShowForm: false,
+      onlyView:false //是否是仅查看
     };
   },
   // 一些基础配置移动该文件中
@@ -279,14 +281,13 @@ export default {
         }
       }
     };
+    if(this.$route.params.value===0){
+        this.onlyView = true
+      console.log(this.onlyView)
+    }
+
   },
-  keyDelete(e) {
-    console.log("删除dom");
-    //  let key = window.event.keyCode;
-    // if(key==8 ||key ==46){
-    //     this.deleteElement()
-    //     return false
-  },
+
 
 
   mounted() {
@@ -320,6 +321,10 @@ export default {
       });
     } else if (routerType===0) {
       //查看
+
+      // 修改查看状态
+  
+
       // 请求画布数据   getCheckdata
 
     this.$http({
@@ -404,8 +409,13 @@ export default {
     // 返回唯一标识
     getUUID() {
       let value = "";
-      this.localnodeID = this.data.nodeList.length;
-      value = this.taskID + "_" + (this.localnodeID + 1);
+      
+      let localnodeID = this.data.nodeList.length-1;
+      let inx =this.data.nodeList[localnodeID].id.lastIndexOf("_");
+      let str=this.data.nodeList[localnodeID].id.substring(inx+1);
+  
+      this.localnodeID =parseInt(str)+2
+      value = this.taskID + "_" + (this.localnodeID);
       this.localnodeID = this.localnodeID + 1;
       return value;
     },

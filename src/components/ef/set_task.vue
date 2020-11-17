@@ -5,6 +5,7 @@
     width="30%"
     customClass="flowHelp"
   >
+{{isdisabled}}
     <el-form
       :visible.sync="dialogVisible"
       :model="ruleForm"
@@ -12,6 +13,7 @@
       ref="ruleForm"
       label-width="100px"
       class="demo-ruleForm"
+      :disabled="isdisabled"
     >
       <el-form-item label="任务名称" prop="name" >
         <el-input v-model="ruleForm.name" ></el-input>
@@ -174,8 +176,15 @@ export default {
     };
   },
   props: {
-    data: Object
+    data: Object,
+    isdisabled:Boolean
   },
+   watch: {
+    isdisabled(val) {
+     console.log(val)
+    }
+  },
+
   mounted() {
     axios.get("http://49.233.45.33:8081/v1/get/job/classify").then(res => {
       this.taskClassifyList = res.data.data;

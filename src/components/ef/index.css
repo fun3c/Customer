@@ -72,7 +72,7 @@
     height: 42px;
     line-height: 42px;
     z-index: 3;
-    background-color: rgba(250, 250, 250, 0.3);
+    background-color: rgba(250, 250, 250, 0);
     /* border-bottom: 1px solid #DADCE0; */
     position: fixed;
     margin-top: 50px;
@@ -402,11 +402,12 @@
     background-color: rgb(23, 174, 194);
   }
   .panel-header{
-      background-color: rgb(49, 47, 47);height: 50px;
+      background-color: #5f72e2;height: 50px;
       line-height: 50px;
       position: fixed;
       width: 100%;
       z-index: 100;
+      font-weight: 700;
       border: none;
       font-size: 15px;
       display: flex;
@@ -426,6 +427,8 @@
   }
   .rightForm{
       margin-top: 40px;
+      /* margin-bottom: 40px; */
+      overflow: scroll;
       /* position:fixed;
       right: 0;
       z-index: 20; */

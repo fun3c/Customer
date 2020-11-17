@@ -63,12 +63,12 @@
         <div class="baifen">%</div>
         <div class="circle" v-if="i > 1" @click="removeTest(i)">X</div>
       </div>
-      <el-button size="mini" @click="add">添加实验组</el-button>
+      <!-- <el-button size="mini" @click="add">添加实验组</el-button> -->
     </el-form-item>
-    <el-form-item>
+    <!-- <el-form-item>
       <el-button type="primary" @click="saveTest">保存</el-button>
       <el-button>取消</el-button>
-    </el-form-item>
+    </el-form-item> -->
   </el-form>
 </template>
 <script>
@@ -130,23 +130,26 @@ export default {
           message: "观察周期为空",
           type: "warning",
         });
-        return
+        return  false
       }
       if (this.nameIsNull()) {
         this.$message({
           message: "实验组名有为空",
           type: "warning",
         });
+         return  false
       } else if (this.numCount()) {
         this.$message({
           message: "分流比例之和不是100%",
           type: "warning",
         });
+         return  false
       } else {
         this.$message({
           message: "保存成功",
           type: "success",
         });
+         return  true
       }
     },
   },

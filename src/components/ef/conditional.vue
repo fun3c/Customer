@@ -11,28 +11,34 @@
       @on-node-mouseover="onMouseover"
       @on-node-mouseout="onMouseout"
     /> -->
-    
+
     <!-- 一期表单 -->
-<el-form :model="dynamicValidateForm" ref="dynamicValidateForm"  class="demo-dynamic">
-  <el-form-item
-  class="conditional_show"
-    v-for="(domain, index) in dynamicValidateForm.domains"
-    :key="domain.key"
-    :prop="'domains.' + index + '.label'"
-  
-    :rules="{
-      required: true, message: '条件不能为空', trigger: 'change'
-    }"
-  >
-    <el-input   @focus="openBox2(index)"  v-model="domain.label"></el-input><span style="cursor:pointer;" @click.prevent="removeDomain(domain)">删除</span>
-  </el-form-item>
-  <el-form-item>
-    <!-- <el-button type="primary" @click="submitForm('dynamicValidateForm')">提交</el-button> -->
-    <a style="cursor:pointer;" @click="addDomain">添加条件</a>
-
-  </el-form-item>
-</el-form>
-
+    <el-form
+      :model="dynamicValidateForm"
+      ref="dynamicValidateForm"
+      class="demo-dynamic"
+    >
+      <el-form-item
+        class="conditional_show"
+        v-for="(domain, index) in dynamicValidateForm.domains"
+        :key="domain.key"
+        :prop="'domains.' + index + '.label'"
+        :rules="{
+          required: true,
+          message: '条件不能为空',
+          trigger: 'change'
+        }"
+      >
+        <el-input @focus="openBox2(index)" v-model="domain.label"></el-input
+        ><span style="cursor:pointer;" @click.prevent="removeDomain(domain)"
+          >删除</span
+        >
+      </el-form-item>
+      <el-form-item>
+        <!-- <el-button type="primary" @click="submitForm('dynamicValidateForm')">提交</el-button> -->
+        <a style="cursor:pointer;" @click="addDomain">添加条件</a>
+      </el-form-item>
+    </el-form>
 
     <!-- <a @click="pushConditional">添加条件</a> -->
     <!-- <div v-show="BasicSwich" class="floating">
@@ -51,14 +57,12 @@
               :key="index"
               :label="item.title"
             >
-                   <el-input placeholder="输入关键字进行过滤" v-model="filterText">
-                </el-input>
-              <div class="wettree" v-if="item.childLabelList.length > 0">
-         
-
+              <el-input placeholder="输入关键字进行过滤" v-model="filterText">
+              </el-input>
+              <div class="wettree" v-if="item.child.length > 0">
                 <el-tree
                   class="filter-tree"
-                  :data="tabeldata"
+                  :data="item.child"
                   :props="defaultProps"
                   default-expand-all
                   :filter-node-method="filterNode"
@@ -141,13 +145,18 @@
                 </el-select>
               </el-form-item>
               <!-- 输入框 -->
-    <el-form-item
-                v-if="rightData.labelValueType !== 'ENUM'&& rightData.labelValueType !== 'BOOLEAN'"  
+              <el-form-item
+                v-if="
+                  rightData.labelValueType !== 'ENUM' &&
+                    rightData.labelValueType !== 'BOOLEAN'
+                "
                 label="值"
               >
-         <el-input v-model="localData.value" placeholder="请输入内容"></el-input>
+                <el-input
+                  v-model="localData.value"
+                  placeholder="请输入内容"
+                ></el-input>
               </el-form-item>
-              
             </el-form>
           </div>
           <el-row class="pop_up_right_btn">
@@ -176,7 +185,14 @@ export default {
       labelName: "",
       activeName: 0,
       localOperator: "",
-      tabeldata: [],
+      tabeldata: [
+        { title: "离线标签", child: [] },
+        { title: "实时标签", child: [] },
+        { title: "人群标签", child: [] },
+        { title: "变量标签", child: [] },
+        { title: "系统标签", child: [] }
+      ],
+      // tabeldata: [],
       localvalue: undefined,
       rightData: undefined, //选中的
       labelData: null, // 条件缩略图信息
@@ -187,24 +203,25 @@ export default {
         dataValue: "",
         operator: "", //运算符信息
         labelInfo: "",
-        value:"",
+        value: "",
         expand: true
       },
-           dynamicValidateForm: {
-          domains: [
-            {     id: 0,
-        label: "",
-        labelNo: "",
-        dataNo: "",
-        dataValue: "",
-        operatorNo: "",
-        operatorValue: "",
-        operatorInfo: "",
-        labelInfo: "",
-        expand: true}
-          ],
-        
-        },
+      dynamicValidateForm: {
+        domains: [
+          {
+            id: 0,
+            label: "",
+            labelNo: "",
+            dataNo: "",
+            dataValue: "",
+            operatorNo: "",
+            operatorValue: "",
+            operatorInfo: "",
+            labelInfo: "",
+            expand: true
+          }
+        ]
+      },
       defaultProps: {
         //树形控件的配置项
         children: "childLabelList",
@@ -249,8 +266,9 @@ export default {
     axios
       .post("http://49.233.45.33:8081/list/label", { labelType: 1 })
       .then(res => {
-        this.tabeldata = res.data.data;
-        console.log(this.tabeldata, "请求的树");
+        
+        this.tabeldata[0].child = res.data.data;
+        console.log( this.tabeldata[0], "请求的树");
         // this.tabeldata.forEach((item, index) => {
         //   item.childLabelList.forEach((itm, index) => {
         //     itm.childLabelList = itm.labelDataList;
@@ -259,11 +277,12 @@ export default {
         //     });
         //   });
         // });
-      })  .catch(() => {
-                this.$message({
-            type: "error",
-            message: "任务标签ID请求失败"
-          });
+      })
+      .catch(() => {
+        this.$message({
+          type: "error",
+          message: "任务标签ID请求失败"
+        });
       });
     this.expandChange();
   },
@@ -328,11 +347,11 @@ export default {
       }
     },
     openBox2(index) {
-      console.log(index)
+      console.log(index);
       // this.localData = Object.assign(item, {});
 
       this.targetData = this.dynamicValidateForm.domains[index];
-      console.log(this.targetData)
+      console.log(this.targetData);
       // this.labelData = item;
       // this.localOperator = item.operator;
       // this.localValue = item.value;
@@ -344,7 +363,11 @@ export default {
         this.$message.error("请选则运算符数据");
         return false;
       }
-      if (!this.localData.dataValue && this.localData.selectlist.length == 0 &&this.localData.value==="") {
+      if (
+        !this.localData.dataValue &&
+        this.localData.selectlist.length == 0 &&
+        this.localData.value === ""
+      ) {
         this.$message.error("请选则运算值数据");
         return false;
       }
@@ -370,8 +393,8 @@ export default {
       // 此处修改缩略图数据
       console.log(this.checkData());
       if (this.checkData()) {
-        console.log(this.localData,'本地数据')
-        if (this.rightData.labelValueType ==="ENUM" ) {
+        console.log(this.localData, "本地数据");
+        if (this.rightData.labelValueType === "ENUM") {
           let labelNo = "";
           let dataNo = "";
           let dataValue = "";
@@ -389,15 +412,14 @@ export default {
           this.targetData.dataNo = dataNo;
           this.targetData.dataValue = dataValue;
           this.targetData.labelInfo = labelInfo;
-        } else if(this.rightData.labelValueType ==="BOOLEAN"){
+        } else if (this.rightData.labelValueType === "BOOLEAN") {
           this.targetData.labelNo = this.localData.dataValue.labelNo;
           this.targetData.dataNo = this.localData.dataValue.dataNo;
           this.targetData.dataValue = this.localData.dataValue.dataValue;
           this.targetData.labelInfo = this.localData.dataValue.labelInfo;
-        }
-        else {
-             this.targetData.dataValue = this.localData.value;
-             this.targetData.labelInfo = this.localData.value;
+        } else {
+          this.targetData.dataValue = this.localData.value;
+          this.targetData.labelInfo = this.localData.value;
         }
         //运算符信息
         this.targetData.operatorValue = this.localData.operator.operatorValue;
@@ -408,7 +430,7 @@ export default {
           this.targetData.operatorInfo +
           this.targetData.labelInfo;
 
-        console.log(this.data.children =this.dynamicValidateForm.domains);
+        console.log((this.data.children = this.dynamicValidateForm.domains));
         this.$message.success("保存成功");
         this.isShowOpenBox = false;
       }
@@ -419,7 +441,8 @@ export default {
     },
     filterNode(value, data) {
       if (!value) return true;
-      return data.label.indexOf(value) !== -1;
+      console.log(data, "数据");
+      return data.labelName.indexOf(value) !== -1;
     },
     nodeClick(data) {
       this.localData = {
@@ -431,27 +454,28 @@ export default {
       this.rightData = data;
       this.labelName = this.rightData.labelName;
       console.log(data);
-    },  submitForm(formName) {
-      let  feedback =''
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-           feedback = true
-          } else {
-            // console.log('error submit!!');
-            feedback = false;
-          }
-        });
-        return feedback
-      },
-      removeDomain(item) {
-        var index = this.dynamicValidateForm.domains.indexOf(item)
-        if (index !== -1) {
-          this.dynamicValidateForm.domains.splice(index, 1)
+    },
+    submitForm(formName) {
+      let feedback = "";
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          feedback = true;
+        } else {
+          // console.log('error submit!!');
+          feedback = false;
         }
-      },
-      addDomain() {
-        this.dynamicValidateForm.domains.push({
-        id:  this.dynamicValidateForm.domains.length,
+      });
+      return feedback;
+    },
+    removeDomain(item) {
+      var index = this.dynamicValidateForm.domains.indexOf(item);
+      if (index !== -1) {
+        this.dynamicValidateForm.domains.splice(index, 1);
+      }
+    },
+    addDomain() {
+      this.dynamicValidateForm.domains.push({
+        id: this.dynamicValidateForm.domains.length,
         label: "",
         labelNo: "",
         dataNo: "",
@@ -462,9 +486,7 @@ export default {
         labelInfo: "",
         expand: true
       });
-      }
-    
-    
+    }
   }
 };
 </script>
@@ -585,36 +607,34 @@ export default {
   height: 100%;
   overflow: scroll;
 }
-.conditional_show{
-
+.conditional_show {
   width: 100%;
-
 }
-.el-form-item__content{
-   display: flex;
-   
-      .el-input{
+.el-form-item__content {
+  display: flex;
+
+  .el-input {
     width: 80% !important;
   }
-  span{
-  width: 20%;
-  color: rgb(133, 130, 130);
-  text-align: center;
-  margin-left: 15px;
+  span {
+    width: 20%;
+    color: rgb(133, 130, 130);
+    text-align: center;
+    margin-left: 15px;
   }
-  span:hover{
+  span:hover {
     font-weight: 800;
-      color: rgb(110, 154, 212);
-    }
+    color: rgb(110, 154, 212);
+  }
 }
-.filter-tree{
+.filter-tree {
   height: 100%;
   overflow: scroll;
 }
-.el-tabs__content{
+.el-tabs__content {
   height: 100%;
 }
-.wettree{
+.wettree {
   height: 370px !important;
   overflow: scroll;
 }
